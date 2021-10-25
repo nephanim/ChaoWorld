@@ -31,16 +31,16 @@ namespace ChaoWorld.Bot
             return id != 0;
         }
 
-        public static Task<Garden> PeekSystem(this Context ctx) => ctx.MatchSystemInner();
+        public static Task<Core.Garden> PeekSystem(this Context ctx) => ctx.MatchSystemInner();
 
-        public static async Task<Garden> MatchSystem(this Context ctx)
+        public static async Task<Core.Garden> MatchSystem(this Context ctx)
         {
             var system = await ctx.MatchSystemInner();
             if (system != null) ctx.PopArgument();
             return system;
         }
 
-        private static async Task<Garden> MatchSystemInner(this Context ctx)
+        private static async Task<Core.Garden> MatchSystemInner(this Context ctx)
         {
             var input = ctx.PeekArgument();
 

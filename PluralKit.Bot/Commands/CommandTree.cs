@@ -222,11 +222,11 @@ namespace ChaoWorld.Bot
         {
             // If we have no parameters, default to self-target
             if (!ctx.HasNext())
-                await ctx.Execute<System>(SystemInfo, m => m.Query(ctx, ctx.System));
+                await ctx.Execute<Garden>(SystemInfo, m => m.Query(ctx, ctx.System));
 
             // First, we match own-system-only commands (ie. no target system parameter)
             else if (ctx.Match("new", "create", "make", "add", "register", "init", "n"))
-                await ctx.Execute<System>(SystemNew, m => m.New(ctx));
+                await ctx.Execute<Garden>(SystemNew, m => m.New(ctx));
             else if (ctx.Match("name", "rename", "changename"))
                 await ctx.Execute<SystemEdit>(SystemRename, m => m.Name(ctx));
             else if (ctx.Match("tag"))
@@ -276,9 +276,9 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("find", "search", "query", "fd", "s"))
                 await ctx.Execute<SystemList>(SystemFind, m => m.MemberList(ctx, target));
             else if (ctx.Match("info", "view", "show"))
-                await ctx.Execute<System>(SystemInfo, m => m.Query(ctx, target));
+                await ctx.Execute<Garden>(SystemInfo, m => m.Query(ctx, target));
             else if (!ctx.HasNext())
-                await ctx.Execute<System>(SystemInfo, m => m.Query(ctx, target));
+                await ctx.Execute<Garden>(SystemInfo, m => m.Query(ctx, target));
             else
                 await PrintCommandNotFoundError(ctx, SystemList, SystemFronter, SystemFrontHistory, SystemFrontPercent,
                     SystemInfo);

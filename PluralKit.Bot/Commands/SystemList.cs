@@ -14,7 +14,7 @@ namespace ChaoWorld.Bot
             _db = db;
         }
 
-        public async Task MemberList(Context ctx, Garden target)
+        public async Task MemberList(Context ctx, Core.Garden target)
         {
             if (target == null) throw Errors.NoGardenError;
             ctx.CheckSystemPrivacy(target, target.MemberListPrivacy);
@@ -23,7 +23,7 @@ namespace ChaoWorld.Bot
             await ctx.RenderMemberList(ctx.LookupContextFor(target), _db, target.Id, GetEmbedTitle(target, opts), target.Color, opts);
         }
 
-        private string GetEmbedTitle(Garden target, MemberListOptions opts)
+        private string GetEmbedTitle(Core.Garden target, MemberListOptions opts)
         {
             var title = new StringBuilder("Members of ");
 

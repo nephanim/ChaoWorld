@@ -55,7 +55,7 @@ namespace ChaoWorld.Bot
             builder.RegisterType<ProxiedMessage>().AsSelf();
             builder.RegisterType<Random>().AsSelf();
             builder.RegisterType<ServerConfig>().AsSelf();
-            builder.RegisterType<System>().AsSelf();
+            builder.RegisterType<Garden>().AsSelf();
             builder.RegisterType<SystemEdit>().AsSelf();
             builder.RegisterType<SystemLink>().AsSelf();
             builder.RegisterType<SystemList>().AsSelf();

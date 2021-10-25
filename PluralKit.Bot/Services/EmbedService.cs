@@ -44,7 +44,7 @@ namespace ChaoWorld.Bot
             return Task.WhenAll(ids.Select(Inner));
         }
 
-        public async Task<Embed> CreateSystemEmbed(Context cctx, Garden system, LookupContext ctx)
+        public async Task<Embed> CreateSystemEmbed(Context cctx, Core.Garden system, LookupContext ctx)
         {
 
             // Fetch/render info for all accounts simultaneously
@@ -126,7 +126,7 @@ namespace ChaoWorld.Bot
             return embed.Build();
         }
 
-        public async Task<Embed> CreateMemberEmbed(Garden system, Chao member, Guild guild, LookupContext ctx)
+        public async Task<Embed> CreateMemberEmbed(Core.Garden system, Chao member, Guild guild, LookupContext ctx)
         {
 
             // string FormatTimestamp(Instant timestamp) => DateTimeFormats.ZonedDateTimeFormat.Format(timestamp.InZone(system.Zone));

@@ -32,7 +32,7 @@ namespace ChaoWorld.Bot
 
         private readonly IDatabase _db;
         private readonly ModelRepository _repo;
-        private readonly Garden _senderSystem;
+        private readonly Core.Garden _senderSystem;
         private readonly IMetrics _metrics;
         private readonly CommandMessageService _commandMessageService;
         private readonly IDiscordCache _cache;
@@ -40,7 +40,7 @@ namespace ChaoWorld.Bot
         private Command? _currentCommand;
 
         public Context(ILifetimeScope provider, Shard shard, Guild? guild, Channel channel, MessageCreateEvent message, int commandParseOffset,
-                       Garden senderSystem, MessageContext messageContext)
+                       Core.Garden senderSystem, MessageContext messageContext)
         {
             _message = message;
             _shard = shard;
@@ -76,7 +76,7 @@ namespace ChaoWorld.Bot
 
         public DiscordApiClient Rest => _rest;
 
-        public Garden System => _senderSystem;
+        public Core.Garden System => _senderSystem;
 
         public Parameters Parameters => _parameters;
 
@@ -136,7 +136,7 @@ namespace ChaoWorld.Bot
             }
         }
 
-        public LookupContext LookupContextFor(Garden target) =>
+        public LookupContext LookupContextFor(Core.Garden target) =>
             System?.Id == target.Id ? LookupContext.ByOwner : LookupContext.ByNonOwner;
 
         public LookupContext LookupContextFor(GardenId systemId) =>

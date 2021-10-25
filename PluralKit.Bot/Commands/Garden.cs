@@ -4,20 +4,20 @@ using ChaoWorld.Core;
 
 namespace ChaoWorld.Bot
 {
-    public class System
+    public class Garden
     {
         private readonly EmbedService _embeds;
         private readonly IDatabase _db;
         private readonly ModelRepository _repo;
 
-        public System(EmbedService embeds, IDatabase db, ModelRepository repo)
+        public Garden(EmbedService embeds, IDatabase db, ModelRepository repo)
         {
             _embeds = embeds;
             _db = db;
             _repo = repo;
         }
 
-        public async Task Query(Context ctx, Garden system)
+        public async Task Query(Context ctx, Core.Garden system)
         {
             if (system == null) throw Errors.NoGardenError;
 

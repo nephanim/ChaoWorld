@@ -62,7 +62,7 @@ namespace ChaoWorld.Bot
 
         public static CWError AccountAlreadyLinked => new CWError("That account is already linked to your system.");
         public static CWError AccountNotLinked => new CWError("That account isn't linked to your system.");
-        public static CWError AccountInOtherSystem(Garden system) => new CWError($"The mentioned account is already linked to another system (see `pk;system {system.Hid}`).");
+        public static CWError AccountInOtherSystem(Core.Garden system) => new CWError($"The mentioned account is already linked to another system (see `pk;system {system.Hid}`).");
         public static CWError UnlinkingLastAccount => new CWError("Since this is the only account linked to this system, you cannot unlink it (as that would leave your system account-less). If you would like to delete your system, use `pk;system delete`.");
         public static CWError MemberLinkCancelled => new CWError("Member link cancelled.");
         public static CWError MemberUnlinkCancelled => new CWError("Member unlink cancelled.");
