@@ -48,7 +48,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Database/**/*.sql" />
+      <EmbeddedResource Include="Database\*\*.sql" />
+	  <EmbeddedResource Include="Database\clean.sql" />
     </ItemGroup>
 
     <ItemGroup>
