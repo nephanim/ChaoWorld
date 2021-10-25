@@ -154,59 +154,6 @@ namespace ChaoWorld.Bot
             }
         }
 
-        public async Task BannerImage(Context ctx)
-        {
-            ctx.CheckGarden();
-
-            async Task ClearImage()
-            {
-                await _repo.UpdateGarden(ctx.System.Id, new() { BannerImage = null });
-                await ctx.Reply($"{Emojis.Success} Garden banner image cleared.");
-            }
-
-            async Task SetImage(ParsedImage img)
-            {
-                await AvatarUtils.VerifyAvatarOrThrow(_client, img.Url, isFullSizeImage: true);
-
-                await _repo.UpdateGarden(ctx.System.Id, new() { BannerImage = img.Url });
-
-                var msg = img.Source switch
-                {
-                    AvatarSource.Url => $"{Emojis.Success} Garden banner image changed to the image at the given URL.",
-                    AvatarSource.Attachment => $"{Emojis.Success} Garden banner image changed to attached image.\n{Emojis.Warn} If you delete the message containing the attachment, the banner image will stop working.",
-                    AvatarSource.User => throw new CWError("Cannot set a banner image to an user's avatar."),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-
-                // The attachment's already right there, no need to preview it.
-                var hasEmbed = img.Source != AvatarSource.Attachment;
-                await (hasEmbed
-                    ? ctx.Reply(msg, embed: new EmbedBuilder().Image(new(img.Url)).Build())
-                    : ctx.Reply(msg));
-            }
-
-            async Task ShowImage()
-            {
-                if ((ctx.System.BannerImage?.Trim() ?? "").Length > 0)
-                {
-                    var eb = new EmbedBuilder()
-                        .Title("Garden banner image")
-                        .Image(new(ctx.System.BannerImage))
-                        .Description("To clear, use `pk;system banner clear`.");
-                    await ctx.Reply(embed: eb.Build());
-                }
-                else
-                    throw new CWSyntaxError("This system does not have a banner image set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
-            }
-
-            if (await ctx.MatchClear("your system's banner image"))
-                await ClearImage();
-            else if (await ctx.MatchImage() is { } img)
-                await SetImage(img);
-            else
-                await ShowImage();
-        }
-
         public async Task Delete(Context ctx)
         {
             ctx.CheckGarden();

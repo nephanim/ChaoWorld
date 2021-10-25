@@ -152,59 +152,6 @@ namespace ChaoWorld.Bot
             }
         }
 
-        public async Task BannerImage(Context ctx, Chao target)
-        {
-            ctx.CheckOwnMember(target);
-
-            async Task ClearBannerImage()
-            {
-                await _repo.UpdateMember(target.Id, new() { BannerImage = null });
-                await ctx.Reply($"{Emojis.Success} Member banner image cleared.");
-            }
-
-            async Task SetBannerImage(ParsedImage img)
-            {
-                await AvatarUtils.VerifyAvatarOrThrow(_client, img.Url, isFullSizeImage: true);
-
-                await _repo.UpdateMember(target.Id, new() { BannerImage = img.Url });
-
-                var msg = img.Source switch
-                {
-                    AvatarSource.Url => $"{Emojis.Success} Member banner image changed to the image at the given URL.",
-                    AvatarSource.Attachment => $"{Emojis.Success} Member banner image changed to attached image.\n{Emojis.Warn} If you delete the message containing the attachment, the banner image will stop working.",
-                    AvatarSource.User => throw new CWError("Cannot set a banner image to an user's avatar."),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-
-                // The attachment's already right there, no need to preview it.
-                var hasEmbed = img.Source != AvatarSource.Attachment;
-                await (hasEmbed
-                    ? ctx.Reply(msg, embed: new EmbedBuilder().Image(new(img.Url)).Build())
-                    : ctx.Reply(msg));
-            }
-
-            async Task ShowBannerImage()
-            {
-                if ((target.BannerImage?.Trim() ?? "").Length > 0)
-                {
-                    var eb = new EmbedBuilder()
-                        .Title($"{target.Name}'s banner image")
-                        .Image(new(target.BannerImage))
-                        .Description($"To clear, use `pk;member {target.Hid} banner clear`.");
-                    await ctx.Reply(embed: eb.Build());
-                }
-                else
-                    throw new CWSyntaxError("This member does not have a banner image set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
-            }
-
-            if (await ctx.MatchClear("this member's banner image"))
-                await ClearBannerImage();
-            else if (await ctx.MatchImage() is { } img)
-                await SetBannerImage(img);
-            else
-                await ShowBannerImage();
-        }
-
         public async Task Color(Context ctx, Chao target)
         {
             var color = ctx.RemainderOrNull();

@@ -175,8 +175,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<SystemEdit>(SystemDesc, m => m.Description(ctx));
             else if (ctx.Match("color", "colour"))
                 await ctx.Execute<SystemEdit>(SystemColor, m => m.Color(ctx));
-            else if (ctx.Match("banner", "splash", "cover"))
-                await ctx.Execute<SystemEdit>(SystemBannerImage, m => m.BannerImage(ctx));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
                 await ctx.Execute<SystemEdit>(SystemDelete, m => m.Delete(ctx));
             else if (ctx.Match("proxy"))
@@ -246,8 +244,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<MemberEdit>(MemberBirthday, m => m.Birthday(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
                 await ctx.Execute<MemberEdit>(MemberDelete, m => m.Delete(ctx, target));
-            else if (ctx.Match("banner", "splash", "cover"))
-                await ctx.Execute<MemberEdit>(MemberBannerImage, m => m.BannerImage(ctx, target));
             else if (ctx.Match("displayname", "dn", "dname", "nick", "nickname", "dispname"))
                 await ctx.Execute<MemberEdit>(MemberDisplayName, m => m.DisplayName(ctx, target));
             else if (ctx.Match("servername", "sn", "sname", "snick", "snickname", "servernick", "servernickname", "serverdisplayname", "guildname", "guildnick", "guildnickname", "serverdn"))
