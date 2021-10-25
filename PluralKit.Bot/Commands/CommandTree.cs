@@ -138,8 +138,6 @@ namespace ChaoWorld.Bot
                 return HandleMemberCommand(ctx);
             if (ctx.Match("commands", "cmd", "c"))
                 return CommandHelpRoot(ctx);
-            if (ctx.Match("ap", "autoproxy", "auto"))
-                return HandleAutoproxyCommand(ctx);
             if (ctx.Match("list", "find", "members", "search", "query", "l", "f", "fd"))
                 return ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, ctx.System));
             if (ctx.Match("link"))
@@ -411,25 +409,6 @@ namespace ChaoWorld.Bot
                     await ctx.Reply("For the full list of commands, see the website: <https://pluralkit.me/commands>");
                     break;
             }
-        }
-
-        private Task HandleAutoproxyCommand(Context ctx)
-        {
-            if (ctx.Match("commands"))
-                return PrintCommandList(ctx, "autoproxy", AutoproxyCommands);
-
-            // ctx.CheckGarden();
-            // oops, that breaks stuff! PKErrors before ctx.Execute don't actually do anything.
-            // so we just emulate checking and throwing an error.
-            if (ctx.System == null)
-                return ctx.Reply($"{Emojis.Error} {Errors.NoGardenError.Message}");
-
-            if (ctx.Match("account", "ac"))
-                return ctx.Execute<Autoproxy>(AutoproxyAccount, m => m.AutoproxyAccount(ctx));
-            else if (ctx.Match("timeout", "tm"))
-                return ctx.Execute<Autoproxy>(AutoproxyTimeout, m => m.AutoproxyTimeout(ctx));
-            else
-                return ctx.Execute<Autoproxy>(AutoproxySet, m => m.SetAutoproxyMode(ctx));
         }
 
         private async Task PrintCommandNotFoundError(Context ctx, params Command[] potentialCommands)

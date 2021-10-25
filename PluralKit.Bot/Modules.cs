@@ -47,7 +47,6 @@ namespace ChaoWorld.Bot
             // Commands
             builder.RegisterType<CommandTree>().AsSelf();
             builder.RegisterType<Admin>().AsSelf();
-            builder.RegisterType<Autoproxy>().AsSelf();
             builder.RegisterType<Checks>().AsSelf();
             builder.RegisterType<Help>().AsSelf();
             builder.RegisterType<Member>().AsSelf();
