@@ -26,14 +26,14 @@ namespace ChaoWorld.Core
             await using var tx = await conn.BeginTransactionAsync();
 
             // Before applying migrations, clean out views/functions to prevent type errors
-            await ExecuteSqlFile($"{RootPath}.clean.sql", conn, tx);
+            //await ExecuteSqlFile($"{RootPath}.clean.sql", conn, tx);
 
             // Apply all migrations between the current database version and the target version
             await ApplyMigrations(conn, tx);
 
             // Now, reapply views/functions (we deleted them above, no need to worry about conflicts)
-            await ExecuteSqlFile($"{RootPath}.Views.views.sql", conn, tx);
-            await ExecuteSqlFile($"{RootPath}.Functions.functions.sql", conn, tx);
+            //await ExecuteSqlFile($"{RootPath}.Views.views.sql", conn, tx);
+            //await ExecuteSqlFile($"{RootPath}.Functions.functions.sql", conn, tx);
 
             // Finally, commit tx
             await tx.CommitAsync();

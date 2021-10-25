@@ -33,13 +33,7 @@ namespace ChaoWorld.Bot
             str.Append(SortProperty switch
             {
                 SortProperty.Name => "member name",
-                SortProperty.Hid => "member ID",
-                SortProperty.DisplayName => "display name",
                 SortProperty.CreationDate => "creation date",
-                SortProperty.LastMessage => "last message",
-                SortProperty.LastSwitch => "last switch",
-                SortProperty.MessageCount => "message count",
-                SortProperty.Birthdate => "birthday",
                 SortProperty.Random => "randomly",
                 _ => new ArgumentOutOfRangeException($"Couldn't find readable string for sort property {SortProperty}")
             });
@@ -75,22 +69,8 @@ namespace ChaoWorld.Bot
             {
                 // As for the OrderByDescending HasValue calls: https://www.jerriepelser.com/blog/orderby-with-null-values/
                 // We want nulls last no matter what, even if orders are reversed
-                SortProperty.Hid => input.OrderBy(m => m.Hid, ReverseMaybe(culture)),
                 SortProperty.Name => input.OrderBy(m => m.Name, ReverseMaybe(culture)),
                 SortProperty.CreationDate => input.OrderBy(m => m.Created, ReverseMaybe(Comparer<Instant>.Default)),
-                SortProperty.MessageCount => input.OrderByDescending(m => m.MessageCount, ReverseMaybe(Comparer<int>.Default)),
-                SortProperty.DisplayName => input
-                    .OrderByDescending(m => m.DisplayName != null)
-                    .ThenBy(m => m.DisplayName, ReverseMaybe(culture)),
-                SortProperty.Birthdate => input
-                    .OrderByDescending(m => m.AnnualBirthday.HasValue)
-                    .ThenBy(m => m.AnnualBirthday, ReverseMaybe(Comparer<AnnualDate?>.Default)),
-                SortProperty.LastMessage => input
-                    .OrderByDescending(m => m.LastMessage.HasValue)
-                    .ThenByDescending(m => m.LastMessage, ReverseMaybe(Comparer<ulong?>.Default)),
-                SortProperty.LastSwitch => input
-                    .OrderByDescending(m => m.LastSwitchTime.HasValue)
-                    .ThenByDescending(m => m.LastSwitchTime, ReverseMaybe(Comparer<Instant?>.Default)),
                 SortProperty.Random => input
                     .OrderBy(m => randGen.Next()),
                 _ => throw new ArgumentOutOfRangeException($"Unknown sort property {opts.SortProperty}")
@@ -103,13 +83,7 @@ namespace ChaoWorld.Bot
     public enum SortProperty
     {
         Name,
-        DisplayName,
-        Hid,
-        MessageCount,
         CreationDate,
-        LastSwitch,
-        LastMessage,
-        Birthdate,
         Random
     }
 
