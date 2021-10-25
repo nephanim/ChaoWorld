@@ -337,8 +337,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<MemberEdit>(MemberColor, m => m.Color(ctx, target));
             else if (ctx.Match("birthday", "bday", "birthdate", "cakeday", "bdate"))
                 await ctx.Execute<MemberEdit>(MemberBirthday, m => m.Birthday(ctx, target));
-            else if (ctx.Match("proxy", "tags", "proxytags", "brackets"))
-                await ctx.Execute<MemberProxy>(MemberProxy, m => m.Proxy(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
                 await ctx.Execute<MemberEdit>(MemberDelete, m => m.Delete(ctx, target));
             else if (ctx.Match("avatar", "profile", "picture", "icon", "image", "pfp", "pic"))

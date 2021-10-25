@@ -53,7 +53,6 @@ namespace ChaoWorld.Bot
             builder.RegisterType<Member>().AsSelf();
             builder.RegisterType<MemberAvatar>().AsSelf();
             builder.RegisterType<MemberEdit>().AsSelf();
-            builder.RegisterType<MemberProxy>().AsSelf();
             builder.RegisterType<Misc>().AsSelf();
             builder.RegisterType<ProxiedMessage>().AsSelf();
             builder.RegisterType<Random>().AsSelf();
