@@ -24,11 +24,11 @@ namespace ChaoWorld.Bot
             ctx.CheckGarden();
 
             var account = await ctx.MatchUser() ?? throw new CWSyntaxError("You must pass an account to link with (either ID or @mention).");
-            var accountIds = await _repo.GetSystemAccounts(ctx.System.Id);
+            var accountIds = await _repo.GetGardenAccounts(ctx.System.Id);
             if (accountIds.Contains(account.Id))
                 throw Errors.AccountAlreadyLinked;
 
-            var existingAccount = await _repo.GetSystemByAccount(account.Id);
+            var existingAccount = await _repo.GetGardenByAccount(account.Id);
             if (existingAccount != null)
                 throw Errors.AccountInOtherSystem(existingAccount);
 
@@ -46,7 +46,7 @@ namespace ChaoWorld.Bot
             if (!ctx.MatchUserRaw(out id))
                 throw new CWSyntaxError("You must pass an account to link with (either ID or @mention).");
 
-            var accountIds = (await _repo.GetSystemAccounts(ctx.System.Id)).ToList();
+            var accountIds = (await _repo.GetGardenAccounts(ctx.System.Id)).ToList();
             if (!accountIds.Contains(id)) throw Errors.AccountNotLinked;
             if (accountIds.Count == 1) throw Errors.UnlinkingLastAccount;
 

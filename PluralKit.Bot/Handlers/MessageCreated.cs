@@ -110,7 +110,7 @@ namespace ChaoWorld.Bot
 
             try
             {
-                var system = ctx.SystemId != null ? await _repo.GetSystem(ctx.SystemId.Value) : null;
+                var system = ctx.SystemId != null ? await _repo.GetGarden(ctx.SystemId.Value) : null;
                 await _tree.ExecuteCommand(new Context(_services, shard, guild, channel, evt, cmdStart, system, ctx));
             }
             catch (CWError)

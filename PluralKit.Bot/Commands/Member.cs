@@ -50,7 +50,7 @@ namespace ChaoWorld.Bot
             await using var conn = await _db.Obtain();
 
             // Enforce per-system member limit
-            var memberCount = await _repo.GetSystemMemberCount(ctx.System.Id);
+            var memberCount = await _repo.GetGardenMemberCount(ctx.System.Id);
             var memberLimit = ctx.System.MemberLimitOverride ?? Limits.MaxMemberCount;
             if (memberCount >= memberLimit)
                 throw Errors.MemberLimitReachedError(memberLimit);
@@ -59,33 +59,12 @@ namespace ChaoWorld.Bot
             var member = await _repo.CreateMember(ctx.System.Id, memberName);
             memberCount++;
 
-            // Try to match an image attached to the message
-            var avatarArg = ctx.Message.Attachments.FirstOrDefault();
-            Exception imageMatchError = null;
-            if (avatarArg != null)
-            {
-                try
-                {
-                    await AvatarUtils.VerifyAvatarOrThrow(_client, avatarArg.Url);
-                    await _repo.UpdateMember(member.Id, new MemberPatch { AvatarUrl = avatarArg.Url });
-                }
-                catch (Exception e)
-                {
-                    imageMatchError = e;
-                }
-            }
-
             // Send confirmation and space hint
             await ctx.Reply($"{Emojis.Success} Member \"{memberName}\" (`{member.Hid}`) registered! Check out the getting started page for how to get a member up and running: https://pluralkit.me/start#create-a-member");
             // todo: move this to ModelRepository
             if (await _db.Execute(conn => conn.QuerySingleAsync<bool>("select has_private_members(@Garden)",
                 new { System = ctx.System.Id }))) //if has private members
                 await ctx.Reply($"{Emojis.Warn} This member is currently **public**. To change this, use `pk;member {member.Hid} private`.");
-            if (avatarArg != null)
-                if (imageMatchError == null)
-                    await ctx.Reply($"{Emojis.Success} Member avatar set to attached image.\n{Emojis.Warn} If you delete the message containing the attachment, the avatar will stop working.");
-                else
-                    await ctx.Reply($"{Emojis.Error} Couldn't set avatar: {imageMatchError.Message}");
             if (memberName.Contains(" "))
                 await ctx.Reply($"{Emojis.Note} Note that this member's name contains spaces. You will need to surround it with \"double quotes\" when using commands referring to it, or just use the member's 5-character ID (which is `{member.Hid}`).");
             if (memberCount >= memberLimit)
@@ -96,7 +75,7 @@ namespace ChaoWorld.Bot
 
         public async Task ViewMember(Context ctx, Chao target)
         {
-            var system = await _repo.GetSystem(target.Garden);
+            var system = await _repo.GetGarden(target.Garden);
             await ctx.Reply(embed: await _embeds.CreateMemberEmbed(system, target, ctx.Guild));
         }
     }

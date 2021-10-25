@@ -216,30 +216,20 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<Garden>(SystemNew, m => m.New(ctx));
             else if (ctx.Match("name", "rename", "changename"))
                 await ctx.Execute<SystemEdit>(SystemRename, m => m.Name(ctx));
-            else if (ctx.Match("tag"))
-                await ctx.Execute<SystemEdit>(SystemTag, m => m.Tag(ctx));
-            else if (ctx.Match("servertag"))
-                await ctx.Execute<SystemEdit>(SystemServerTag, m => m.ServerTag(ctx));
             else if (ctx.Match("description", "desc", "bio"))
                 await ctx.Execute<SystemEdit>(SystemDesc, m => m.Description(ctx));
             else if (ctx.Match("color", "colour"))
                 await ctx.Execute<SystemEdit>(SystemColor, m => m.Color(ctx));
             else if (ctx.Match("banner", "splash", "cover"))
                 await ctx.Execute<SystemEdit>(SystemBannerImage, m => m.BannerImage(ctx));
-            else if (ctx.Match("avatar", "picture", "icon", "image", "pic", "pfp"))
-                await ctx.Execute<SystemEdit>(SystemAvatar, m => m.Avatar(ctx));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
                 await ctx.Execute<SystemEdit>(SystemDelete, m => m.Delete(ctx));
-            else if (ctx.Match("timezone", "tz"))
-                await ctx.Execute<SystemEdit>(SystemTimezone, m => m.SystemTimezone(ctx));
             else if (ctx.Match("proxy"))
                 await ctx.Execute<SystemEdit>(SystemProxy, m => m.SystemProxy(ctx));
             else if (ctx.Match("list", "l", "members"))
                 await ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, ctx.System));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
                 await ctx.Execute<SystemList>(SystemFind, m => m.MemberList(ctx, ctx.System));
-            else if (ctx.Match("ping"))
-                await ctx.Execute<SystemEdit>(SystemPing, m => m.SystemPing(ctx));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "systems", SystemCommands);
             else
@@ -307,10 +297,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<MemberEdit>(MemberDisplayName, m => m.DisplayName(ctx, target));
             else if (ctx.Match("servername", "sn", "sname", "snick", "snickname", "servernick", "servernickname", "serverdisplayname", "guildname", "guildnick", "guildnickname", "serverdn"))
                 await ctx.Execute<MemberEdit>(MemberServerName, m => m.ServerName(ctx, target));
-            else if (ctx.Match("autoproxy", "ap"))
-                await ctx.Execute<MemberEdit>(MemberAutoproxy, m => m.MemberAutoproxy(ctx, target));
-            else if (ctx.Match("keepproxy", "keeptags", "showtags"))
-                await ctx.Execute<MemberEdit>(MemberKeepProxy, m => m.KeepProxy(ctx, target));
             else if (!ctx.HasNext()) // Bare command
                 await ctx.Execute<Member>(MemberInfo, m => m.ViewMember(ctx, target));
             else

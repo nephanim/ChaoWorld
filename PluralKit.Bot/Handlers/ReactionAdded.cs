@@ -103,7 +103,7 @@ namespace ChaoWorld.Bot
             if (!_bot.PermissionsIn(evt.ChannelId).HasFlag(PermissionSet.ManageMessages))
                 return;
 
-            var system = await _repo.GetSystemByAccount(evt.UserId);
+            var system = await _repo.GetGardenByAccount(evt.UserId);
 
             // Can only delete your own message
             if (msg.System.Id != system?.Id) return;

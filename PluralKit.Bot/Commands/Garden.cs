@@ -32,7 +32,7 @@ namespace ChaoWorld.Bot
             if (systemName != null && systemName.Length > Limits.MaxSystemNameLength)
                 throw Errors.StringTooLongError("Garden name", systemName.Length, Limits.MaxSystemNameLength);
 
-            var system = await _repo.CreateSystem(systemName);
+            var system = await _repo.CreateGarden(systemName);
             await _repo.AddAccount(system.Id, ctx.Author.Id);
 
             // TODO: better message, perhaps embed like in groups?

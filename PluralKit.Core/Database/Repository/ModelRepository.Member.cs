@@ -60,9 +60,9 @@ namespace ChaoWorld.Core
             return member;
         }
 
-        public Task<Chao> UpdateMember(ChaoId id, MemberPatch patch, IPKConnection? conn = null)
+        public Task<Chao> UpdateMember(ChaoId id, GardenPatch patch, IPKConnection? conn = null)
         {
-            _logger.Information("Updated {ChaoId}: {@MemberPatch}", id, patch);
+            _logger.Information("Updated {ChaoId}: {@GardenPatch}", id, patch);
             var query = patch.Apply(new Query("members").Where("id", id));
             return _db.QueryFirst<Chao>(conn, query, extraSql: "returning *");
         }

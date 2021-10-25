@@ -43,7 +43,7 @@ namespace ChaoWorld.Bot
 
             var triggerChannel = _cache.GetChannel(proxiedMessage.Channel);
 
-            var system = await _repo.GetSystem(ctx.SystemId.Value);
+            var system = await _repo.GetGarden(ctx.SystemId.Value);
             var member = await _repo.GetMember(proxiedMessage.Member);
 
             // Send embed!

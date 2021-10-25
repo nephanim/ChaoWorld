@@ -43,7 +43,7 @@ namespace ChaoWorld.Bot
             }
 
             // Rename the member
-            var patch = new MemberPatch { Name = Partial<string>.Present(newName) };
+            var patch = new GardenPatch { Name = Partial<string>.Present(newName) };
             await _repo.UpdateMember(target.Id, patch);
 
             await ctx.Reply($"{Emojis.Success} Member renamed.");
@@ -90,7 +90,7 @@ namespace ChaoWorld.Bot
 
             if (await ctx.MatchClear("this member's description"))
             {
-                var patch = new MemberPatch { Description = Partial<string>.Null() };
+                var patch = new GardenPatch { Description = Partial<string>.Null() };
                 await _repo.UpdateMember(target.Id, patch);
                 await ctx.Reply($"{Emojis.Success} Member description cleared.");
             }
@@ -100,7 +100,7 @@ namespace ChaoWorld.Bot
                 if (description.IsLongerThan(Limits.MaxDescriptionLength))
                     throw Errors.StringTooLongError("Description", description.Length, Limits.MaxDescriptionLength);
 
-                var patch = new MemberPatch { Description = Partial<string>.Present(description) };
+                var patch = new GardenPatch { Description = Partial<string>.Present(description) };
                 await _repo.UpdateMember(target.Id, patch);
 
                 await ctx.Reply($"{Emojis.Success} Member description changed.");
@@ -135,7 +135,7 @@ namespace ChaoWorld.Bot
 
             if (await ctx.MatchClear("this member's pronouns"))
             {
-                var patch = new MemberPatch { Pronouns = Partial<string>.Null() };
+                var patch = new GardenPatch { Pronouns = Partial<string>.Null() };
                 await _repo.UpdateMember(target.Id, patch);
                 await ctx.Reply($"{Emojis.Success} Member pronouns cleared.");
             }
@@ -145,7 +145,7 @@ namespace ChaoWorld.Bot
                 if (pronouns.IsLongerThan(Limits.MaxPronounsLength))
                     throw Errors.StringTooLongError("Pronouns", pronouns.Length, Limits.MaxPronounsLength);
 
-                var patch = new MemberPatch { Pronouns = Partial<string>.Present(pronouns) };
+                var patch = new GardenPatch { Pronouns = Partial<string>.Present(pronouns) };
                 await _repo.UpdateMember(target.Id, patch);
 
                 await ctx.Reply($"{Emojis.Success} Member pronouns changed.");
@@ -212,7 +212,7 @@ namespace ChaoWorld.Bot
             {
                 ctx.CheckOwnMember(target);
 
-                var patch = new MemberPatch { Color = Partial<string>.Null() };
+                var patch = new GardenPatch { Color = Partial<string>.Null() };
                 await _repo.UpdateMember(target.Id, patch);
 
                 await ctx.Reply($"{Emojis.Success} Member color cleared.");
@@ -244,7 +244,7 @@ namespace ChaoWorld.Bot
                 if (color.StartsWith("#")) color = color.Substring(1);
                 if (!Regex.IsMatch(color, "^[0-9a-fA-F]{6}$")) throw Errors.InvalidColorError(color);
 
-                var patch = new MemberPatch { Color = Partial<string>.Present(color.ToLowerInvariant()) };
+                var patch = new GardenPatch { Color = Partial<string>.Present(color.ToLowerInvariant()) };
                 await _repo.UpdateMember(target.Id, patch);
 
                 await ctx.Reply(embed: new EmbedBuilder()
@@ -260,7 +260,7 @@ namespace ChaoWorld.Bot
             {
                 ctx.CheckOwnMember(target);
 
-                var patch = new MemberPatch { Birthday = Partial<LocalDate?>.Null() };
+                var patch = new GardenPatch { Birthday = Partial<LocalDate?>.Null() };
                 await _repo.UpdateMember(target.Id, patch);
 
                 await ctx.Reply($"{Emojis.Success} Member birthdate cleared.");
@@ -282,7 +282,7 @@ namespace ChaoWorld.Bot
                 var birthday = DateUtils.ParseDate(birthdayStr, true);
                 if (birthday == null) throw Errors.BirthdayParseError(birthdayStr);
 
-                var patch = new MemberPatch { Birthday = Partial<LocalDate?>.Present(birthday) };
+                var patch = new GardenPatch { Birthday = Partial<LocalDate?>.Present(birthday) };
                 await _repo.UpdateMember(target.Id, patch);
 
                 await ctx.Reply($"{Emojis.Success} Member birthdate changed.");
@@ -364,7 +364,7 @@ namespace ChaoWorld.Bot
 
             if (await ctx.MatchClear("this member's display name"))
             {
-                var patch = new MemberPatch { DisplayName = Partial<string>.Null() };
+                var patch = new GardenPatch { DisplayName = Partial<string>.Null() };
                 await _repo.UpdateMember(target.Id, patch);
 
                 await PrintSuccess($"{Emojis.Success} Member display name cleared. This member will now be proxied using their member name \"{target.Name}\".");
@@ -373,7 +373,7 @@ namespace ChaoWorld.Bot
             {
                 var newDisplayName = ctx.RemainderOrNull(skipFlags: false).NormalizeLineEndSpacing();
 
-                var patch = new MemberPatch { DisplayName = Partial<string>.Present(newDisplayName) };
+                var patch = new GardenPatch { DisplayName = Partial<string>.Present(newDisplayName) };
                 await _repo.UpdateMember(target.Id, patch);
 
                 await PrintSuccess($"{Emojis.Success} Member display name changed. This member will now be proxied using the name \"{newDisplayName}\".");
@@ -428,59 +428,6 @@ namespace ChaoWorld.Bot
 
                 await ctx.Reply($"{Emojis.Success} Member server name changed. This member will now be proxied using the name \"{newServerName}\" in this server ({ctx.Guild.Name}).");
             }
-        }
-
-        public async Task KeepProxy(Context ctx, Chao target)
-        {
-            ctx.CheckGarden().CheckOwnMember(target);
-
-            bool newValue;
-            if (ctx.Match("on", "enabled", "true", "yes")) newValue = true;
-            else if (ctx.Match("off", "disabled", "false", "no")) newValue = false;
-            else if (ctx.HasNext()) throw new CWSyntaxError("You must pass either \"on\" or \"off\".");
-            else
-            {
-                if (target.KeepProxy)
-                    await ctx.Reply("This member has keepproxy **enabled**, which means proxy tags will be **included** in the resulting message when proxying.");
-                else
-                    await ctx.Reply("This member has keepproxy **disabled**, which means proxy tags will **not** be included in the resulting message when proxying.");
-                return;
-            };
-
-            var patch = new MemberPatch { KeepProxy = Partial<bool>.Present(newValue) };
-            await _repo.UpdateMember(target.Id, patch);
-
-            if (newValue)
-                await ctx.Reply($"{Emojis.Success} Member proxy tags will now be included in the resulting message when proxying.");
-            else
-                await ctx.Reply($"{Emojis.Success} Member proxy tags will now not be included in the resulting message when proxying.");
-        }
-
-        public async Task MemberAutoproxy(Context ctx, Chao target)
-        {
-            if (ctx.System == null) throw Errors.NoGardenError;
-            if (target.Garden != ctx.System.Id) throw Errors.NotOwnChaoError;
-
-            bool newValue;
-            if (ctx.Match("on", "enabled", "true", "yes") || ctx.MatchFlag("on", "enabled", "true", "yes")) newValue = true;
-            else if (ctx.Match("off", "disabled", "false", "no") || ctx.MatchFlag("off", "disabled", "false", "no")) newValue = false;
-            else if (ctx.HasNext()) throw new CWSyntaxError("You must pass either \"on\" or \"off\".");
-            else
-            {
-                if (target.AllowAutoproxy)
-                    await ctx.Reply("Latch/front autoproxy are **enabled** for this member. This member will be automatically proxied when autoproxy is set to latch or front mode.");
-                else
-                    await ctx.Reply("Latch/front autoproxy are **disabled** for this member. This member will not be automatically proxied when autoproxy is set to latch or front mode.");
-                return;
-            };
-
-            var patch = new MemberPatch { AllowAutoproxy = Partial<bool>.Present(newValue) };
-            await _repo.UpdateMember(target.Id, patch);
-
-            if (newValue)
-                await ctx.Reply($"{Emojis.Success} Latch / front autoproxy have been **enabled** for this member.");
-            else
-                await ctx.Reply($"{Emojis.Success} Latch / front autoproxy have been **disabled** for this member.");
         }
 
         public async Task Delete(Context ctx, Chao target)

@@ -48,10 +48,10 @@ namespace ChaoWorld.Bot
         {
 
             // Fetch/render info for all accounts simultaneously
-            var accounts = await _repo.GetSystemAccounts(system.Id);
+            var accounts = await _repo.GetGardenAccounts(system.Id);
             var users = (await GetUsers(accounts)).Select(x => x.User?.NameAndMention() ?? $"(deleted account {x.Id})");
 
-            var memberCount = await _repo.GetSystemMemberCount(system.Id);
+            var memberCount = await _repo.GetGardenMemberCount(system.Id);
 
             uint color;
             try

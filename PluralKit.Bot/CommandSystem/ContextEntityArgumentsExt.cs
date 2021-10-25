@@ -51,11 +51,8 @@ namespace ChaoWorld.Bot
 
             // Direct IDs and mentions are both handled by the below method:
             if (input.TryParseMention(out var id))
-                return await ctx.Repository.GetSystemByAccount(id);
-
-            // Finally, try HID parsing
-            var system = await ctx.Repository.GetSystemByHid(input);
-            return system;
+                return await ctx.Repository.GetGardenByAccount(id);
+            return null; //TODO: Is this safe?
         }
 
         public static async Task<Chao> PeekMember(this Context ctx, GardenId? restrictToSystem = null)

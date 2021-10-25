@@ -27,7 +27,7 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckGarden();
 
-            var members = await _repo.GetSystemMembers(ctx.System.Id).ToListAsync();
+            var members = await _repo.GetGardenMembers(ctx.System.Id).ToListAsync();
 
             if (members == null || !members.Any())
                 throw new CWError("Your system has no members! Please create at least one member before using this command.");
