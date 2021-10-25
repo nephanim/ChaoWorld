@@ -94,7 +94,7 @@ namespace ChaoWorld.Bot
 
         public async Task Export(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             var json = await ctx.BusyIndicator(async () =>
             {

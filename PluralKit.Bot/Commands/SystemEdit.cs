@@ -31,7 +31,7 @@ namespace ChaoWorld.Bot
         {
             var noNameSetMessage = "Your system does not have a name set. Type `pk;system name <name>` to set one.";
 
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             if (ctx.MatchRaw())
             {
@@ -73,7 +73,7 @@ namespace ChaoWorld.Bot
         {
             var noDescriptionSetMessage = "Your system does not have a description set. To set one, type `pk;s description <description>`.";
 
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             if (ctx.MatchRaw())
             {
@@ -116,7 +116,7 @@ namespace ChaoWorld.Bot
 
         public async Task Color(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             if (await ctx.MatchClear())
             {
@@ -158,7 +158,7 @@ namespace ChaoWorld.Bot
         {
             var noTagSetMessage = "You currently have no system tag. To set one, type `pk;s tag <tag>`.";
 
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             if (ctx.MatchRaw())
             {
@@ -198,7 +198,7 @@ namespace ChaoWorld.Bot
 
         public async Task ServerTag(Context ctx)
         {
-            ctx.CheckSystem().CheckGuildContext();
+            ctx.CheckGarden().CheckGuildContext();
 
             var setDisabledWarning = $"{Emojis.Warn} Your system tag is currently **disabled** in this server. No tag will be applied when proxying.\nTo re-enable the system tag in the current server, type `pk;s servertag -enable`.";
 
@@ -306,7 +306,7 @@ namespace ChaoWorld.Bot
 
         public async Task Avatar(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             async Task ClearIcon()
             {
@@ -346,7 +346,7 @@ namespace ChaoWorld.Bot
                     await ctx.Reply(embed: eb.Build());
                 }
                 else
-                    throw new PKSyntaxError("This system does not have an icon set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
+                    throw new CWSyntaxError("This system does not have an icon set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
             }
 
             if (await ctx.MatchClear("your system's icon"))
@@ -359,7 +359,7 @@ namespace ChaoWorld.Bot
 
         public async Task BannerImage(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             async Task ClearImage()
             {
@@ -377,7 +377,7 @@ namespace ChaoWorld.Bot
                 {
                     AvatarSource.Url => $"{Emojis.Success} Garden banner image changed to the image at the given URL.",
                     AvatarSource.Attachment => $"{Emojis.Success} Garden banner image changed to attached image.\n{Emojis.Warn} If you delete the message containing the attachment, the banner image will stop working.",
-                    AvatarSource.User => throw new PKError("Cannot set a banner image to an user's avatar."),
+                    AvatarSource.User => throw new CWError("Cannot set a banner image to an user's avatar."),
                     _ => throw new ArgumentOutOfRangeException()
                 };
 
@@ -399,7 +399,7 @@ namespace ChaoWorld.Bot
                     await ctx.Reply(embed: eb.Build());
                 }
                 else
-                    throw new PKSyntaxError("This system does not have a banner image set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
+                    throw new CWSyntaxError("This system does not have a banner image set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
             }
 
             if (await ctx.MatchClear("your system's banner image"))
@@ -412,11 +412,11 @@ namespace ChaoWorld.Bot
 
         public async Task Delete(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             await ctx.Reply($"{Emojis.Warn} Are you sure you want to delete your system? If so, reply to this message with your system's ID (`{ctx.System.Hid}`).\n**Note: this action is permanent.**");
             if (!await ctx.ConfirmWithReply(ctx.System.Hid))
-                throw new PKError($"Garden deletion cancelled. Note that you must reply with your system ID (`{ctx.System.Hid}`) *verbatim*.");
+                throw new CWError($"Garden deletion cancelled. Note that you must reply with your system ID (`{ctx.System.Hid}`) *verbatim*.");
 
             await _repo.DeleteSystem(ctx.System.Id);
 
@@ -425,10 +425,10 @@ namespace ChaoWorld.Bot
 
         public async Task SystemProxy(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             var guild = ctx.MatchGuild() ?? ctx.Guild ??
-                throw new PKError("You must run this command in a server or pass a server ID.");
+                throw new CWError("You must run this command in a server or pass a server ID.");
 
             var gs = await _repo.GetSystemGuild(guild.Id, ctx.System.Id);
 
@@ -441,7 +441,7 @@ namespace ChaoWorld.Bot
             bool newValue;
             if (ctx.Match("on", "enabled", "true", "yes")) newValue = true;
             else if (ctx.Match("off", "disabled", "false", "no")) newValue = false;
-            else if (ctx.HasNext()) throw new PKSyntaxError("You must pass either \"on\" or \"off\".");
+            else if (ctx.HasNext()) throw new CWSyntaxError("You must pass either \"on\" or \"off\".");
             else
             {
                 if (gs.ProxyEnabled)
@@ -461,7 +461,7 @@ namespace ChaoWorld.Bot
 
         public async Task SystemTimezone(Context ctx)
         {
-            if (ctx.System == null) throw Errors.NoSystemError;
+            if (ctx.System == null) throw Errors.NoGardenError;
 
             if (await ctx.MatchClear())
             {
@@ -493,7 +493,7 @@ namespace ChaoWorld.Bot
 
         public async Task SystemPrivacy(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             Task PrintEmbed()
             {
@@ -557,7 +557,7 @@ namespace ChaoWorld.Bot
 
         public async Task SystemPing(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             if (!ctx.HasNext())
             {

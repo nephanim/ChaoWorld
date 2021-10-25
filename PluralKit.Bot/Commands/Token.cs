@@ -21,7 +21,7 @@ namespace ChaoWorld.Bot
 
         public async Task GetToken(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             // Get or make a token
             var token = ctx.System.Token ?? await MakeAndSetNewToken(ctx.System);
@@ -56,7 +56,7 @@ namespace ChaoWorld.Bot
 
         public async Task RefreshToken(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             if (ctx.System.Token == null)
             {

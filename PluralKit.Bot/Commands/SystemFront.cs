@@ -36,7 +36,7 @@ namespace ChaoWorld.Bot
 
         public async Task SystemFronter(Context ctx, Garden system)
         {
-            if (system == null) throw Errors.NoSystemError;
+            if (system == null) throw Errors.NoGardenError;
             ctx.CheckSystemPrivacy(system, system.FrontPrivacy);
 
             var sw = await _repo.GetLatestSwitch(system.Id);
@@ -47,7 +47,7 @@ namespace ChaoWorld.Bot
 
         public async Task SystemFrontHistory(Context ctx, Garden system)
         {
-            if (system == null) throw Errors.NoSystemError;
+            if (system == null) throw Errors.NoGardenError;
             ctx.CheckSystemPrivacy(system, system.FrontHistoryPrivacy);
 
             // Gotta be careful here: if we dispose of the connection while the IAE is alive, boom 
@@ -112,7 +112,7 @@ namespace ChaoWorld.Bot
 
         public async Task SystemFrontPercent(Context ctx, Garden system)
         {
-            if (system == null) throw Errors.NoSystemError;
+            if (system == null) throw Errors.NoGardenError;
             ctx.CheckSystemPrivacy(system, system.FrontHistoryPrivacy);
 
             var totalSwitches = await _repo.GetSwitchCount(system.Id);

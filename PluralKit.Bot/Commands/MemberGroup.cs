@@ -22,7 +22,7 @@ namespace ChaoWorld.Bot
 
         public async Task AddRemove(Context ctx, Chao target, Groups.AddRemoveOperation op)
         {
-            ctx.CheckSystem().CheckOwnMember(target);
+            ctx.CheckGarden().CheckOwnMember(target);
 
             var groups = (await ctx.ParseGroupList(ctx.System.Id))
                 .Select(g => g.Id)

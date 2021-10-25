@@ -22,14 +22,14 @@ namespace ChaoWorld.Bot
 
         public async Task SwitchDo(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             var members = await ctx.ParseMemberList(ctx.System.Id);
             await DoSwitchCommand(ctx, members);
         }
         public async Task SwitchOut(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             // Switch with no members = switch-out
             await DoSwitchCommand(ctx, new Chao[] { });
@@ -41,7 +41,7 @@ namespace ChaoWorld.Bot
             // We do this by checking if removing duplicate member IDs results in a list of different length 
             if (members.Select(m => m.Id).Distinct().Count() != members.Count) throw Errors.DuplicateSwitchMembers;
             if (members.Count > Limits.MaxSwitchMemberCount)
-                throw new PKError($"Switch contains too many members ({members.Count} > {Limits.MaxSwitchMemberCount} members).");
+                throw new CWError($"Switch contains too many members ({members.Count} > {Limits.MaxSwitchMemberCount} members).");
 
             // Find the last switch and its members if applicable
             await using var conn = await _db.Obtain();
@@ -64,9 +64,9 @@ namespace ChaoWorld.Bot
 
         public async Task SwitchMove(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
-            var timeToMove = ctx.RemainderOrNull() ?? throw new PKSyntaxError("Must pass a date or time to move the switch to.");
+            var timeToMove = ctx.RemainderOrNull() ?? throw new CWSyntaxError("Must pass a date or time to move the switch to.");
             var tz = TzdbDateTimeZoneSource.Default.ForId(ctx.System.UiTz ?? "UTC");
 
             var result = DateUtils.ParseDateTime(timeToMove, true, tz);
@@ -109,7 +109,7 @@ namespace ChaoWorld.Bot
 
         public async Task SwitchEdit(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             var members = await ctx.ParseMemberList(ctx.System.Id);
             await DoEditCommand(ctx, members);
@@ -117,7 +117,7 @@ namespace ChaoWorld.Bot
 
         public async Task SwitchEditOut(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
             await DoEditCommand(ctx, new Chao[] { });
 
         }
@@ -161,7 +161,7 @@ namespace ChaoWorld.Bot
 
         public async Task SwitchDelete(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             if (ctx.Match("all", "clear") || ctx.MatchFlag("all", "clear"))
             {

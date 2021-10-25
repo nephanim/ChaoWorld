@@ -32,8 +32,8 @@ namespace ChaoWorld.Bot
 
         public async Task NewMember(Context ctx)
         {
-            if (ctx.System == null) throw Errors.NoSystemError;
-            var memberName = ctx.RemainderOrNull() ?? throw new PKSyntaxError("You must pass a member name.");
+            if (ctx.System == null) throw Errors.NoGardenError;
+            var memberName = ctx.RemainderOrNull() ?? throw new CWSyntaxError("You must pass a member name.");
 
             // Hard name length cap
             if (memberName.Length > Limits.MaxMemberNameLength)
@@ -44,7 +44,7 @@ namespace ChaoWorld.Bot
             if (existingMember != null)
             {
                 var msg = $"{Emojis.Warn} You already have a member in your system with the name \"{existingMember.NameFor(ctx)}\" (with ID `{existingMember.Hid}`). Do you want to create another member with the same name?";
-                if (!await ctx.PromptYesNo(msg, "Create")) throw new PKError("Member creation cancelled.");
+                if (!await ctx.PromptYesNo(msg, "Create")) throw new CWError("Member creation cancelled.");
             }
 
             await using var conn = await _db.Obtain();

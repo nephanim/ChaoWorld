@@ -54,7 +54,7 @@ namespace ChaoWorld.Bot
             // PERM CHECK: If we're trying to access non-public members of another system, error
             if (p.PrivacyFilter != PrivacyLevel.Public && lookupCtx != LookupContext.ByOwner)
                 // TODO: should this just return null instead of throwing or something? >.>
-                throw new PKError("You cannot look up private members of another system.");
+                throw new CWError("You cannot look up private members of another system.");
 
             // Additional fields to include in the search results
             if (ctx.MatchFlag("with-last-switch", "with-last-fronted", "with-last-front", "wls", "wlf"))

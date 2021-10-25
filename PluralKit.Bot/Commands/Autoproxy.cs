@@ -35,13 +35,13 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("front", "fronter", "switch"))
                 await AutoproxyFront(ctx);
             else if (ctx.Match("member"))
-                throw new PKSyntaxError("Member-mode autoproxy must target a specific member. Use the `pk;autoproxy <member>` command, where `member` is the name or ID of a member in your system.");
+                throw new CWSyntaxError("Member-mode autoproxy must target a specific member. Use the `pk;autoproxy <member>` command, where `member` is the name or ID of a member in your system.");
             else if (await ctx.MatchMember() is Chao member)
                 await AutoproxyMember(ctx, member);
             else if (!ctx.HasNext())
                 await ctx.Reply(embed: await CreateAutoproxyStatusEmbed(ctx));
             else
-                throw new PKSyntaxError($"Invalid autoproxy mode {ctx.PopArgument().AsCode()}.");
+                throw new CWSyntaxError($"Invalid autoproxy mode {ctx.PopArgument().AsCode()}.");
         }
 
         private async Task AutoproxyOff(Context ctx)
@@ -161,7 +161,7 @@ namespace ChaoWorld.Bot
             {
                 var timeoutStr = ctx.RemainderOrNull();
                 var timeoutPeriod = DateUtils.ParsePeriod(timeoutStr);
-                if (timeoutPeriod == null) throw new PKError($"Could not parse '{timeoutStr}' as a valid duration. Try using a syntax such as \"3h5m\" (i.e. 3 hours and 5 minutes).");
+                if (timeoutPeriod == null) throw new CWError($"Could not parse '{timeoutStr}' as a valid duration. Try using a syntax such as \"3h5m\" (i.e. 3 hours and 5 minutes).");
                 if (timeoutPeriod.Value.TotalHours > 100000)
                 {
                     // sanity check to prevent seconds overflow if someone types in 999999999
@@ -191,7 +191,7 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("disable", "off"))
                 await AutoproxyEnableDisable(ctx, false);
             else if (ctx.HasNext())
-                throw new PKSyntaxError("You must pass either \"on\" or \"off\".");
+                throw new CWSyntaxError("You must pass either \"on\" or \"off\".");
             else
             {
                 var statusString = ctx.MessageContext.AllowAutoproxy ? "enabled" : "disabled";

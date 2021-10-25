@@ -87,10 +87,10 @@ namespace ChaoWorld.Bot
         {
             if (!BotPermissions.HasFlag(PermissionSet.SendMessages))
                 // Will be "swallowed" during the error handler anyway, this message is never shown.
-                throw new PKError("ChaoWorld does not have permission to send messages in this channel.");
+                throw new CWError("ChaoWorld does not have permission to send messages in this channel.");
 
             if (embed != null && !BotPermissions.HasFlag(PermissionSet.EmbedLinks))
-                throw new PKError("ChaoWorld does not have permission to send embeds in this channel. Please ensure I have the **Embed Links** permission enabled.");
+                throw new CWError("ChaoWorld does not have permission to send embeds in this channel. Please ensure I have the **Embed Links** permission enabled.");
 
             var msg = await _rest.CreateMessage(_channel.Id, new MessageRequest
             {
@@ -121,11 +121,11 @@ namespace ChaoWorld.Bot
 
                 _metrics.Measure.Meter.Mark(BotMetrics.CommandsRun);
             }
-            catch (PKSyntaxError e)
+            catch (CWSyntaxError e)
             {
                 await Reply($"{Emojis.Error} {e.Message}\n**Command usage:**\n> pk;{commandDef?.Usage}");
             }
-            catch (PKError e)
+            catch (CWError e)
             {
                 await Reply($"{Emojis.Error} {e.Message}");
             }

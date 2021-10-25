@@ -16,7 +16,7 @@ namespace ChaoWorld.Bot
 
         public async Task MemberList(Context ctx, Garden target)
         {
-            if (target == null) throw Errors.NoSystemError;
+            if (target == null) throw Errors.NoGardenError;
             ctx.CheckSystemPrivacy(target, target.MemberListPrivacy);
 
             var opts = ctx.ParseMemberListOptions(ctx.LookupContextFor(target));

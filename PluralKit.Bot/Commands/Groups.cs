@@ -35,18 +35,18 @@ namespace ChaoWorld.Bot
 
         public async Task CreateGroup(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             // Check group name length
-            var groupName = ctx.RemainderOrNull() ?? throw new PKSyntaxError("You must pass a group name.");
+            var groupName = ctx.RemainderOrNull() ?? throw new CWSyntaxError("You must pass a group name.");
             if (groupName.Length > Limits.MaxGroupNameLength)
-                throw new PKError($"Group name too long ({groupName.Length}/{Limits.MaxGroupNameLength} characters).");
+                throw new CWError($"Group name too long ({groupName.Length}/{Limits.MaxGroupNameLength} characters).");
 
             // Check group cap
             var existingGroupCount = await _repo.GetSystemGroupCount(ctx.System.Id);
             var groupLimit = ctx.System.GroupLimitOverride ?? Limits.MaxGroupCount;
             if (existingGroupCount >= groupLimit)
-                throw new PKError($"Garden has reached the maximum number of groups ({groupLimit}). Please delete unused groups first in order to create new ones.");
+                throw new CWError($"Garden has reached the maximum number of groups ({groupLimit}). Please delete unused groups first in order to create new ones.");
 
             // Warn if there's already a group by this name
             var existingGroup = await _repo.GetGroupByName(ctx.System.Id, groupName);
@@ -54,7 +54,7 @@ namespace ChaoWorld.Bot
             {
                 var msg = $"{Emojis.Warn} You already have a group in your system with the name \"{existingGroup.Name}\" (with ID `{existingGroup.Hid}`). Do you want to create another group with the same name?";
                 if (!await ctx.PromptYesNo(msg, "Create"))
-                    throw new PKError("Group creation cancelled.");
+                    throw new CWError("Group creation cancelled.");
             }
 
             var newGroup = await _repo.CreateGroup(ctx.System.Id, groupName);
@@ -76,9 +76,9 @@ namespace ChaoWorld.Bot
             ctx.CheckOwnGroup(target);
 
             // Check group name length
-            var newName = ctx.RemainderOrNull() ?? throw new PKSyntaxError("You must pass a new group name.");
+            var newName = ctx.RemainderOrNull() ?? throw new CWSyntaxError("You must pass a new group name.");
             if (newName.Length > Limits.MaxGroupNameLength)
-                throw new PKError($"New group name too long ({newName.Length}/{Limits.MaxMemberNameLength} characters).");
+                throw new CWError($"New group name too long ({newName.Length}/{Limits.MaxMemberNameLength} characters).");
 
             // Warn if there's already a group by this name
             var existingGroup = await _repo.GetGroupByName(ctx.System.Id, newName);
@@ -86,7 +86,7 @@ namespace ChaoWorld.Bot
             {
                 var msg = $"{Emojis.Warn} You already have a group in your system with the name \"{existingGroup.Name}\" (with ID `{existingGroup.Hid}`). Do you want to rename this group to that name too?";
                 if (!await ctx.PromptYesNo(msg, "Rename"))
-                    throw new PKError("Group rename cancelled.");
+                    throw new CWError("Group rename cancelled.");
             }
 
             await _repo.UpdateGroup(target.Id, new() { Name = newName });
@@ -253,7 +253,7 @@ namespace ChaoWorld.Bot
                     await ctx.Reply(embed: eb.Build());
                 }
                 else
-                    throw new PKSyntaxError("This group does not have an icon set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
+                    throw new CWSyntaxError("This group does not have an icon set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
             }
 
             if (await ctx.MatchClear("this group's icon"))
@@ -286,7 +286,7 @@ namespace ChaoWorld.Bot
                 {
                     AvatarSource.Url => $"{Emojis.Success} Group banner image changed to the image at the given URL.",
                     AvatarSource.Attachment => $"{Emojis.Success} Group banner image changed to attached image.\n{Emojis.Warn} If you delete the message containing the attachment, the banner image will stop working.",
-                    AvatarSource.User => throw new PKError("Cannot set a banner image to an user's avatar."),
+                    AvatarSource.User => throw new CWError("Cannot set a banner image to an user's avatar."),
                     _ => throw new ArgumentOutOfRangeException(),
                 };
 
@@ -315,7 +315,7 @@ namespace ChaoWorld.Bot
                     await ctx.Reply(embed: eb.Build());
                 }
                 else
-                    throw new PKSyntaxError("This group does not have a banner image set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
+                    throw new CWSyntaxError("This group does not have a banner image set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
             }
 
             if (await ctx.MatchClear("this group's banner image"))
@@ -378,7 +378,7 @@ namespace ChaoWorld.Bot
         {
             if (system == null)
             {
-                ctx.CheckSystem();
+                ctx.CheckGarden();
                 system = ctx.System;
             }
 
@@ -392,7 +392,7 @@ namespace ChaoWorld.Bot
                 if (system.Id == ctx.System.Id)
                     pctx = LookupContext.ByOwner;
                 else
-                    throw new PKError("You do not have permission to access this information.");
+                    throw new CWError("You do not have permission to access this information.");
             }
 
             var groups = (await _db.Execute(conn => conn.QueryGroupList(system.Id)))
@@ -496,7 +496,7 @@ namespace ChaoWorld.Bot
 
         public async Task GroupPrivacy(Context ctx, PKGroup target, PrivacyLevel? newValueFromCommand)
         {
-            ctx.CheckSystem().CheckOwnGroup(target);
+            ctx.CheckGarden().CheckOwnGroup(target);
             // Display privacy settings
             if (!ctx.HasNext() && newValueFromCommand == null)
             {
@@ -564,7 +564,7 @@ namespace ChaoWorld.Bot
 
             await ctx.Reply($"{Emojis.Warn} Are you sure you want to delete this group? If so, reply to this message with the group's ID (`{target.Hid}`).\n**Note: this action is permanent.**");
             if (!await ctx.ConfirmWithReply(target.Hid))
-                throw new PKError($"Group deletion cancelled. Note that you must reply with your group ID (`{target.Hid}`) *verbatim*.");
+                throw new CWError($"Group deletion cancelled. Note that you must reply with your group ID (`{target.Hid}`) *verbatim*.");
 
             await _repo.DeleteGroup(target.Id);
 

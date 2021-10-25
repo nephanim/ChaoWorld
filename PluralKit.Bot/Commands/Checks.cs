@@ -62,9 +62,9 @@ namespace ChaoWorld.Bot
             }
             else
             {
-                var guildIdStr = ctx.RemainderOrNull() ?? throw new PKSyntaxError("You must pass a server ID or run this command in a server.");
+                var guildIdStr = ctx.RemainderOrNull() ?? throw new CWSyntaxError("You must pass a server ID or run this command in a server.");
                 if (!ulong.TryParse(guildIdStr, out var guildId))
-                    throw new PKSyntaxError($"Could not parse {guildIdStr.AsCode()} as an ID.");
+                    throw new CWSyntaxError($"Could not parse {guildIdStr.AsCode()} as an ID.");
 
                 try
                 {
@@ -166,21 +166,21 @@ namespace ChaoWorld.Bot
         public async Task PermCheckChannel(Context ctx)
         {
             if (!ctx.HasNext())
-                throw new PKSyntaxError("You need to specify a channel.");
+                throw new CWSyntaxError("You need to specify a channel.");
 
             var error = "Channel not found or you do not have permissions to access it.";
 
             var channel = await ctx.MatchChannel();
             if (channel == null || channel.GuildId == null)
-                throw new PKError(error);
+                throw new CWError(error);
 
             var guild = _cache.GetGuild(channel.GuildId.Value);
             if (guild == null)
-                throw new PKError(error);
+                throw new CWError(error);
 
             var guildMember = await _rest.GetGuildMember(channel.GuildId.Value, ctx.Author.Id);
             if (guildMember == null)
-                throw new PKError(error);
+                throw new CWError(error);
 
 
 
@@ -189,7 +189,7 @@ namespace ChaoWorld.Bot
             var userPermissions = PermissionExtensions.PermissionsFor(guild, channel, ctx.Author.Id, guildMember);
 
             if ((userPermissions & PermissionSet.ViewChannel) == 0)
-                throw new PKError(error);
+                throw new CWError(error);
 
 
 
@@ -229,13 +229,13 @@ namespace ChaoWorld.Bot
         public async Task MessageProxyCheck(Context ctx)
         {
             if (!ctx.HasNext() && ctx.Message.MessageReference == null)
-                throw new PKSyntaxError("You need to specify a message.");
+                throw new CWSyntaxError("You need to specify a message.");
 
             var failedToGetMessage = "Could not find a valid message to check, was not able to fetch the message, or the message was not sent by you.";
 
             var (messageId, channelId) = ctx.MatchMessage(false);
             if (messageId == null || channelId == null)
-                throw new PKError(failedToGetMessage);
+                throw new CWError(failedToGetMessage);
 
             var proxiedMsg = await _db.Execute(conn => _repo.GetMessage(conn, messageId.Value));
             if (proxiedMsg != null)
@@ -252,26 +252,26 @@ namespace ChaoWorld.Bot
             }
             catch (ForbiddenException)
             {
-                throw new PKError(failedToGetMessage);
+                throw new CWError(failedToGetMessage);
             }
 
             // if user is fetching a message in a different channel sent by someone else, throw a generic error message
             if (msg == null || (msg.Author.Id != ctx.Author.Id && msg.ChannelId != ctx.Channel.Id))
-                throw new PKError(failedToGetMessage);
+                throw new CWError(failedToGetMessage);
 
             if ((_botConfig.Prefixes ?? BotConfig.DefaultPrefixes).Any(p => msg.Content.StartsWith(p)))
                 await ctx.Reply("This message starts with the bot's prefix, and was parsed as a command.");
             if (msg.Author.Bot)
-                throw new PKError("You cannot check messages sent by a bot.");
+                throw new CWError("You cannot check messages sent by a bot.");
             if (msg.WebhookId != null)
-                throw new PKError("You cannot check messages sent by a webhook.");
+                throw new CWError("You cannot check messages sent by a webhook.");
             if (msg.Author.Id != ctx.Author.Id && !ctx.CheckBotAdmin())
-                throw new PKError("You can only check your own messages.");
+                throw new CWError("You can only check your own messages.");
 
             // get the channel info
             var channel = _cache.GetChannel(channelId.Value);
             if (channel == null)
-                throw new PKError("Unable to get the channel associated with this message.");
+                throw new CWError("Unable to get the channel associated with this message.");
 
             // using channel.GuildId here since _rest.GetMessage() doesn't return the GuildId
             var context = await _repo.GetMessageContext(msg.Author.Id, channel.GuildId.Value, msg.ChannelId);

@@ -108,11 +108,11 @@ namespace ChaoWorld.Bot
 
                 if (member == null)
                     // if we can't, big error. Every member name must be valid.
-                    throw new PKError(ctx.CreateMemberNotFoundError(ctx.PopArgument()));
+                    throw new CWError(ctx.CreateMemberNotFoundError(ctx.PopArgument()));
 
                 members.Add(member); // Then add to the final output list
             }
-            if (members.Count == 0) throw new PKSyntaxError($"You must input at least one member.");
+            if (members.Count == 0) throw new CWSyntaxError($"You must input at least one member.");
 
             return members;
         }
@@ -128,7 +128,7 @@ namespace ChaoWorld.Bot
                 var group = await ctx.MatchGroup(restrictToSystem);
                 if (group == null)
                     // if we can't, big error. Every group name must be valid.
-                    throw new PKError(ctx.CreateGroupNotFoundError(ctx.PopArgument()));
+                    throw new CWError(ctx.CreateGroupNotFoundError(ctx.PopArgument()));
 
                 // todo: remove this, the database query enforces the restriction
                 if (restrictToSystem != null && group.System != restrictToSystem)
@@ -137,7 +137,7 @@ namespace ChaoWorld.Bot
                 groups.Add(group); // Then add to the final output list
             }
 
-            if (groups.Count == 0) throw new PKSyntaxError($"You must input at least one group.");
+            if (groups.Count == 0) throw new CWSyntaxError($"You must input at least one group.");
 
             return groups;
         }

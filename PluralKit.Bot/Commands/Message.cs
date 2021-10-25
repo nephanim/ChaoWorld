@@ -45,16 +45,16 @@ namespace ChaoWorld.Bot
         {
             var msg = await GetMessageToEdit(ctx);
             if (!ctx.HasNext())
-                throw new PKSyntaxError("You need to include the message to edit in.");
+                throw new CWSyntaxError("You need to include the message to edit in.");
 
             if (ctx.System.Id != msg.System.Id)
-                throw new PKError("Can't edit a message sent by a different system.");
+                throw new CWError("Can't edit a message sent by a different system.");
 
             var newContent = ctx.RemainderOrNull().NormalizeLineEndSpacing();
 
             var originalMsg = await _rest.GetMessage(msg.Message.Channel, msg.Message.Mid);
             if (originalMsg == null)
-                throw new PKError("Could not edit message.");
+                throw new CWError("Could not edit message.");
 
             try
             {
@@ -70,7 +70,7 @@ namespace ChaoWorld.Bot
             }
             catch (NotFoundException)
             {
-                throw new PKError("Could not edit message.");
+                throw new CWError("Could not edit message.");
             }
         }
 
@@ -84,21 +84,21 @@ namespace ChaoWorld.Bot
             {
                 msg = await _repo.GetMessage(conn, referencedMessage.Value);
                 if (msg == null)
-                    throw new PKError("This is not a message proxied by ChaoWorld.");
+                    throw new CWError("This is not a message proxied by ChaoWorld.");
             }
 
             if (msg == null)
             {
                 if (ctx.Guild == null)
-                    throw new PKError("You must use a message link to edit messages in DMs.");
+                    throw new CWError("You must use a message link to edit messages in DMs.");
 
                 var recent = await FindRecentMessage(ctx);
                 if (recent == null)
-                    throw new PKError("Could not find a recent message to edit.");
+                    throw new CWError("Could not find a recent message to edit.");
 
                 msg = await _repo.GetMessage(conn, recent.Mid);
                 if (msg == null)
-                    throw new PKError("Could not find a recent message to edit.");
+                    throw new CWError("Could not find a recent message to edit.");
             }
 
             return msg;
@@ -123,8 +123,8 @@ namespace ChaoWorld.Bot
             if (messageId == null)
             {
                 if (!ctx.HasNext())
-                    throw new PKSyntaxError("You must pass a message ID or link.");
-                throw new PKSyntaxError($"Could not parse {ctx.PeekArgument().AsCode()} as a message ID or link.");
+                    throw new CWSyntaxError("You must pass a message ID or link.");
+                throw new CWSyntaxError($"Could not parse {ctx.PeekArgument().AsCode()} as a message ID or link.");
             }
 
             var isDelete = ctx.Match("delete") || ctx.MatchFlag("delete");
@@ -144,7 +144,7 @@ namespace ChaoWorld.Bot
             if (isDelete)
             {
                 if (message.System.Id != ctx.System.Id)
-                    throw new PKError("You can only delete your own messages.");
+                    throw new CWError("You can only delete your own messages.");
 
                 await ctx.Rest.DeleteMessage(message.Message.Channel, message.Message.Mid);
 
@@ -176,7 +176,7 @@ namespace ChaoWorld.Bot
                 throw Errors.MessageNotFound(messageId);
 
             if (message.AuthorId != ctx.Author.Id)
-                throw new PKError("You can only delete command messages queried by this account.");
+                throw new CWError("You can only delete command messages queried by this account.");
 
             await ctx.Rest.DeleteMessage(message.ChannelId, message.MessageId);
 

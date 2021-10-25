@@ -25,18 +25,18 @@ namespace ChaoWorld.Bot
 
             var target = await ctx.MatchSystem();
             if (target == null)
-                throw new PKError("Unknown system.");
+                throw new CWError("Unknown system.");
 
             var newHid = ctx.PopArgument();
             if (!Regex.IsMatch(newHid, "^[a-z]{5}$"))
-                throw new PKError($"Invalid new system ID `{newHid}`.");
+                throw new CWError($"Invalid new system ID `{newHid}`.");
 
             var existingSystem = await _repo.GetSystemByHid(newHid);
             if (existingSystem != null)
-                throw new PKError($"Another system already exists with ID `{newHid}`.");
+                throw new CWError($"Another system already exists with ID `{newHid}`.");
 
             if (!await ctx.PromptYesNo($"Change system ID of `{target.Hid}` to `{newHid}`?", "Change"))
-                throw new PKError("ID change cancelled.");
+                throw new CWError("ID change cancelled.");
 
             await _repo.UpdateSystem(target.Id, new() { Hid = newHid });
             await ctx.Reply($"{Emojis.Success} Garden ID updated (`{target.Hid}` -> `{newHid}`).");
@@ -48,18 +48,18 @@ namespace ChaoWorld.Bot
 
             var target = await ctx.MatchMember();
             if (target == null)
-                throw new PKError("Unknown member.");
+                throw new CWError("Unknown member.");
 
             var newHid = ctx.PopArgument();
             if (!Regex.IsMatch(newHid, "^[a-z]{5}$"))
-                throw new PKError($"Invalid new member ID `{newHid}`.");
+                throw new CWError($"Invalid new member ID `{newHid}`.");
 
             var existingMember = await _repo.GetMemberByHid(newHid);
             if (existingMember != null)
-                throw new PKError($"Another member already exists with ID `{newHid}`.");
+                throw new CWError($"Another member already exists with ID `{newHid}`.");
 
             if (!await ctx.PromptYesNo($"Change member ID of **{target.NameFor(LookupContext.ByNonOwner)}** (`{target.Hid}`) to `{newHid}`?", "Change"))
-                throw new PKError("ID change cancelled.");
+                throw new CWError("ID change cancelled.");
 
             await _repo.UpdateMember(target.Id, new() { Hid = newHid });
             await ctx.Reply($"{Emojis.Success} Member ID updated (`{target.Hid}` -> `{newHid}`).");
@@ -71,18 +71,18 @@ namespace ChaoWorld.Bot
 
             var target = await ctx.MatchGroup();
             if (target == null)
-                throw new PKError("Unknown group.");
+                throw new CWError("Unknown group.");
 
             var newHid = ctx.PopArgument();
             if (!Regex.IsMatch(newHid, "^[a-z]{5}$"))
-                throw new PKError($"Invalid new group ID `{newHid}`.");
+                throw new CWError($"Invalid new group ID `{newHid}`.");
 
             var existingGroup = await _repo.GetGroupByHid(newHid);
             if (existingGroup != null)
-                throw new PKError($"Another group already exists with ID `{newHid}`.");
+                throw new CWError($"Another group already exists with ID `{newHid}`.");
 
             if (!await ctx.PromptYesNo($"Change group ID of **{target.Name}** (`{target.Hid}`) to `{newHid}`?", "Change"))
-                throw new PKError("ID change cancelled.");
+                throw new CWError("ID change cancelled.");
 
             await _repo.UpdateGroup(target.Id, new() { Hid = newHid });
             await ctx.Reply($"{Emojis.Success} Group ID updated (`{target.Hid}` -> `{newHid}`).");
@@ -94,7 +94,7 @@ namespace ChaoWorld.Bot
 
             var target = await ctx.MatchSystem();
             if (target == null)
-                throw new PKError("Unknown system.");
+                throw new CWError("Unknown system.");
 
             var currentLimit = target.MemberLimitOverride ?? Limits.MaxMemberCount;
             if (!ctx.HasNext())
@@ -105,10 +105,10 @@ namespace ChaoWorld.Bot
 
             var newLimitStr = ctx.PopArgument();
             if (!int.TryParse(newLimitStr, out var newLimit))
-                throw new PKError($"Couldn't parse `{newLimitStr}` as number.");
+                throw new CWError($"Couldn't parse `{newLimitStr}` as number.");
 
             if (!await ctx.PromptYesNo($"Update member limit from **{currentLimit}** to **{newLimit}**?", "Update"))
-                throw new PKError("Member limit change cancelled.");
+                throw new CWError("Member limit change cancelled.");
 
             await _repo.UpdateSystem(target.Id, new() { MemberLimitOverride = newLimit });
             await ctx.Reply($"{Emojis.Success} Member limit updated.");
@@ -120,7 +120,7 @@ namespace ChaoWorld.Bot
 
             var target = await ctx.MatchSystem();
             if (target == null)
-                throw new PKError("Unknown system.");
+                throw new CWError("Unknown system.");
 
             var currentLimit = target.GroupLimitOverride ?? Limits.MaxGroupCount;
             if (!ctx.HasNext())
@@ -131,10 +131,10 @@ namespace ChaoWorld.Bot
 
             var newLimitStr = ctx.PopArgument();
             if (!int.TryParse(newLimitStr, out var newLimit))
-                throw new PKError($"Couldn't parse `{newLimitStr}` as number.");
+                throw new CWError($"Couldn't parse `{newLimitStr}` as number.");
 
             if (!await ctx.PromptYesNo($"Update group limit from **{currentLimit}** to **{newLimit}**?", "Update"))
-                throw new PKError("Group limit change cancelled.");
+                throw new CWError("Group limit change cancelled.");
 
             await _repo.UpdateSystem(target.Id, new() { GroupLimitOverride = newLimit });
             await ctx.Reply($"{Emojis.Success} Group limit updated.");

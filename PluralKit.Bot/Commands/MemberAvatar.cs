@@ -50,12 +50,12 @@ namespace ChaoWorld.Bot
                 if (location == AvatarLocation.Member)
                 {
                     if (target.Garden == ctx.System?.Id)
-                        throw new PKSyntaxError("This member does not have an avatar set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
-                    throw new PKError("This member does not have an avatar set.");
+                        throw new CWSyntaxError("This member does not have an avatar set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
+                    throw new CWError("This member does not have an avatar set.");
                 }
 
                 if (location == AvatarLocation.Server)
-                    throw new PKError($"This member does not have a server avatar set. Type `pk;member {target.Reference()} avatar` to see their global avatar.");
+                    throw new CWError($"This member does not have a server avatar set. Type `pk;member {target.Reference()} avatar` to see their global avatar.");
             }
 
             var field = location == AvatarLocation.Server ? $"server avatar (for {ctx.Guild.Name})" : "avatar";
@@ -90,7 +90,7 @@ namespace ChaoWorld.Bot
             // First, see if we need to *clear*
             if (await ctx.MatchClear(location == AvatarLocation.Server ? "this member's server avatar" : "this member's avatar"))
             {
-                ctx.CheckSystem().CheckOwnMember(target);
+                ctx.CheckGarden().CheckOwnMember(target);
                 await AvatarClear(location, ctx, target, guildData);
                 return;
             }
@@ -104,7 +104,7 @@ namespace ChaoWorld.Bot
                 return;
             }
 
-            ctx.CheckSystem().CheckOwnMember(target);
+            ctx.CheckGarden().CheckOwnMember(target);
             await AvatarUtils.VerifyAvatarOrThrow(_client, avatarArg.Value.Url);
             await UpdateAvatar(location, ctx, target, avatarArg.Value.Url);
             await PrintResponse(location, ctx, target, avatarArg.Value, guildData);

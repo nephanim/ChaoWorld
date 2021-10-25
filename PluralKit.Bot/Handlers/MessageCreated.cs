@@ -116,7 +116,7 @@ namespace ChaoWorld.Bot
                 var system = ctx.SystemId != null ? await _repo.GetSystem(ctx.SystemId.Value) : null;
                 await _tree.ExecuteCommand(new Context(_services, shard, guild, channel, evt, cmdStart, system, ctx));
             }
-            catch (PKError)
+            catch (CWError)
             {
                 // Only permission errors will ever bubble this far and be caught here instead of Context.Execute
                 // so we just catch and ignore these. TODO: this may need to change.
@@ -157,7 +157,7 @@ namespace ChaoWorld.Bot
             // Catch any failed proxy checks so they get ignored in the global error handler
             catch (ProxyService.ProxyChecksFailedException) { }
 
-            catch (PKError e)
+            catch (CWError e)
             {
                 // User-facing errors, print to the channel properly formatted
                 if (botPermissions.HasFlag(PermissionSet.SendMessages))

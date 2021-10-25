@@ -20,7 +20,7 @@ namespace ChaoWorld.Bot
 
         public async Task Proxy(Context ctx, Chao target)
         {
-            ctx.CheckSystem().CheckOwnMember(target);
+            ctx.CheckGarden().CheckOwnMember(target);
 
             ProxyTag ParseProxyTags(string exampleProxy)
             {
@@ -72,14 +72,14 @@ namespace ChaoWorld.Bot
             // Subcommand: "add"
             else if (ctx.Match("add", "append"))
             {
-                if (!ctx.HasNext(skipFlags: false)) throw new PKSyntaxError("You must pass an example proxy to add (eg. `[text]` or `J:text`).");
+                if (!ctx.HasNext(skipFlags: false)) throw new CWSyntaxError("You must pass an example proxy to add (eg. `[text]` or `J:text`).");
 
                 var tagToAdd = ParseProxyTags(ctx.RemainderOrNull(skipFlags: false));
                 if (tagToAdd.IsEmpty) throw Errors.EmptyProxyTags(target);
                 if (target.ProxyTags.Contains(tagToAdd))
                     throw Errors.ProxyTagAlreadyExists(tagToAdd, target);
                 if (tagToAdd.ProxyString.Length > Limits.MaxProxyTagLength)
-                    throw new PKError($"Proxy tag too long ({tagToAdd.ProxyString.Length} > {Limits.MaxProxyTagLength} characters).");
+                    throw new CWError($"Proxy tag too long ({tagToAdd.ProxyString.Length} > {Limits.MaxProxyTagLength} characters).");
 
                 if (!await WarnOnConflict(tagToAdd))
                     throw Errors.GenericCancelled();
@@ -94,7 +94,7 @@ namespace ChaoWorld.Bot
             // Subcommand: "remove"
             else if (ctx.Match("remove", "delete"))
             {
-                if (!ctx.HasNext(skipFlags: false)) throw new PKSyntaxError("You must pass a proxy tag to remove (eg. `[text]` or `J:text`).");
+                if (!ctx.HasNext(skipFlags: false)) throw new CWSyntaxError("You must pass a proxy tag to remove (eg. `[text]` or `J:text`).");
 
                 var tagToRemove = ParseProxyTags(ctx.RemainderOrNull(skipFlags: false));
                 if (tagToRemove.IsEmpty) throw Errors.EmptyProxyTags(target);

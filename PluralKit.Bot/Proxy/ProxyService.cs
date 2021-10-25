@@ -67,7 +67,7 @@ namespace ChaoWorld.Bot
                 allowAutoproxy)) return false;
 
             // this is hopefully temporary, so not putting it into a separate method
-            if (message.Content != null && message.Content.Length > 2000) throw new PKError("ChaoWorld cannot proxy messages over 2000 characters in length.");
+            if (message.Content != null && message.Content.Length > 2000) throw new CWError("ChaoWorld cannot proxy messages over 2000 characters in length.");
 
             // Permission check after proxy match so we don't get spammed when not actually proxying
             if (!await CheckBotPermissionsOrError(botPermissions, rootChannel.Id))
@@ -91,7 +91,7 @@ namespace ChaoWorld.Bot
         {
             // Make sure author has a system
             if (ctx.SystemId == null)
-                throw new ProxyChecksFailedException(Errors.NoSystemError.Message);
+                throw new ProxyChecksFailedException(Errors.NoGardenError.Message);
 
             // Make sure channel is a guild text channel and this is a normal message
             if (!DiscordUtils.IsValidGuildChannel(channel))
@@ -344,7 +344,7 @@ namespace ChaoWorld.Bot
 
             if (!permissions.HasFlag(PermissionSet.ManageWebhooks))
             {
-                // todo: PKError-ify these
+                // todo: CWError-ify these
                 await _rest.CreateMessage(responseChannel, new MessageRequest
                 {
                     Content = $"{Emojis.Error} ChaoWorld does not have the *Manage Webhooks* permission in this channel, and thus cannot proxy messages. Please contact a server administrator to remedy this."

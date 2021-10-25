@@ -19,14 +19,14 @@ namespace ChaoWorld.Bot
 
         public async Task Query(Context ctx, Garden system)
         {
-            if (system == null) throw Errors.NoSystemError;
+            if (system == null) throw Errors.NoGardenError;
 
             await ctx.Reply(embed: await _embeds.CreateSystemEmbed(ctx, system, ctx.LookupContextFor(system)));
         }
 
         public async Task New(Context ctx)
         {
-            ctx.CheckNoSystem();
+            ctx.CheckNoGarden();
 
             var systemName = ctx.RemainderOrNull();
             if (systemName != null && systemName.Length > Limits.MaxSystemNameLength)

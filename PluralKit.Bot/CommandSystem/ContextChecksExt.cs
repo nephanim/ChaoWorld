@@ -13,19 +13,19 @@ namespace ChaoWorld.Bot
         public static Context CheckGuildContext(this Context ctx)
         {
             if (ctx.Channel.GuildId != null) return ctx;
-            throw new PKError("This command can not be run in a DM.");
+            throw new CWError("This command can not be run in a DM.");
         }
 
         public static Context CheckSystemPrivacy(this Context ctx, Garden target, PrivacyLevel level)
         {
             if (level.CanAccess(ctx.LookupContextFor(target))) return ctx;
-            throw new PKError("You do not have permission to access this information.");
+            throw new CWError("You do not have permission to access this information.");
         }
 
         public static Context CheckOwnMember(this Context ctx, Chao member)
         {
             if (member.Garden != ctx.System?.Id)
-                throw Errors.NotOwnMemberError;
+                throw Errors.NotOwnChaoError;
             return ctx;
         }
 
@@ -36,24 +36,24 @@ namespace ChaoWorld.Bot
             return ctx;
         }
 
-        public static Context CheckSystem(this Context ctx)
+        public static Context CheckGarden(this Context ctx)
         {
             if (ctx.System == null)
-                throw Errors.NoSystemError;
+                throw Errors.NoGardenError;
             return ctx;
         }
 
-        public static Context CheckNoSystem(this Context ctx)
+        public static Context CheckNoGarden(this Context ctx)
         {
             if (ctx.System != null)
-                throw Errors.ExistingSystemError;
+                throw Errors.ExistingGardenError;
             return ctx;
         }
 
         public static Context CheckAuthorPermission(this Context ctx, PermissionSet neededPerms, string permissionName)
         {
             if ((ctx.UserPermissions & neededPerms) != neededPerms)
-                throw new PKError($"You must have the \"{permissionName}\" permission in this server to use this command.");
+                throw new CWError($"You must have the \"{permissionName}\" permission in this server to use this command.");
             return ctx;
         }
 
@@ -66,7 +66,7 @@ namespace ChaoWorld.Bot
         public static Context AssertBotAdmin(this Context ctx)
         {
             if (!ctx.CheckBotAdmin())
-                throw new PKError("This command is only usable by bot admins.");
+                throw new CWError("This command is only usable by bot admins.");
 
             return ctx;
         }

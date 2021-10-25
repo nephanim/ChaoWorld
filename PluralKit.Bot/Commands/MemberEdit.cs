@@ -26,9 +26,9 @@ namespace ChaoWorld.Bot
 
         public async Task Name(Context ctx, Chao target)
         {
-            ctx.CheckSystem().CheckOwnMember(target);
+            ctx.CheckGarden().CheckOwnMember(target);
 
-            var newName = ctx.RemainderOrNull() ?? throw new PKSyntaxError("You must pass a new name for the member.");
+            var newName = ctx.RemainderOrNull() ?? throw new CWSyntaxError("You must pass a new name for the member.");
 
             // Hard name length cap
             if (newName.Length > Limits.MaxMemberNameLength)
@@ -39,7 +39,7 @@ namespace ChaoWorld.Bot
             if (existingMember != null && existingMember.Id != target.Id)
             {
                 var msg = $"{Emojis.Warn} You already have a member in your system with the name \"{existingMember.NameFor(ctx)}\" (`{existingMember.Hid}`). Do you want to rename this member to that name too?";
-                if (!await ctx.PromptYesNo(msg, "Rename")) throw new PKError("Member renaming cancelled.");
+                if (!await ctx.PromptYesNo(msg, "Rename")) throw new CWError("Member renaming cancelled.");
             }
 
             // Rename the member
@@ -178,7 +178,7 @@ namespace ChaoWorld.Bot
                 {
                     AvatarSource.Url => $"{Emojis.Success} Member banner image changed to the image at the given URL.",
                     AvatarSource.Attachment => $"{Emojis.Success} Member banner image changed to attached image.\n{Emojis.Warn} If you delete the message containing the attachment, the banner image will stop working.",
-                    AvatarSource.User => throw new PKError("Cannot set a banner image to an user's avatar."),
+                    AvatarSource.User => throw new CWError("Cannot set a banner image to an user's avatar."),
                     _ => throw new ArgumentOutOfRangeException()
                 };
 
@@ -200,7 +200,7 @@ namespace ChaoWorld.Bot
                     await ctx.Reply(embed: eb.Build());
                 }
                 else
-                    throw new PKSyntaxError("This member does not have a banner image set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
+                    throw new CWSyntaxError("This member does not have a banner image set. Set one by attaching an image to this command, or by passing an image URL or @mention.");
             }
 
             if (await ctx.MatchClear("this member's banner image"))
@@ -446,12 +446,12 @@ namespace ChaoWorld.Bot
 
         public async Task KeepProxy(Context ctx, Chao target)
         {
-            ctx.CheckSystem().CheckOwnMember(target);
+            ctx.CheckGarden().CheckOwnMember(target);
 
             bool newValue;
             if (ctx.Match("on", "enabled", "true", "yes")) newValue = true;
             else if (ctx.Match("off", "disabled", "false", "no")) newValue = false;
-            else if (ctx.HasNext()) throw new PKSyntaxError("You must pass either \"on\" or \"off\".");
+            else if (ctx.HasNext()) throw new CWSyntaxError("You must pass either \"on\" or \"off\".");
             else
             {
                 if (target.KeepProxy)
@@ -472,13 +472,13 @@ namespace ChaoWorld.Bot
 
         public async Task MemberAutoproxy(Context ctx, Chao target)
         {
-            if (ctx.System == null) throw Errors.NoSystemError;
-            if (target.Garden != ctx.System.Id) throw Errors.NotOwnMemberError;
+            if (ctx.System == null) throw Errors.NoGardenError;
+            if (target.Garden != ctx.System.Id) throw Errors.NotOwnChaoError;
 
             bool newValue;
             if (ctx.Match("on", "enabled", "true", "yes") || ctx.MatchFlag("on", "enabled", "true", "yes")) newValue = true;
             else if (ctx.Match("off", "disabled", "false", "no") || ctx.MatchFlag("off", "disabled", "false", "no")) newValue = false;
-            else if (ctx.HasNext()) throw new PKSyntaxError("You must pass either \"on\" or \"off\".");
+            else if (ctx.HasNext()) throw new CWSyntaxError("You must pass either \"on\" or \"off\".");
             else
             {
                 if (target.AllowAutoproxy)
@@ -499,7 +499,7 @@ namespace ChaoWorld.Bot
 
         public async Task Privacy(Context ctx, Chao target, PrivacyLevel? newValueFromCommand)
         {
-            ctx.CheckSystem().CheckOwnMember(target);
+            ctx.CheckGarden().CheckOwnMember(target);
 
             // Display privacy settings
             if (!ctx.HasNext() && newValueFromCommand == null)
@@ -589,7 +589,7 @@ namespace ChaoWorld.Bot
 
         public async Task Delete(Context ctx, Chao target)
         {
-            ctx.CheckSystem().CheckOwnMember(target);
+            ctx.CheckGarden().CheckOwnMember(target);
 
             await ctx.Reply($"{Emojis.Warn} Are you sure you want to delete \"{target.NameFor(ctx)}\"? If so, reply to this message with the member's ID (`{target.Hid}`). __***This cannot be undone!***__");
             if (!await ctx.ConfirmWithReply(target.Hid)) throw Errors.MemberDeleteCancelled;

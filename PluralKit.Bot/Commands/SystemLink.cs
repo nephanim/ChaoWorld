@@ -21,9 +21,9 @@ namespace ChaoWorld.Bot
 
         public async Task LinkSystem(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
-            var account = await ctx.MatchUser() ?? throw new PKSyntaxError("You must pass an account to link with (either ID or @mention).");
+            var account = await ctx.MatchUser() ?? throw new CWSyntaxError("You must pass an account to link with (either ID or @mention).");
             var accountIds = await _repo.GetSystemAccounts(ctx.System.Id);
             if (accountIds.Contains(account.Id))
                 throw Errors.AccountAlreadyLinked;
@@ -40,11 +40,11 @@ namespace ChaoWorld.Bot
 
         public async Task UnlinkAccount(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             ulong id;
             if (!ctx.MatchUserRaw(out id))
-                throw new PKSyntaxError("You must pass an account to link with (either ID or @mention).");
+                throw new CWSyntaxError("You must pass an account to link with (either ID or @mention).");
 
             var accountIds = (await _repo.GetSystemAccounts(ctx.System.Id)).ToList();
             if (!accountIds.Contains(id)) throw Errors.AccountNotLinked;

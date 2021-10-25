@@ -25,7 +25,7 @@ namespace ChaoWorld.Bot
 
         public async Task Member(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             var members = await _repo.GetSystemMembers(ctx.System.Id).ToListAsync();
 
@@ -33,7 +33,7 @@ namespace ChaoWorld.Bot
                 members = members.Where(m => m.MemberVisibility == PrivacyLevel.Public).ToList();
 
             if (members == null || !members.Any())
-                throw new PKError("Your system has no members! Please create at least one member before using this command.");
+                throw new CWError("Your system has no members! Please create at least one member before using this command.");
 
             var randInt = randGen.Next(members.Count);
             await ctx.Reply(embed: await _embeds.CreateMemberEmbed(ctx.System, members[randInt], ctx.Guild, ctx.LookupContextFor(ctx.System)));
@@ -41,14 +41,14 @@ namespace ChaoWorld.Bot
 
         public async Task Group(Context ctx)
         {
-            ctx.CheckSystem();
+            ctx.CheckGarden();
 
             var groups = await _db.Execute(c => c.QueryGroupList(ctx.System.Id));
             if (!ctx.MatchFlag("all", "a"))
                 groups = groups.Where(g => g.Visibility == PrivacyLevel.Public);
 
             if (groups == null || !groups.Any())
-                throw new PKError("Your system has no groups! Please create at least one group before using this command.");
+                throw new CWError("Your system has no groups! Please create at least one group before using this command.");
 
             var randInt = randGen.Next(groups.Count());
             await ctx.Reply(embed: await _embeds.CreateGroupEmbed(ctx, ctx.System, groups.ToArray()[randInt]));
@@ -63,7 +63,7 @@ namespace ChaoWorld.Bot
             var members = await conn.QueryMemberList(ctx.System.Id, opts.ToQueryOptions());
 
             if (members == null || !members.Any())
-                throw new PKError("This group has no members! Please add at least one member to this group before using this command.");
+                throw new CWError("This group has no members! Please add at least one member to this group before using this command.");
 
             if (!ctx.MatchFlag("all", "a"))
                 members = members.Where(g => g.MemberVisibility == PrivacyLevel.Public);

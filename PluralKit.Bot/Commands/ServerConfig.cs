@@ -39,7 +39,7 @@ namespace ChaoWorld.Bot
             }
 
             if (!ctx.HasNext())
-                throw new PKSyntaxError("You must pass a #channel to set, or `clear` to clear it.");
+                throw new CWSyntaxError("You must pass a #channel to set, or `clear` to clear it.");
 
             Channel channel = null;
             var channelString = ctx.PeekArgument();
@@ -57,7 +57,7 @@ namespace ChaoWorld.Bot
             var affectedChannels = new List<Channel>();
             if (ctx.Match("all"))
                 affectedChannels = _cache.GetGuildChannels(ctx.Guild.Id).Where(x => x.Type == Channel.ChannelType.GuildText).ToList();
-            else if (!ctx.HasNext()) throw new PKSyntaxError("You must pass one or more #channels.");
+            else if (!ctx.HasNext()) throw new CWSyntaxError("You must pass one or more #channels.");
             else while (ctx.HasNext())
                 {
                     var channelString = ctx.PeekArgument();
@@ -139,7 +139,7 @@ namespace ChaoWorld.Bot
             var affectedChannels = new List<Channel>();
             if (ctx.Match("all"))
                 affectedChannels = _cache.GetGuildChannels(ctx.Guild.Id).Where(x => x.Type == Channel.ChannelType.GuildText).ToList();
-            else if (!ctx.HasNext()) throw new PKSyntaxError("You must pass one or more #channels.");
+            else if (!ctx.HasNext()) throw new CWSyntaxError("You must pass one or more #channels.");
             else while (ctx.HasNext())
                 {
                     var channelString = ctx.PeekArgument();

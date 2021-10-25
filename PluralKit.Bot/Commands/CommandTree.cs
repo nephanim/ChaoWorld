@@ -555,11 +555,11 @@ namespace ChaoWorld.Bot
             if (ctx.Match("commands"))
                 return PrintCommandList(ctx, "autoproxy", AutoproxyCommands);
 
-            // ctx.CheckSystem();
+            // ctx.CheckGarden();
             // oops, that breaks stuff! PKErrors before ctx.Execute don't actually do anything.
             // so we just emulate checking and throwing an error.
             if (ctx.System == null)
-                return ctx.Reply($"{Emojis.Error} {Errors.NoSystemError.Message}");
+                return ctx.Reply($"{Emojis.Error} {Errors.NoGardenError.Message}");
 
             if (ctx.Match("account", "ac"))
                 return ctx.Execute<Autoproxy>(AutoproxyAccount, m => m.AutoproxyAccount(ctx));
