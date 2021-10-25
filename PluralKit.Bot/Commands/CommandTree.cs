@@ -152,57 +152,12 @@ namespace ChaoWorld.Bot
                 else return ctx.Execute<Help>(Help, m => m.HelpRoot(ctx));
             if (ctx.Match("explain"))
                 return ctx.Execute<Help>(Explain, m => m.Explain(ctx));
-            if (ctx.Match("log"))
-                if (ctx.Match("channel"))
-                    return ctx.Execute<ServerConfig>(LogChannel, m => m.SetLogChannel(ctx));
-                else if (ctx.Match("enable", "on"))
-                    return ctx.Execute<ServerConfig>(LogEnable, m => m.SetLogEnabled(ctx, true));
-                else if (ctx.Match("disable", "off"))
-                    return ctx.Execute<ServerConfig>(LogDisable, m => m.SetLogEnabled(ctx, false));
-                else if (ctx.Match("commands"))
-                    return PrintCommandList(ctx, "message logging", LogCommands);
-                else return PrintCommandExpectedError(ctx, LogCommands);
-            if (ctx.Match("logclean"))
-                return ctx.Execute<ServerConfig>(LogClean, m => m.SetLogCleanup(ctx));
-            if (ctx.Match("blacklist", "bl"))
-                if (ctx.Match("enable", "on", "add", "deny"))
-                    return ctx.Execute<ServerConfig>(BlacklistAdd, m => m.SetBlacklisted(ctx, true));
-                else if (ctx.Match("disable", "off", "remove", "allow"))
-                    return ctx.Execute<ServerConfig>(BlacklistRemove, m => m.SetBlacklisted(ctx, false));
-                else if (ctx.Match("list", "show"))
-                    return ctx.Execute<ServerConfig>(BlacklistShow, m => m.ShowBlacklisted(ctx));
-                else if (ctx.Match("commands"))
-                    return PrintCommandList(ctx, "channel blacklisting", BlacklistCommands);
-                else return PrintCommandExpectedError(ctx, BlacklistCommands);
             if (ctx.Match("invite")) return ctx.Execute<Misc>(Invite, m => m.Invite(ctx));
             if (ctx.Match("stats")) return ctx.Execute<Misc>(null, m => m.Stats(ctx));
-            if (ctx.Match("permcheck"))
-                return ctx.Execute<Checks>(PermCheck, m => m.PermCheckGuild(ctx));
-            if (ctx.Match("debug"))
-                return HandleDebugCommand(ctx);
-            if (ctx.Match("random", "r"))
-                return ctx.Execute<Random>(MemberRandom, m => m.Member(ctx));
 
             // remove compiler warning
             return ctx.Reply(
                 $"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a list of possible commands, see <https://pluralkit.me/commands>.");
-        }
-
-        private async Task HandleDebugCommand(Context ctx)
-        {
-            var availableCommandsStr = "Available debug targets: `permissions`, `proxying`";
-
-            if (ctx.Match("permissions", "perms", "permcheck"))
-                if (ctx.Match("channel", "ch"))
-                    await ctx.Execute<Checks>(PermCheck, m => m.PermCheckChannel(ctx));
-                else
-                    await ctx.Execute<Checks>(PermCheck, m => m.PermCheckGuild(ctx));
-            else if (ctx.Match("channel"))
-                await ctx.Execute<Checks>(PermCheck, m => m.PermCheckChannel(ctx));
-            else if (!ctx.HasNext())
-                await ctx.Reply($"{Emojis.Error} You need to pass a command. {availableCommandsStr}");
-            else
-                await ctx.Reply($"{Emojis.Error} Unknown debug command {ctx.PeekArgument().AsCode()}. {availableCommandsStr}");
         }
 
         private async Task HandleSystemCommand(Context ctx)
