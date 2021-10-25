@@ -191,28 +191,12 @@ namespace ChaoWorld.Bot
                 return ctx.Execute<Checks>(ProxyCheck, m => m.MessageProxyCheck(ctx));
             if (ctx.Match("debug"))
                 return HandleDebugCommand(ctx);
-            if (ctx.Match("admin"))
-                return HandleAdminCommand(ctx);
             if (ctx.Match("random", "r"))
                 return ctx.Execute<Random>(MemberRandom, m => m.Member(ctx));
 
             // remove compiler warning
             return ctx.Reply(
                 $"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a list of possible commands, see <https://pluralkit.me/commands>.");
-        }
-
-        private async Task HandleAdminCommand(Context ctx)
-        {
-            if (ctx.Match("usid", "updatesystemid"))
-                await ctx.Execute<Admin>(Admin, a => a.UpdateSystemId(ctx));
-            else if (ctx.Match("umid", "updatememberid"))
-                await ctx.Execute<Admin>(Admin, a => a.UpdateMemberId(ctx));
-            else if (ctx.Match("uml", "updatememberlimit"))
-                await ctx.Execute<Admin>(Admin, a => a.SystemMemberLimit(ctx));
-            else if (ctx.Match("ugl", "updategrouplimit"))
-                await ctx.Execute<Admin>(Admin, a => a.SystemGroupLimit(ctx));
-            else
-                await ctx.Reply($"{Emojis.Error} Unknown command.");
         }
 
         private async Task HandleDebugCommand(Context ctx)
