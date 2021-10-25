@@ -1,0 +1,206 @@
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+using Myriad.Builders;
+
+using NodaTime;
+using NodaTime.Text;
+using NodaTime.TimeZones;
+
+using ChaoWorld.Core;
+
+namespace ChaoWorld.Bot
+{
+    public class SystemEdit
+    {
+        private readonly IDatabase _db;
+        private readonly ModelRepository _repo;
+        private readonly HttpClient _client;
+
+        public SystemEdit(IDatabase db, ModelRepository repo, HttpClient client)
+        {
+            _db = db;
+            _repo = repo;
+            _client = client;
+        }
+
+        public async Task Name(Context ctx)
+        {
+            var noNameSetMessage = "Your system does not have a name set. Type `!system name <name>` to set one.";
+
+            ctx.CheckGarden();
+
+            if (ctx.MatchRaw())
+            {
+                if (ctx.Garden.Name != null)
+                    await ctx.Reply($"```\n{ctx.Garden.Name}\n```");
+                else
+                    await ctx.Reply(noNameSetMessage);
+                return;
+            }
+            if (!ctx.HasNext(false))
+            {
+                if (ctx.Garden.Name != null)
+                    await ctx.Reply($"Your garden's name is currently **{ctx.Garden.Name}**. Type `!system name -clear` to clear it.");
+                else
+                    await ctx.Reply(noNameSetMessage);
+                return;
+            }
+
+            if (await ctx.MatchClear("your garden's name"))
+            {
+                await _repo.UpdateGarden(ctx.Garden.Id, new() { Name = null });
+
+                await ctx.Reply($"{Emojis.Success} Garden name cleared.");
+            }
+            else
+            {
+                var newSystemName = ctx.RemainderOrNull(skipFlags: false).NormalizeLineEndSpacing();
+
+                if (newSystemName.Length > Limits.MaxSystemNameLength)
+                    throw Errors.StringTooLongError("Garden name", newSystemName.Length, Limits.MaxSystemNameLength);
+
+                await _repo.UpdateGarden(ctx.Garden.Id, new() { Name = newSystemName });
+
+                await ctx.Reply($"{Emojis.Success} Garden name changed.");
+            }
+        }
+
+        public async Task Description(Context ctx)
+        {
+            var noDescriptionSetMessage = "Your system does not have a description set. To set one, type `!s description <description>`.";
+
+            ctx.CheckGarden();
+
+            if (ctx.MatchRaw())
+            {
+                if (ctx.Garden.Description == null)
+                    await ctx.Reply(noDescriptionSetMessage);
+                else
+                    await ctx.Reply($"```\n{ctx.Garden.Description}\n```");
+                return;
+            }
+            if (!ctx.HasNext(false))
+            {
+                if (ctx.Garden.Description == null)
+                    await ctx.Reply(noDescriptionSetMessage);
+                else
+                    await ctx.Reply(embed: new EmbedBuilder()
+                        .Title("Garden description")
+                        .Description(ctx.Garden.Description)
+                        .Footer(new("To print the description with formatting, type `!s description -raw`. To clear it, type `!s description -clear`. To change it, type `!s description <new description>`."))
+                        .Build());
+                return;
+            }
+
+            if (await ctx.MatchClear("your system's description"))
+            {
+                await _repo.UpdateGarden(ctx.Garden.Id, new() { Description = null });
+
+                await ctx.Reply($"{Emojis.Success} Garden description cleared.");
+            }
+            else
+            {
+                var newDescription = ctx.RemainderOrNull(skipFlags: false).NormalizeLineEndSpacing();
+                if (newDescription.Length > Limits.MaxDescriptionLength)
+                    throw Errors.StringTooLongError("Description", newDescription.Length, Limits.MaxDescriptionLength);
+
+                await _repo.UpdateGarden(ctx.Garden.Id, new() { Description = newDescription });
+
+                await ctx.Reply($"{Emojis.Success} Garden description changed.");
+            }
+        }
+
+        public async Task Color(Context ctx)
+        {
+            ctx.CheckGarden();
+
+            if (await ctx.MatchClear())
+            {
+                await _repo.UpdateGarden(ctx.Garden.Id, new() { Color = Partial<string>.Null() });
+
+                await ctx.Reply($"{Emojis.Success} Garden color cleared.");
+            }
+            else if (!ctx.HasNext())
+            {
+                if (ctx.Garden.Color == null)
+                    await ctx.Reply(
+                            $"Your system does not have a color set. To set one, type `!system color <color>`.");
+                else
+                    await ctx.Reply(embed: new EmbedBuilder()
+                        .Title("Garden color")
+                        .Color(ctx.Garden.Color.ToDiscordColor())
+                        .Thumbnail(new($"https://fakeimg.pl/256x256/{ctx.Garden.Color}/?text=%20"))
+                        .Description($"Your system's color is **#{ctx.Garden.Color}**. To clear it, type `!s color -clear`.")
+                        .Build());
+            }
+            else
+            {
+                var color = ctx.RemainderOrNull();
+
+                if (color.StartsWith("#")) color = color.Substring(1);
+                if (!Regex.IsMatch(color, "^[0-9a-fA-F]{6}$")) throw Errors.InvalidColorError(color);
+
+                await _repo.UpdateGarden(ctx.Garden.Id, new() { Color = Partial<string>.Present(color.ToLowerInvariant()) });
+
+                await ctx.Reply(embed: new EmbedBuilder()
+                    .Title($"{Emojis.Success} Garden color changed.")
+                    .Color(color.ToDiscordColor())
+                    .Thumbnail(new($"https://fakeimg.pl/256x256/{color}/?text=%20"))
+                    .Build());
+            }
+        }
+
+        public async Task Delete(Context ctx)
+        {
+            ctx.CheckGarden();
+
+            await ctx.Reply($"{Emojis.Warn} Are you sure you want to delete your system? If so, reply to this message with your system's ID (`{ctx.Garden.Id}`).\n**Note: this action is permanent.**");
+            if (!await ctx.ConfirmWithReply(ctx.Garden.Id.ToString()))
+                throw new CWError($"Garden deletion cancelled. Note that you must reply with your system ID (`{ctx.Garden.Id}`) *verbatim*.");
+
+            await _repo.DeleteGarden(ctx.Garden.Id);
+
+            await ctx.Reply($"{Emojis.Success} Garden deleted.");
+        }
+
+        public async Task SystemProxy(Context ctx)
+        {
+            ctx.CheckGarden();
+
+            var guild = ctx.MatchGuild() ?? ctx.Guild ??
+                throw new CWError("You must run this command in a server or pass a server ID.");
+
+            var gs = await _repo.GetSystemGuild(guild.Id, ctx.Garden.Id);
+
+            string serverText;
+            if (guild.Id == ctx.Guild?.Id)
+                serverText = $"this server ({guild.Name.EscapeMarkdown()})";
+            else
+                serverText = $"the server {guild.Name.EscapeMarkdown()}";
+
+            bool newValue;
+            if (ctx.Match("on", "enabled", "true", "yes")) newValue = true;
+            else if (ctx.Match("off", "disabled", "false", "no")) newValue = false;
+            else if (ctx.HasNext()) throw new CWSyntaxError("You must pass either \"on\" or \"off\".");
+            else
+            {
+                if (gs.ProxyEnabled)
+                    await ctx.Reply($"Proxying in {serverText} is currently **enabled** for your system. To disable it, type `!system proxy off`.");
+                else
+                    await ctx.Reply($"Proxying in {serverText} is currently **disabled** for your system. To enable it, type `!system proxy on`.");
+                return;
+            }
+
+            await _repo.UpdateSystemGuild(ctx.Garden.Id, guild.Id, new() { ProxyEnabled = newValue });
+
+            if (newValue)
+                await ctx.Reply($"Message proxying in {serverText} is now **enabled** for your system.");
+            else
+                await ctx.Reply($"Message proxying in {serverText} is now **disabled** for your system.");
+        }
+    }
+}
