@@ -34,7 +34,6 @@ namespace ChaoWorld.Bot
         private readonly ModelRepository _repo;
         private readonly Core.Garden _senderSystem;
         private readonly IMetrics _metrics;
-        private readonly CommandMessageService _commandMessageService;
         private readonly IDiscordCache _cache;
 
         private Command? _currentCommand;
@@ -53,7 +52,6 @@ namespace ChaoWorld.Bot
             _repo = provider.Resolve<ModelRepository>();
             _metrics = provider.Resolve<IMetrics>();
             _provider = provider;
-            _commandMessageService = provider.Resolve<CommandMessageService>();
             _parameters = new Parameters(message.Content?.Substring(commandParseOffset));
             _rest = provider.Resolve<DiscordApiClient>();
             _cluster = provider.Resolve<Cluster>();
@@ -99,13 +97,6 @@ namespace ChaoWorld.Bot
                 // Default to an empty allowed mentions object instead of null (which means no mentions allowed)
                 AllowedMentions = mentions ?? new AllowedMentions()
             });
-
-            if (embed != null)
-            {
-                // Sensitive information that might want to be deleted by :x: reaction is typically in an embed format (member cards, for example)
-                // This may need to be changed at some point but works well enough for now
-                await _commandMessageService.RegisterMessage(msg.Id, msg.ChannelId, Author.Id);
-            }
 
             return msg;
         }

@@ -49,22 +49,8 @@ namespace ChaoWorld.ScheduledTasks
             _logger.Information("Updating database stats...");
             await _repo.UpdateStats();
 
-            // Clean up message cache in postgres
-            await CleanupOldMessages();
-
             stopwatch.Stop();
             _logger.Information("Ran scheduled tasks in {Time}", stopwatch.ElapsedDuration());
-        }
-
-        private async Task CleanupOldMessages()
-        {
-            var deleteThresholdInstant = SystemClock.Instance.GetCurrentInstant() - CommandMessageRetention;
-            var deleteThresholdSnowflake = InstantToSnowflake(deleteThresholdInstant);
-
-            var deletedRows = await _repo.DeleteCommandMessagesBefore(deleteThresholdSnowflake);
-
-            _logger.Information("Pruned {DeletedRows} command messages older than retention {Retention} (older than {DeleteThresholdInstant} / {DeleteThresholdSnowflake})",
-                deletedRows, CommandMessageRetention, deleteThresholdInstant, deleteThresholdSnowflake);
         }
 
         // we don't have access to ChaoWorld.Bot here, so this needs to be vendored

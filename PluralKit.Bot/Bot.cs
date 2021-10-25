@@ -38,21 +38,19 @@ namespace ChaoWorld.Bot
         private readonly PeriodicStatCollector _collector;
         private readonly IMetrics _metrics;
         private readonly ErrorMessageService _errorMessageService;
-        private readonly CommandMessageService _commandMessageService;
         private readonly IDiscordCache _cache;
 
         private bool _hasReceivedReady = false;
         private Timer _periodicTask; // Never read, just kept here for GC reasons
 
         public Bot(ILifetimeScope services, ILogger logger, PeriodicStatCollector collector, IMetrics metrics,
-            ErrorMessageService errorMessageService, CommandMessageService commandMessageService, Cluster cluster, DiscordApiClient rest, IDiscordCache cache)
+            ErrorMessageService errorMessageService, Cluster cluster, DiscordApiClient rest, IDiscordCache cache)
         {
             _logger = logger.ForContext<Bot>();
             _services = services;
             _collector = collector;
             _metrics = metrics;
             _errorMessageService = errorMessageService;
-            _commandMessageService = commandMessageService;
             _cluster = cluster;
             _rest = rest;
             _cache = cache;

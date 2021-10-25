@@ -152,10 +152,6 @@ namespace ChaoWorld.Bot
                 else return ctx.Execute<Help>(Help, m => m.HelpRoot(ctx));
             if (ctx.Match("explain"))
                 return ctx.Execute<Help>(Explain, m => m.Explain(ctx));
-            if (ctx.Match("message", "msg"))
-                return ctx.Execute<ProxiedMessage>(Message, m => m.GetMessage(ctx));
-            if (ctx.Match("edit", "e"))
-                return ctx.Execute<ProxiedMessage>(MessageEdit, m => m.EditMessage(ctx));
             if (ctx.Match("log"))
                 if (ctx.Match("channel"))
                     return ctx.Execute<ServerConfig>(LogChannel, m => m.SetLogChannel(ctx));

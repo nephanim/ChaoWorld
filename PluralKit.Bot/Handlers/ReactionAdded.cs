@@ -20,7 +20,6 @@ namespace ChaoWorld.Bot
     {
         private readonly IDatabase _db;
         private readonly ModelRepository _repo;
-        private readonly CommandMessageService _commandMessageService;
         private readonly ILogger _logger;
         private readonly IDiscordCache _cache;
         private readonly EmbedService _embeds;
@@ -28,11 +27,10 @@ namespace ChaoWorld.Bot
         private readonly Cluster _cluster;
         private readonly DiscordApiClient _rest;
 
-        public ReactionAdded(ILogger logger, IDatabase db, ModelRepository repo, CommandMessageService commandMessageService, IDiscordCache cache, Bot bot, Cluster cluster, DiscordApiClient rest, EmbedService embeds)
+        public ReactionAdded(ILogger logger, IDatabase db, ModelRepository repo, IDiscordCache cache, Bot bot, Cluster cluster, DiscordApiClient rest, EmbedService embeds)
         {
             _db = db;
             _repo = repo;
-            _commandMessageService = commandMessageService;
             _cache = cache;
             _bot = bot;
             _cluster = cluster;
@@ -61,25 +59,6 @@ namespace ChaoWorld.Bot
             if (user.Bot) return;
 
             var channel = _cache.GetChannel(evt.ChannelId);
-
-            // check if it's a command message first
-            // since this can happen in DMs as well
-            if (evt.Emoji.Name == "\u274c")
-            {
-                // in DMs, allow deleting any PK message
-                if (channel.GuildId == null)
-                {
-                    await HandleCommandDeleteReaction(evt, null);
-                    return;
-                }
-
-                var commandMsg = await _commandMessageService.GetCommandMessage(evt.MessageId);
-                if (commandMsg != null)
-                {
-                    await HandleCommandDeleteReaction(evt, commandMsg);
-                    return;
-                }
-            }
 
             // Proxied messages only exist in guild text channels, so skip checking if we're elsewhere
             if (!DiscordUtils.IsValidGuildChannel(channel)) return;
@@ -139,25 +118,6 @@ namespace ChaoWorld.Bot
             }
 
             await _repo.DeleteMessage(evt.MessageId);
-        }
-
-        private async ValueTask HandleCommandDeleteReaction(MessageReactionAddEvent evt, CommandMessage? msg)
-        {
-            // Can only delete your own message
-            // (except in DMs, where msg will be null)
-            if (msg != null && msg.AuthorId != evt.UserId)
-                return;
-
-            try
-            {
-                await _rest.DeleteMessage(evt.ChannelId, evt.MessageId);
-            }
-            catch (NotFoundException)
-            {
-                // Message was deleted by something/someone else before we got to it
-            }
-
-            // No need to delete database row here, it'll get deleted by the once-per-minute scheduled task.
         }
 
         private async ValueTask HandleQueryReaction(MessageReactionAddEvent evt, FullMessage msg)

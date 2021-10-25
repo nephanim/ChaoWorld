@@ -52,7 +52,6 @@ namespace ChaoWorld.Bot
             builder.RegisterType<MemberAvatar>().AsSelf();
             builder.RegisterType<MemberEdit>().AsSelf();
             builder.RegisterType<Misc>().AsSelf();
-            builder.RegisterType<ProxiedMessage>().AsSelf();
             builder.RegisterType<Random>().AsSelf();
             builder.RegisterType<ServerConfig>().AsSelf();
             builder.RegisterType<Garden>().AsSelf();
@@ -83,7 +82,6 @@ namespace ChaoWorld.Bot
             builder.RegisterType<LastMessageCacheService>().AsSelf().SingleInstance();
             builder.RegisterType<LoggerCleanService>().AsSelf().SingleInstance();
             builder.RegisterType<ErrorMessageService>().AsSelf().SingleInstance();
-            builder.RegisterType<CommandMessageService>().AsSelf().SingleInstance();
             builder.RegisterType<InteractionDispatchService>().AsSelf().SingleInstance();
 
             // Sentry stuff
