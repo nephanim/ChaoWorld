@@ -9,9 +9,6 @@ namespace ChaoWorld.Core
 {
     public static class DatabaseViewsExt
     {
-        public static Task<IEnumerable<SystemFronter>> QueryCurrentFronters(this IPKConnection conn, GardenId system) =>
-            conn.QueryAsync<SystemFronter>("select * from system_fronters where system = @system", new { system });
-
         public static Task<IEnumerable<ListedMember>> QueryMemberList(this IPKConnection conn, GardenId system, MemberListQueryOptions opts)
         {
             StringBuilder query;
