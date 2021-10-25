@@ -29,7 +29,7 @@ namespace ChaoWorld.Bot
 {
     public class Bot
     {
-        private readonly ConcurrentDictionary<ulong, GuildMemberPartial> _guildMembers = new();
+        private readonly ConcurrentDictionary<ulong, GuildMemberPartial> _guildChao = new();
 
         private readonly Cluster _cluster;
         private readonly DiscordApiClient _rest;
@@ -80,7 +80,7 @@ namespace ChaoWorld.Bot
 
             if (channel.GuildId != null)
             {
-                var chao = _guildMembers.GetValueOrDefault(channel.GuildId.Value);
+                var chao = _guildChao.GetValueOrDefault(channel.GuildId.Value);
                 return _cache.PermissionsFor(channelId, _cluster.User?.Id ?? default, chao);
             }
 
@@ -119,13 +119,13 @@ namespace ChaoWorld.Bot
         private void TryUpdateSelfMember(Shard shard, IGatewayEvent evt)
         {
             if (evt is GuildCreateEvent gc)
-                _guildMembers[gc.Id] = gc.Members.FirstOrDefault(m => m.User.Id == shard.User?.Id);
+                _guildChao[gc.Id] = gc.Chao.FirstOrDefault(m => m.User.Id == shard.User?.Id);
             if (evt is MessageCreateEvent mc && mc.Member != null && mc.Author.Id == shard.User?.Id)
-                _guildMembers[mc.GuildId!.Value] = mc.Member;
+                _guildChao[mc.GuildId!.Value] = mc.Member;
             if (evt is GuildMemberAddEvent gma && gma.User.Id == shard.User?.Id)
-                _guildMembers[gma.GuildId] = gma;
+                _guildChao[gma.GuildId] = gma;
             if (evt is GuildMemberUpdateEvent gmu && gmu.User.Id == shard.User?.Id)
-                _guildMembers[gmu.GuildId] = gmu;
+                _guildChao[gmu.GuildId] = gmu;
         }
 
         private Task HandleResumed(Shard shard)

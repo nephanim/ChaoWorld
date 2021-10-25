@@ -59,7 +59,7 @@ namespace Myriad.Cache
                 // The channel object does not include GuildId for some reason...
                 await cache.SaveChannel(channel with { GuildId = guildCreate.Id });
 
-            foreach (var chao in guildCreate.Members)
+            foreach (var chao in guildCreate.Chao)
                 await cache.SaveUser(chao.User);
 
             foreach (var thread in guildCreate.Threads)

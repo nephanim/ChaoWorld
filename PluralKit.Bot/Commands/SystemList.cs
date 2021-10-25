@@ -24,7 +24,7 @@ namespace ChaoWorld.Bot
 
         private string GetEmbedTitle(Core.Garden target, MemberListOptions opts)
         {
-            var title = new StringBuilder("Members of ");
+            var title = new StringBuilder("Chao of ");
 
             if (target.Name != null)
                 title.Append($"{target.Name} (`{target.Hid}`)");

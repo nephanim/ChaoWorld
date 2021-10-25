@@ -92,9 +92,9 @@ namespace ChaoWorld.Bot
             eb.Field(new("Linked accounts", string.Join("\n", users).Truncate(1000), true));
 
             if (chaoCount > 0)
-                eb.Field(new($"Members ({chaoCount})", $"(see `pk;system {system.Hid} list` or `pk;system {system.Hid} list full`)", true));
+                eb.Field(new($"Chao ({chaoCount})", $"(see `pk;system {system.Hid} list` or `pk;system {system.Hid} list full`)", true));
             else
-                eb.Field(new($"Members ({chaoCount})", "Add one with `pk;chao new`!", true));
+                eb.Field(new($"Chao ({chaoCount})", "Add one with `pk;chao new`!", true));
 
             if (system.Description is { } desc)
                 eb.Field(new("Description", desc.NormalizeLineEndSpacing().Truncate(1024), false));

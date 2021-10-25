@@ -27,7 +27,7 @@ namespace ChaoWorld.Core
             return _db.Query<ulong>(query);
         }
 
-        public IAsyncEnumerable<Chao> GetGardenMembers(GardenId garden)
+        public IAsyncEnumerable<Chao> GetGardenChao(GardenId garden)
         {
             var query = new Query("chao").Where("gardenid", garden);
             return _db.QueryStream<Chao>(query);

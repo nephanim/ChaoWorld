@@ -13,7 +13,7 @@ namespace ChaoWorld.Core
                 channel_id = channel
             });
 
-        public Task<IEnumerable<ProxyMember>> GetProxyMembers(ulong account, ulong guild)
+        public Task<IEnumerable<ProxyMember>> GetProxyChao(ulong account, ulong guild)
             => _db.QueryProcedure<ProxyMember>("proxy_chao", new
             {
                 account_id = account,

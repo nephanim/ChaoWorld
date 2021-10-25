@@ -153,9 +153,9 @@ namespace Myriad.Extensions
             PermissionSet.AddReactions |
             PermissionSet.Connect |
             PermissionSet.Speak |
-            PermissionSet.MuteMembers |
-            PermissionSet.DeafenMembers |
-            PermissionSet.MoveMembers |
+            PermissionSet.MuteChao |
+            PermissionSet.DeafenChao |
+            PermissionSet.MoveChao |
             PermissionSet.UseVad |
             PermissionSet.Stream |
             PermissionSet.PrioritySpeaker;
