@@ -33,9 +33,9 @@ namespace ChaoWorld.Core
         public new void AssertIsValid()
         {
             if (Name.IsPresent)
-                AssertValid(Name.Value, "name", Limits.MaxMemberNameLength);
+                AssertValid(Name.Value, "name", Limits.MaxChaoNameLength);
             if (DisplayName.Value != null)
-                AssertValid(DisplayName.Value, "display_name", Limits.MaxMemberNameLength);
+                AssertValid(DisplayName.Value, "display_name", Limits.MaxChaoNameLength);
             if (BannerImage.Value != null)
                 AssertValid(BannerImage.Value, "banner", Limits.MaxUriLength,
                     s => MiscUtils.TryMatchUri(s, out var bannerUri));
@@ -54,7 +54,7 @@ namespace ChaoWorld.Core
             var patch = new GardenPatch();
 
             if (o.ContainsKey("name") && o["name"].Type == JTokenType.Null)
-                throw new ValidationError("Member name can not be set to null.");
+                throw new ValidationError("Chao name can not be set to null.");
 
             if (o.ContainsKey("name")) patch.Name = o.Value<string>("name");
             if (o.ContainsKey("color")) patch.Color = o.Value<string>("color").NullIfEmpty()?.ToLower();

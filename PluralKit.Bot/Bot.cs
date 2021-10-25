@@ -29,7 +29,7 @@ namespace ChaoWorld.Bot
 {
     public class Bot
     {
-        private readonly ConcurrentDictionary<ulong, GuildMemberPartial> _guildChao = new();
+        private readonly ConcurrentDictionary<ulong, GuildMemberPartial> _guildMember = new();
 
         private readonly Cluster _cluster;
         private readonly DiscordApiClient _rest;
@@ -80,7 +80,7 @@ namespace ChaoWorld.Bot
 
             if (channel.GuildId != null)
             {
-                var chao = _guildChao.GetValueOrDefault(channel.GuildId.Value);
+                var chao = _guildMember.GetValueOrDefault(channel.GuildId.Value);
                 return _cache.PermissionsFor(channelId, _cluster.User?.Id ?? default, chao);
             }
 
@@ -91,7 +91,7 @@ namespace ChaoWorld.Bot
         {
             await _cache.HandleGatewayEvent(evt);
 
-            TryUpdateSelfMember(shard, evt);
+            TryUpdateSelfMembers(shard, evt);
 
             // HandleEvent takes a type parameter, automatically inferred by the event type
             // It will then look up an IEventHandler<TypeOfEvent> in the DI container and call that object's handler method
@@ -116,16 +116,16 @@ namespace ChaoWorld.Bot
                 await HandleResumed(shard);
         }
 
-        private void TryUpdateSelfMember(Shard shard, IGatewayEvent evt)
+        private void TryUpdateSelfMembers(Shard shard, IGatewayEvent evt)
         {
             if (evt is GuildCreateEvent gc)
-                _guildChao[gc.Id] = gc.Chao.FirstOrDefault(m => m.User.Id == shard.User?.Id);
+                _guildMember[gc.Id] = gc.Members.FirstOrDefault(m => m.User.Id == shard.User?.Id);
             if (evt is MessageCreateEvent mc && mc.Member != null && mc.Author.Id == shard.User?.Id)
-                _guildChao[mc.GuildId!.Value] = mc.Member;
+                _guildMember[mc.GuildId!.Value] = mc.Member;
             if (evt is GuildMemberAddEvent gma && gma.User.Id == shard.User?.Id)
-                _guildChao[gma.GuildId] = gma;
+                _guildMember[gma.GuildId] = gma;
             if (evt is GuildMemberUpdateEvent gmu && gmu.User.Id == shard.User?.Id)
-                _guildChao[gmu.GuildId] = gmu;
+                _guildMember[gmu.GuildId] = gmu;
         }
 
         private Task HandleResumed(Shard shard)

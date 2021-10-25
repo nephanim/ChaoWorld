@@ -43,14 +43,14 @@ namespace ChaoWorld.Bot
 
         public static CWError StringTooLongError(string name, int length, int maxLength) => new CWError($"{name} too long ({length}/{maxLength} characters).");
 
-        public static CWError MemberLimitReachedError(int limit) => new CWError($"Garden has reached the maximum number of chao ({limit}). Please delete unused chao first in order to create new ones.");
+        public static CWError ChaoLimitReachedError(int limit) => new CWError($"Garden has reached the maximum number of chao ({limit}). Please delete unused chao first in order to create new ones.");
 
         public static CWError InvalidColorError(string color) => new CWError($"\"{color}\" is not a valid color. Color must be in 6-digit RGB hex format (eg. #ff0000).");
         public static CWError BirthdayParseError(string birthday) => new CWError($"\"{birthday}\" could not be parsed as a valid date. Try a format like \"2016-12-24\" or \"May 3 1996\".");
         public static CWError ProxyMustHaveText => new CWSyntaxError("Example proxy message must contain the string 'text'.");
         public static CWError ProxyMultipleText => new CWSyntaxError("Example proxy message must contain the string 'text' exactly once.");
 
-        public static CWError MemberDeleteCancelled => new CWError($"Member deletion cancelled. Stay safe! {Emojis.ThumbsUp}");
+        public static CWError ChaoDeleteCancelled => new CWError($"Chao deletion cancelled. Stay safe! {Emojis.ThumbsUp}");
         public static CWError AvatarServerError(HttpStatusCode statusCode) => new CWError($"Server responded with status code {(int)statusCode}, are you sure your link is working?");
         public static CWError AvatarFileSizeLimit(long size) => new CWError($"File size too large ({size.Bytes().ToString("#.#")} > {Limits.AvatarFileSizeLimit.Bytes().ToString("#.#")}), try shrinking or compressing the image.");
         public static CWError AvatarNotAnImage(string mimeType) => new CWError($"The given link does not point to an image{(mimeType != null ? $" ({mimeType})" : "")}. Make sure you're using a direct link (ending in .jpg, .png, .gif).");
@@ -64,8 +64,8 @@ namespace ChaoWorld.Bot
         public static CWError AccountNotLinked => new CWError("That account isn't linked to your system.");
         public static CWError AccountInOtherSystem(Core.Garden system) => new CWError($"The mentioned account is already linked to another system (see `pk;system {system.Hid}`).");
         public static CWError UnlinkingLastAccount => new CWError("Since this is the only account linked to this system, you cannot unlink it (as that would leave your system account-less). If you would like to delete your system, use `pk;system delete`.");
-        public static CWError MemberLinkCancelled => new CWError("Member link cancelled.");
-        public static CWError MemberUnlinkCancelled => new CWError("Member unlink cancelled.");
+        public static CWError ChaoLinkCancelled => new CWError("Chao link cancelled.");
+        public static CWError ChaoUnlinkCancelled => new CWError("Chao unlink cancelled.");
 
         public static CWError InvalidDateTime(string str) => new CWError($"Could not parse '{str}' as a valid date/time. Try using a syntax such as \"May 21, 12:30 PM\" or \"3d12h\" (ie. 3 days, 12 hours ago).");
 

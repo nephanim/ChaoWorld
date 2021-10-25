@@ -18,8 +18,6 @@ namespace ChaoWorld.Bot
 {
     public static class MiscUtils
     {
-        public static string ProxyTagsString(this Chao chao, string separator = ", ") =>
-            string.Join(separator, chao.ProxyTags.Select(t => t.ProxyString.AsCode()));
 
         public static bool IsOurProblem(this Exception e)
         {

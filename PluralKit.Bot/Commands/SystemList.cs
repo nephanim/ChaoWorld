@@ -14,15 +14,15 @@ namespace ChaoWorld.Bot
             _db = db;
         }
 
-        public async Task MemberList(Context ctx, Core.Garden target)
+        public async Task ChaoList(Context ctx, Core.Garden target)
         {
             if (target == null) throw Errors.NoGardenError;
 
-            var opts = ctx.ParseMemberListOptions();
-            await ctx.RenderMemberList(_db, target.Id, GetEmbedTitle(target, opts), target.Color, opts);
+            var opts = ctx.ParseChaoListOptions();
+            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(target, opts), target.Color, opts);
         }
 
-        private string GetEmbedTitle(Core.Garden target, MemberListOptions opts)
+        private string GetEmbedTitle(Core.Garden target, ChaoListOptions opts)
         {
             var title = new StringBuilder("Chao of ");
 

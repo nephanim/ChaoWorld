@@ -61,7 +61,7 @@ namespace ChaoWorld.Bot
 
         public Channel Channel => _channel;
         public User Author => _message.Author;
-        public GuildMemberPartial Member => _message.Member;
+        public GuildMemberPartial Chao => _message.Member;
 
         public Message Message => _message;
         public Guild Guild => _guild;

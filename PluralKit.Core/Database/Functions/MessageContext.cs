@@ -16,9 +16,9 @@ namespace ChaoWorld.Core
         public bool LogCleanupEnabled { get; }
         public bool ProxyEnabled { get; }
         public AutoproxyMode AutoproxyMode { get; }
-        public ChaoId? AutoproxyMember { get; }
+        public ChaoId? AutoproxyChao { get; }
         public ulong? LastMessage { get; }
-        public ChaoId? LastMessageMember { get; }
+        public ChaoId? LastMessageChao { get; }
         public ChaoId[] LastSwitchChao { get; } = new ChaoId[0];
         public Instant? LastSwitchTimestamp { get; }
         public string? SystemTag { get; }

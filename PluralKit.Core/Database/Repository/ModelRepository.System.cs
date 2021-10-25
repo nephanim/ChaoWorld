@@ -33,7 +33,7 @@ namespace ChaoWorld.Core
             return _db.QueryStream<Chao>(query);
         }
 
-        public Task<int> GetGardenMemberCount(GardenId garden)
+        public Task<int> GetGardenChaoCount(GardenId garden)
         {
             var query = new Query("chao").SelectRaw("count(*)").Where("gardenid", garden);
 

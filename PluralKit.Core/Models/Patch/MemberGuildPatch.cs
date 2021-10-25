@@ -4,7 +4,7 @@ using SqlKata;
 
 namespace ChaoWorld.Core
 {
-    public class MemberGuildPatch: PatchObject
+    public class ChaoGuildPatch: PatchObject
     {
         public Partial<string?> DisplayName { get; set; }
         public Partial<string?> AvatarUrl { get; set; }

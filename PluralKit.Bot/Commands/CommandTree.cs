@@ -31,31 +31,31 @@ namespace ChaoWorld.Bot
         public static Command AutoproxySet = new Command("autoproxy", "autoproxy [off|front|latch|chao]", "Sets your system's autoproxy mode for the current server");
         public static Command AutoproxyTimeout = new Command("autoproxy", "autoproxy timeout [<duration>|off|reset]", "Sets the latch timeout duration for your system");
         public static Command AutoproxyAccount = new Command("autoproxy", "autoproxy account [on|off]", "Toggles autoproxy globally for the current account");
-        public static Command MemberInfo = new Command("chao", "chao <chao>", "Looks up information about a chao");
-        public static Command MemberNew = new Command("chao new", "chao new <name>", "Creates a new chao");
-        public static Command MemberRename = new Command("chao rename", "chao <chao> rename <new name>", "Renames a chao");
-        public static Command MemberDesc = new Command("chao description", "chao <chao> description [description]", "Changes a chao's description");
-        public static Command MemberPronouns = new Command("chao pronouns", "chao <chao> pronouns [pronouns]", "Changes a chao's pronouns");
-        public static Command MemberColor = new Command("chao color", "chao <chao> color [color]", "Changes a chao's color");
-        public static Command MemberBirthday = new Command("chao birthday", "chao <chao> birthday [birthday]", "Changes a chao's birthday");
-        public static Command MemberProxy = new Command("chao proxy", "chao <chao> proxy [add|remove] [example proxy]", "Changes, adds, or removes a chao's proxy tags");
-        public static Command MemberDelete = new Command("chao delete", "chao <chao> delete", "Deletes a chao");
-        public static Command MemberBannerImage = new Command("chao banner", "chao <chao> banner [url]", "Set the chao's banner image");
-        public static Command MemberAvatar = new Command("chao avatar", "chao <chao> avatar [url|@mention]", "Changes a chao's avatar");
-        public static Command MemberGroups = new Command("chao group", "chao <chao> group", "Shows the groups a chao is in");
-        public static Command MemberGroupAdd = new Command("chao group", "chao <chao> group add <group> [group 2] [group 3...]", "Adds a chao to one or more groups");
-        public static Command MemberGroupRemove = new Command("chao group", "chao <chao> group remove <group> [group 2] [group 3...]", "Removes a chao from one or more groups");
-        public static Command MemberServerAvatar = new Command("chao serveravatar", "chao <chao> serveravatar [url|@mention]", "Changes a chao's avatar in the current server");
-        public static Command MemberDisplayName = new Command("chao displayname", "chao <chao> displayname [display name]", "Changes a chao's display name");
-        public static Command MemberServerName = new Command("chao servername", "chao <chao> servername [server name]", "Changes a chao's display name in the current server");
-        public static Command MemberAutoproxy = new Command("chao autoproxy", "chao <chao> autoproxy [on|off]", "Sets whether a chao will be autoproxied when autoproxy is set to latch or front mode.");
-        public static Command MemberKeepProxy = new Command("chao keepproxy", "chao <chao> keepproxy [on|off]", "Sets whether to include a chao's proxy tags when proxying");
-        public static Command MemberRandom = new Command("random", "random", "Shows the info card of a randomly selected chao in your system.");
-        public static Command MemberPrivacy = new Command("chao privacy", "chao <chao> privacy <name|description|birthday|pronouns|metadata|visibility|all> <public|private>", "Changes a chao's privacy settings");
+        public static Command ChaoInfo = new Command("chao", "chao <chao>", "Looks up information about a chao");
+        public static Command ChaoNew = new Command("chao new", "chao new <name>", "Creates a new chao");
+        public static Command ChaoRename = new Command("chao rename", "chao <chao> rename <new name>", "Renames a chao");
+        public static Command ChaoDesc = new Command("chao description", "chao <chao> description [description]", "Changes a chao's description");
+        public static Command ChaoPronouns = new Command("chao pronouns", "chao <chao> pronouns [pronouns]", "Changes a chao's pronouns");
+        public static Command ChaoColor = new Command("chao color", "chao <chao> color [color]", "Changes a chao's color");
+        public static Command ChaoBirthday = new Command("chao birthday", "chao <chao> birthday [birthday]", "Changes a chao's birthday");
+        public static Command ChaoProxy = new Command("chao proxy", "chao <chao> proxy [add|remove] [example proxy]", "Changes, adds, or removes a chao's proxy tags");
+        public static Command ChaoDelete = new Command("chao delete", "chao <chao> delete", "Deletes a chao");
+        public static Command ChaoBannerImage = new Command("chao banner", "chao <chao> banner [url]", "Set the chao's banner image");
+        public static Command ChaoAvatar = new Command("chao avatar", "chao <chao> avatar [url|@mention]", "Changes a chao's avatar");
+        public static Command ChaoGroups = new Command("chao group", "chao <chao> group", "Shows the groups a chao is in");
+        public static Command ChaoGroupAdd = new Command("chao group", "chao <chao> group add <group> [group 2] [group 3...]", "Adds a chao to one or more groups");
+        public static Command ChaoGroupRemove = new Command("chao group", "chao <chao> group remove <group> [group 2] [group 3...]", "Removes a chao from one or more groups");
+        public static Command ChaoServerAvatar = new Command("chao serveravatar", "chao <chao> serveravatar [url|@mention]", "Changes a chao's avatar in the current server");
+        public static Command ChaoDisplayName = new Command("chao displayname", "chao <chao> displayname [display name]", "Changes a chao's display name");
+        public static Command ChaoServerName = new Command("chao servername", "chao <chao> servername [server name]", "Changes a chao's display name in the current server");
+        public static Command ChaoAutoproxy = new Command("chao autoproxy", "chao <chao> autoproxy [on|off]", "Sets whether a chao will be autoproxied when autoproxy is set to latch or front mode.");
+        public static Command ChaoKeepProxy = new Command("chao keepproxy", "chao <chao> keepproxy [on|off]", "Sets whether to include a chao's proxy tags when proxying");
+        public static Command ChaoRandom = new Command("random", "random", "Shows the info card of a randomly selected chao in your system.");
+        public static Command ChaoPrivacy = new Command("chao privacy", "chao <chao> privacy <name|description|birthday|pronouns|metadata|visibility|all> <public|private>", "Changes a chao's privacy settings");
         public static Command GroupInfo = new Command("group", "group <name>", "Looks up information about a group");
         public static Command GroupNew = new Command("group new", "group new <name>", "Creates a new group");
         public static Command GroupList = new Command("group list", "group list", "Lists all groups in this system");
-        public static Command GroupMemberList = new Command("group chao", "group <group> list", "Lists all chao in a group");
+        public static Command GroupChaoList = new Command("group chao", "group <group> list", "Lists all chao in a group");
         public static Command GroupRename = new Command("group rename", "group <group> rename <new name>", "Renames a group");
         public static Command GroupDisplayName = new Command("group displayname", "group <group> displayname [display name]", "Changes a group's display name");
         public static Command GroupDesc = new Command("group description", "group <group> description [description]", "Changes a group's description");
@@ -67,7 +67,7 @@ namespace ChaoWorld.Bot
         public static Command GroupIcon = new Command("group icon", "group <group> icon [url|@mention]", "Changes a group's icon");
         public static Command GroupDelete = new Command("group delete", "group <group> delete", "Deletes a group");
         public static Command GroupFrontPercent = new Command("group frontpercent", "group <group> frontpercent [timespan]", "Shows a group's front breakdown.");
-        public static Command GroupMemberRandom = new Command("group random", "group <group> random", "Shows the info card of a randomly selected chao in a group.");
+        public static Command GroupChaoRandom = new Command("group random", "group <group> random", "Shows the info card of a randomly selected chao in a group.");
         public static Command GroupRandom = new Command("random", "random group", "Shows the info card of a randomly selected group in your system.");
         public static Command Switch = new Command("switch", "switch <chao> [chao 2] [chao 3...]", "Registers a switch");
         public static Command SwitchOut = new Command("switch out", "switch out", "Registers a switch with no chao");
@@ -104,22 +104,22 @@ namespace ChaoWorld.Bot
             SystemTimezone, SystemList, SystemFronter, SystemFrontHistory, SystemFrontPercent, SystemPrivacy, SystemProxy
         };
 
-        public static Command[] MemberCommands = {
-            MemberInfo, MemberNew, MemberRename, MemberDisplayName, MemberServerName, MemberDesc, MemberPronouns,
-            MemberColor, MemberBirthday, MemberProxy, MemberAutoproxy, MemberKeepProxy, MemberGroups, MemberGroupAdd, MemberGroupRemove,
-            MemberDelete, MemberAvatar, MemberServerAvatar, MemberBannerImage, MemberPrivacy, MemberRandom
+        public static Command[] ChaoCommands = {
+            ChaoInfo, ChaoNew, ChaoRename, ChaoDisplayName, ChaoServerName, ChaoDesc, ChaoPronouns,
+            ChaoColor, ChaoBirthday, ChaoProxy, ChaoAutoproxy, ChaoKeepProxy, ChaoGroups, ChaoGroupAdd, ChaoGroupRemove,
+            ChaoDelete, ChaoAvatar, ChaoServerAvatar, ChaoBannerImage, ChaoPrivacy, ChaoRandom
         };
 
         public static Command[] GroupCommands =
         {
-            GroupInfo, GroupList, GroupNew, GroupAdd, GroupRemove, GroupMemberList, GroupRename, GroupDesc,
+            GroupInfo, GroupList, GroupNew, GroupAdd, GroupRemove, GroupChaoList, GroupRename, GroupDesc,
             GroupIcon, GroupBannerImage, GroupColor, GroupPrivacy, GroupDelete
         };
 
         public static Command[] GroupCommandsTargeted =
         {
-            GroupInfo, GroupAdd, GroupRemove, GroupMemberList, GroupRename, GroupDesc, GroupIcon, GroupPrivacy,
-            GroupDelete, GroupMemberRandom, GroupFrontPercent
+            GroupInfo, GroupAdd, GroupRemove, GroupChaoList, GroupRename, GroupDesc, GroupIcon, GroupPrivacy,
+            GroupDelete, GroupChaoRandom, GroupFrontPercent
         };
 
         public static Command[] SwitchCommands = { Switch, SwitchOut, SwitchMove, SwitchEdit, SwitchEditOut, SwitchDelete, SwitchDeleteAll };
@@ -135,11 +135,11 @@ namespace ChaoWorld.Bot
             if (ctx.Match("system", "s"))
                 return HandleSystemCommand(ctx);
             if (ctx.Match("chao", "m"))
-                return HandleMemberCommand(ctx);
+                return HandleChaoCommand(ctx);
             if (ctx.Match("commands", "cmd", "c"))
                 return CommandHelpRoot(ctx);
             if (ctx.Match("list", "find", "chao", "search", "query", "l", "f", "fd"))
-                return ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, ctx.System));
+                return ctx.Execute<SystemList>(SystemList, m => m.ChaoList(ctx, ctx.System));
             if (ctx.Match("link"))
                 return ctx.Execute<SystemLink>(Link, m => m.LinkSystem(ctx));
             if (ctx.Match("unlink"))
@@ -180,9 +180,9 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("proxy"))
                 await ctx.Execute<SystemEdit>(SystemProxy, m => m.SystemProxy(ctx));
             else if (ctx.Match("list", "l", "chao"))
-                await ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, ctx.System));
+                await ctx.Execute<SystemList>(SystemList, m => m.ChaoList(ctx, ctx.System));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
-                await ctx.Execute<SystemList>(SystemFind, m => m.MemberList(ctx, ctx.System));
+                await ctx.Execute<SystemList>(SystemFind, m => m.ChaoList(ctx, ctx.System));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "systems", SystemCommands);
             else
@@ -200,9 +200,9 @@ namespace ChaoWorld.Bot
                     $"{Emojis.Error} {await CreateSystemNotFoundError(ctx)}\n\nPerhaps you meant to use one of the following commands?\n{list}");
             }
             else if (ctx.Match("list", "l", "chao"))
-                await ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, target));
+                await ctx.Execute<SystemList>(SystemList, m => m.ChaoList(ctx, target));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
-                await ctx.Execute<SystemList>(SystemFind, m => m.MemberList(ctx, target));
+                await ctx.Execute<SystemList>(SystemFind, m => m.ChaoList(ctx, target));
             else if (ctx.Match("info", "view", "show"))
                 await ctx.Execute<Garden>(SystemInfo, m => m.Query(ctx, target));
             else if (!ctx.HasNext())
@@ -212,34 +212,34 @@ namespace ChaoWorld.Bot
                     SystemInfo);
         }
 
-        private async Task HandleMemberCommand(Context ctx)
+        private async Task HandleChaoCommand(Context ctx)
         {
             if (ctx.Match("new", "n", "add", "create", "register"))
-                await ctx.Execute<Member>(MemberNew, m => m.NewMember(ctx));
+                await ctx.Execute<Chao>(ChaoNew, m => m.NewChao(ctx));
             else if (ctx.Match("list"))
-                await ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, ctx.System));
+                await ctx.Execute<SystemList>(SystemList, m => m.ChaoList(ctx, ctx.System));
             else if (ctx.Match("commands", "help"))
-                await PrintCommandList(ctx, "chao", MemberCommands);
-            else if (await ctx.MatchMember() is Chao target)
-                await HandleMemberCommandTargeted(ctx, target);
+                await PrintCommandList(ctx, "chao", ChaoCommands);
+            else if (await ctx.MatchChao() is Core.Chao target)
+                await HandleChaoCommandTargeted(ctx, target);
             else if (!ctx.HasNext())
-                await PrintCommandExpectedError(ctx, MemberNew, MemberInfo, MemberRename, MemberDisplayName, MemberServerName, MemberDesc, MemberPronouns,
-                    MemberColor, MemberBirthday, MemberProxy, MemberDelete, MemberAvatar);
+                await PrintCommandExpectedError(ctx, ChaoNew, ChaoInfo, ChaoRename, ChaoDisplayName, ChaoServerName, ChaoDesc, ChaoPronouns,
+                    ChaoColor, ChaoBirthday, ChaoProxy, ChaoDelete, ChaoAvatar);
             else
-                await ctx.Reply($"{Emojis.Error} {ctx.CreateMemberNotFoundError(ctx.PopArgument())}");
+                await ctx.Reply($"{Emojis.Error} {ctx.CreateChaoNotFoundError(ctx.PopArgument())}");
         }
 
-        private async Task HandleMemberCommandTargeted(Context ctx, Chao target)
+        private async Task HandleChaoCommandTargeted(Context ctx, Core.Chao target)
         {
             // Commands that have a chao target (eg. pk;chao <chao> delete)
             if (ctx.Match("rename", "name", "changename", "setname"))
-                await ctx.Execute<MemberEdit>(MemberRename, m => m.Name(ctx, target));
+                await ctx.Execute<ChaoEdit>(ChaoRename, m => m.Name(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
-                await ctx.Execute<MemberEdit>(MemberDelete, m => m.Delete(ctx, target));
+                await ctx.Execute<ChaoEdit>(ChaoDelete, m => m.Delete(ctx, target));
             else if (!ctx.HasNext()) // Bare command
-                await ctx.Execute<Member>(MemberInfo, m => m.ViewMember(ctx, target));
+                await ctx.Execute<Chao>(ChaoInfo, m => m.ViewChao(ctx, target));
             else
-                await PrintCommandNotFoundError(ctx, MemberInfo, MemberRename, MemberDisplayName, MemberServerName, MemberDesc, MemberPronouns, MemberColor, MemberBirthday, MemberProxy, MemberDelete, MemberAvatar, SystemList);
+                await PrintCommandNotFoundError(ctx, ChaoInfo, ChaoRename, ChaoDisplayName, ChaoServerName, ChaoDesc, ChaoPronouns, ChaoColor, ChaoBirthday, ChaoProxy, ChaoDelete, ChaoAvatar, SystemList);
         }
 
         private async Task CommandHelpRoot(Context ctx)
@@ -261,7 +261,7 @@ namespace ChaoWorld.Bot
                     break;
                 case "chao":
                 case "m":
-                    await PrintCommandList(ctx, "chao", MemberCommands);
+                    await PrintCommandList(ctx, "chao", ChaoCommands);
                     break;
                 case "group":
                 case "groups":

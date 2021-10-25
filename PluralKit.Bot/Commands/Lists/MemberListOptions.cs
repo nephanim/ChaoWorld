@@ -10,7 +10,7 @@ using ChaoWorld.Core;
 #nullable enable
 namespace ChaoWorld.Bot
 {
-    public class MemberListOptions
+    public class ChaoListOptions
     {
         public SortProperty SortProperty { get; set; } = SortProperty.Name;
         public bool Reverse { get; set; }
@@ -47,17 +47,17 @@ namespace ChaoWorld.Bot
             return str.ToString();
         }
 
-        public DatabaseViewsExt.MemberListQueryOptions ToQueryOptions() =>
-            new DatabaseViewsExt.MemberListQueryOptions
+        public DatabaseViewsExt.ChaoListQueryOptions ToQueryOptions() =>
+            new DatabaseViewsExt.ChaoListQueryOptions
             {
                 Search = Search,
                 SearchDescription = SearchDescription
             };
     }
 
-    public static class MemberListOptionsExt
+    public static class ChaoListOptionsExt
     {
-        public static IEnumerable<ListedMember> SortByMemberListOptions(this IEnumerable<ListedMember> input, MemberListOptions opts)
+        public static IEnumerable<ListedChao> SortByChaoListOptions(this IEnumerable<ListedChao> input, ChaoListOptions opts)
         {
             IComparer<T> ReverseMaybe<T>(IComparer<T> c) =>
                 opts.Reverse ? Comparer<T>.Create((a, b) => c.Compare(b, a)) : c;

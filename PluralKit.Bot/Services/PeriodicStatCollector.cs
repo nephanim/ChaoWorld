@@ -68,7 +68,7 @@ namespace ChaoWorld.Bot
             // await _repo.UpdateStats();
             var counts = await _repo.GetStats();
             _metrics.Measure.Gauge.SetValue(CoreMetrics.SystemCount, counts.SystemCount);
-            _metrics.Measure.Gauge.SetValue(CoreMetrics.MemberCount, counts.MemberCount);
+            _metrics.Measure.Gauge.SetValue(CoreMetrics.ChaoCount, counts.ChaoCount);
             _metrics.Measure.Gauge.SetValue(CoreMetrics.GroupCount, counts.GroupCount);
             _metrics.Measure.Gauge.SetValue(CoreMetrics.SwitchCount, counts.SwitchCount);
             _metrics.Measure.Gauge.SetValue(CoreMetrics.MessageCount, counts.MessageCount);

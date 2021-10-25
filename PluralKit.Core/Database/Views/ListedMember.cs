@@ -4,7 +4,7 @@ using NodaTime;
 namespace ChaoWorld.Core
 {
     // TODO: is inheritance here correct?
-    public class ListedMember: Chao
+    public class ListedChao: Chao
     {
         public ulong? LastMessage { get; }
         public Instant? LastSwitchTime { get; }

@@ -55,27 +55,19 @@ namespace ChaoWorld.Bot
             return null; //TODO: Is this safe?
         }
 
-        public static async Task<Chao> PeekMember(this Context ctx, GardenId? restrictToSystem = null)
+        public static async Task<Core.Chao> PeekChao(this Context ctx, GardenId? restrictToSystem = null)
         {
             var input = ctx.PeekArgument();
 
-            // Member references can have one of three forms, depending on
+            // Chao references can have one of three forms, depending on
             // whether you're in a system or not:
             // - A chao hid
             // - A textual name of a chao *in your own system*
             // - a textual display name of a chao *in your own system*
 
             // First, if we have a system, try finding by chao name in system
-            if (ctx.System != null && await ctx.Repository.GetMemberByName(ctx.System.Id, input) is Chao chaoByName)
+            if (ctx.System != null && await ctx.Repository.GetChaoByName(ctx.System.Id, input) is Core.Chao chaoByName)
                 return chaoByName;
-
-            // Then, try chao HID parsing:
-            if (await ctx.Repository.GetMemberByHid(input, restrictToSystem) is Chao chaoByHid)
-                return chaoByHid;
-
-            // And if that again fails, we try finding a chao with a display name matching the argument from the system
-            if (ctx.System != null && await ctx.Repository.GetMemberByDisplayName(ctx.System.Id, input) is Chao chaoByDisplayName)
-                return chaoByDisplayName;
 
             // We didn't find anything, so we return null.
             return null;
@@ -85,10 +77,10 @@ namespace ChaoWorld.Bot
         /// Attempts to pop a chao descriptor from the stack, returning it if present. If a chao could not be
         /// resolved by the next word in the argument stack, does *not* touch the stack, and returns null.
         /// </summary>
-        public static async Task<Chao> MatchMember(this Context ctx, GardenId? restrictToSystem = null)
+        public static async Task<Core.Chao> MatchChao(this Context ctx, GardenId? restrictToSystem = null)
         {
             // First, peek a chao
-            var chao = await ctx.PeekMember(restrictToSystem);
+            var chao = await ctx.PeekChao(restrictToSystem);
 
             // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
             if (chao != null) ctx.PopArgument();
@@ -97,19 +89,19 @@ namespace ChaoWorld.Bot
             return chao;
         }
 
-        public static string CreateMemberNotFoundError(this Context ctx, string input)
+        public static string CreateChaoNotFoundError(this Context ctx, string input)
         {
             // TODO: does this belong here?
             if (input.Length == 5)
             {
                 if (ctx.System != null)
-                    return $"Member with ID or name \"{input}\" not found.";
-                return $"Member with ID \"{input}\" not found."; // Accounts without systems can't query by name
+                    return $"Chao with ID or name \"{input}\" not found.";
+                return $"Chao with ID \"{input}\" not found."; // Accounts without systems can't query by name
             }
 
             if (ctx.System != null)
-                return $"Member with name \"{input}\" not found. Note that a chao ID is 5 characters long.";
-            return $"Member not found. Note that a chao ID is 5 characters long.";
+                return $"Chao with name \"{input}\" not found. Note that a chao ID is 5 characters long.";
+            return $"Chao not found. Note that a chao ID is 5 characters long.";
         }
 
         public static string CreateGroupNotFoundError(this Context ctx, string input)

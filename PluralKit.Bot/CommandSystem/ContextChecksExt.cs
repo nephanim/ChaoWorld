@@ -16,7 +16,7 @@ namespace ChaoWorld.Bot
             throw new CWError("This command can not be run in a DM.");
         }
 
-        public static Context CheckOwnMember(this Context ctx, Chao chao)
+        public static Context CheckOwnChao(this Context ctx, Core.Chao chao)
         {
             if (chao.Garden != ctx.System?.Id)
                 throw Errors.NotOwnChaoError;
@@ -47,7 +47,7 @@ namespace ChaoWorld.Bot
         public static bool CheckBotAdmin(this Context ctx)
         {
             var botConfig = ctx.Services.Resolve<BotConfig>();
-            return botConfig.AdminRole != null && ctx.Member != null && ctx.Member.Roles.Contains(botConfig.AdminRole.Value);
+            return botConfig.AdminRole != null && ctx.Chao != null && ctx.Chao.Roles.Contains(botConfig.AdminRole.Value);
         }
 
         public static Context AssertBotAdmin(this Context ctx)

@@ -6,7 +6,7 @@ namespace Myriad.Gateway
     public enum GatewayIntent
     {
         Guilds = 1 << 0,
-        GuildChao = 1 << 1,
+        GuildMember = 1 << 1,
         GuildBans = 1 << 2,
         GuildEmojis = 1 << 3,
         GuildIntegrations = 1 << 4,

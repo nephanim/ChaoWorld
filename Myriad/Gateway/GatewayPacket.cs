@@ -25,7 +25,7 @@ namespace Myriad.Gateway
         VoiceStateUpdate = 4,
         Resume = 6,
         Reconnect = 7,
-        RequestGuildChao = 8,
+        RequestGuildMember = 8,
         InvalidSession = 9,
         Hello = 10,
         HeartbeatAck = 11

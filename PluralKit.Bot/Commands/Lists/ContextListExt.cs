@@ -15,9 +15,9 @@ namespace ChaoWorld.Bot
 {
     public static class ContextListExt
     {
-        public static MemberListOptions ParseMemberListOptions(this Context ctx)
+        public static ChaoListOptions ParseChaoListOptions(this Context ctx)
         {
-            var p = new MemberListOptions();
+            var p = new ChaoListOptions();
 
             // Short or long list? (parse this first, as it can potentially take a positional argument)
             var isFull = ctx.Match("f", "full", "big", "details", "long") || ctx.MatchFlag("f", "full");
@@ -61,19 +61,19 @@ namespace ChaoWorld.Bot
             return p;
         }
 
-        public static async Task RenderMemberList(this Context ctx, IDatabase db, GardenId system, string embedTitle, string color, MemberListOptions opts)
+        public static async Task RenderChaoList(this Context ctx, IDatabase db, GardenId system, string embedTitle, string color, ChaoListOptions opts)
         {
             // We take an IDatabase instead of a IPKConnection so we don't keep the handle open for the entire runtime
             // We wanna release it as soon as the chao list is actually *fetched*, instead of potentially minutes later (paginate timeout)
-            var chao = (await db.Execute(conn => conn.QueryMemberList(system, opts.ToQueryOptions())))
-                .SortByMemberListOptions(opts)
+            var chao = (await db.Execute(conn => conn.QueryChaoList(system, opts.ToQueryOptions())))
+                .SortByChaoListOptions(opts)
                 .ToList();
 
             var itemsPerPage = opts.Type == ListType.Short ? 25 : 5;
             await ctx.Paginate(chao.ToAsyncEnumerable(), chao.Count, itemsPerPage, embedTitle, color, Renderer);
 
             // Base renderer, dispatches based on type
-            Task Renderer(EmbedBuilder eb, IEnumerable<ListedMember> page)
+            Task Renderer(EmbedBuilder eb, IEnumerable<ListedChao> page)
             {
                 // Add a global footer with the filter/sort string + result count
                 eb.Footer(new($"{opts.CreateFilterString()}. {"result".ToQuantity(chao.Count)}."));
@@ -87,7 +87,7 @@ namespace ChaoWorld.Bot
                 return Task.CompletedTask;
             }
 
-            void ShortRenderer(EmbedBuilder eb, IEnumerable<ListedMember> page)
+            void ShortRenderer(EmbedBuilder eb, IEnumerable<ListedChao> page)
             {
                 // We may end up over the description character limit
                 // so run it through a helper that "makes it work" :)
@@ -113,18 +113,12 @@ namespace ChaoWorld.Bot
                 }));
             }
 
-            void LongRenderer(EmbedBuilder eb, IEnumerable<ListedMember> page)
+            void LongRenderer(EmbedBuilder eb, IEnumerable<ListedChao> page)
             {
                 var zone = ctx.System?.Zone ?? DateTimeZone.Utc;
                 foreach (var m in page)
                 {
                     var profile = new StringBuilder($"**ID**: {m.Hid}");
-
-                    if (m.DisplayName != null)
-                        profile.Append($"\n**Display name**: {m.DisplayName}");
-
-                    if (m.ProxyTags.Count > 0)
-                        profile.Append($"\n**Proxy tags**: {m.ProxyTagsString()}");
 
                     if (opts.IncludeCreated || opts.SortProperty == SortProperty.CreationDate)
                         profile.Append($"\n**Created on:** {m.Created.FormatZoned(zone)}");

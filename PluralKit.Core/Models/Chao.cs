@@ -31,13 +31,13 @@ namespace ChaoWorld.Core
 
         public int CompareTo(ChaoId other) => Value.CompareTo(other.Value);
 
-        public override string ToString() => $"Member #{Value}";
+        public override string ToString() => $"Chao #{Value}";
     }
 
     public class Chao
     {
         // Dapper *can* figure out mapping to getter-only properties, but this doesn't work
-        // when trying to map to *subclasses* (eg. ListedMember). Adding private setters makes it work anyway.
+        // when trying to map to *subclasses* (eg. ListedChao). Adding private setters makes it work anyway.
         public ChaoId Id { get; private set; }
         public string Hid { get; private set; }
         public Guid Uuid { get; private set; }

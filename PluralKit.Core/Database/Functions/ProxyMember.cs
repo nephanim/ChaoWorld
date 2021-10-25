@@ -6,7 +6,7 @@ namespace ChaoWorld.Core
     /// <summary>
     /// Model for the `proxy_chao` PL/pgSQL function in `functions.sql`
     /// </summary>
-    public class ProxyMember
+    public class ProxyChao
     {
         public ChaoId Id { get; }
         public IReadOnlyCollection<ProxyTag> ProxyTags { get; } = new ProxyTag[0];
@@ -37,9 +37,9 @@ namespace ChaoWorld.Core
         }
         public string? ProxyAvatar(MessageContext ctx) => ServerAvatar ?? Avatar ?? ctx.SystemAvatar;
 
-        public ProxyMember() { }
+        public ProxyChao() { }
 
-        public ProxyMember(string name, params ProxyTag[] tags)
+        public ProxyChao(string name, params ProxyTag[] tags)
         {
             Name = name;
             ProxyTags = tags;

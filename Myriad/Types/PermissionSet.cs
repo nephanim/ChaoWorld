@@ -6,8 +6,8 @@ namespace Myriad.Types
     public enum PermissionSet: ulong
     {
         CreateInvite = 0x1,
-        KickChao = 0x2,
-        BanChao = 0x4,
+        KickMember = 0x2,
+        BanMember = 0x4,
         Administrator = 0x8,
         ManageChannels = 0x10,
         ManageGuild = 0x20,
@@ -27,9 +27,9 @@ namespace Myriad.Types
         ViewGuildInsights = 0x80000,
         Connect = 0x100000,
         Speak = 0x200000,
-        MuteChao = 0x400000,
-        DeafenChao = 0x800000,
-        MoveChao = 0x1000000,
+        MuteMember = 0x400000,
+        DeafenMember = 0x800000,
+        MoveMember = 0x1000000,
         UseVad = 0x2000000,
         ChangeNickname = 0x4000000,
         ManageNicknames = 0x8000000,

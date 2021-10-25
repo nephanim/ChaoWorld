@@ -23,7 +23,7 @@ namespace ChaoWorld.Core
         public Partial<string> UiTz { get; set; }
         public Partial<bool> PingsEnabled { get; set; }
         public Partial<int?> LatchTimeout { get; set; }
-        public Partial<int?> MemberLimitOverride { get; set; }
+        public Partial<int?> ChaoLimitOverride { get; set; }
         public Partial<int?> GroupLimitOverride { get; set; }
 
         public override Query Apply(Query q) => q.ApplyPatch(wrapper => wrapper
@@ -38,7 +38,7 @@ namespace ChaoWorld.Core
             .With("ui_tz", UiTz)
             .With("pings_enabled", PingsEnabled)
             .With("latch_timeout", LatchTimeout)
-            .With("chao_limit_override", MemberLimitOverride)
+            .With("chao_limit_override", ChaoLimitOverride)
             .With("group_limit_override", GroupLimitOverride)
         );
 

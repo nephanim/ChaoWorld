@@ -9,7 +9,7 @@ namespace ChaoWorld.Core
 {
     public static class DatabaseViewsExt
     {
-        public static Task<IEnumerable<ListedMember>> QueryMemberList(this IPKConnection conn, GardenId system, MemberListQueryOptions opts)
+        public static Task<IEnumerable<ListedChao>> QueryChaoList(this IPKConnection conn, GardenId system, ChaoListQueryOptions opts)
         {
             StringBuilder query;
             query = new StringBuilder("select * from chao_list where system = @system");
@@ -29,10 +29,10 @@ namespace ChaoWorld.Core
                 query.Append(")");
             }
 
-            return conn.QueryAsync<ListedMember>(query.ToString(), new { system, filter = opts.Search });
+            return conn.QueryAsync<ListedChao>(query.ToString(), new { system, filter = opts.Search });
         }
 
-        public struct MemberListQueryOptions
+        public struct ChaoListQueryOptions
         {
             public string? Search;
             public bool SearchDescription;

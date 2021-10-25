@@ -33,7 +33,7 @@ namespace ChaoWorld.Bot
                 throw Errors.AccountInOtherSystem(existingAccount);
 
             var msg = $"{account.Mention()}, please confirm the link.";
-            if (!await ctx.PromptYesNo(msg, "Confirm", user: account, matchFlag: false)) throw Errors.MemberLinkCancelled;
+            if (!await ctx.PromptYesNo(msg, "Confirm", user: account, matchFlag: false)) throw Errors.ChaoLinkCancelled;
             await _repo.AddAccount(ctx.System.Id, account.Id);
             await ctx.Reply($"{Emojis.Success} Account linked to system.");
         }
@@ -51,7 +51,7 @@ namespace ChaoWorld.Bot
             if (accountIds.Count == 1) throw Errors.UnlinkingLastAccount;
 
             var msg = $"Are you sure you want to unlink <@{id}> from your system?";
-            if (!await ctx.PromptYesNo(msg, "Unlink")) throw Errors.MemberUnlinkCancelled;
+            if (!await ctx.PromptYesNo(msg, "Unlink")) throw Errors.ChaoUnlinkCancelled;
 
             await _repo.RemoveAccount(ctx.System.Id, id);
             await ctx.Reply($"{Emojis.Success} Account unlinked.");

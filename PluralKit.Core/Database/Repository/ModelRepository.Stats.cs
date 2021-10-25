@@ -24,7 +24,7 @@ namespace ChaoWorld.Core
         public class Counts
         {
             public int SystemCount { get; }
-            public int MemberCount { get; }
+            public int ChaoCount { get; }
             public int GroupCount { get; }
             public int SwitchCount { get; }
             public int MessageCount { get; }

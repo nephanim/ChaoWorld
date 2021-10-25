@@ -8,14 +8,14 @@ namespace ChaoWorld.Core
     {
         public Partial<bool> ProxyEnabled { get; set; }
         public Partial<AutoproxyMode> AutoproxyMode { get; set; }
-        public Partial<ChaoId?> AutoproxyMember { get; set; }
+        public Partial<ChaoId?> AutoproxyChao { get; set; }
         public Partial<string?> Tag { get; set; }
         public Partial<bool?> TagEnabled { get; set; }
 
         public override Query Apply(Query q) => q.ApplyPatch(wrapper => wrapper
             .With("proxy_enabled", ProxyEnabled)
             .With("autoproxy_mode", AutoproxyMode)
-            .With("autoproxy_chao", AutoproxyMember)
+            .With("autoproxy_chao", AutoproxyChao)
             .With("tag", Tag)
             .With("tag_enabled", TagEnabled)
         );

@@ -8,13 +8,13 @@ namespace ChaoWorld.Core
 {
     public partial class ModelRepository
     {
-        public Task<Chao?> GetMember(ChaoId id)
+        public Task<Chao?> GetChao(ChaoId id)
         {
             var query = new Query("chao").Where("id", id);
             return _db.QueryFirst<Chao?>(query);
         }
 
-        public Task<Chao?> GetMemberByHid(string hid, GardenId? system = null)
+        public Task<Chao?> GetChaoByHid(string hid, GardenId? system = null)
         {
             var query = new Query("chao").Where("hid", hid.ToLower());
             if (system != null)
@@ -22,13 +22,13 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Chao?>(query);
         }
 
-        public Task<Chao?> GetMemberByGuid(Guid uuid)
+        public Task<Chao?> GetChaoByGuid(Guid uuid)
         {
             var query = new Query("chao").Where("uuid", uuid);
             return _db.QueryFirst<Chao?>(query);
         }
 
-        public Task<Chao?> GetMemberByName(GardenId system, string name)
+        public Task<Chao?> GetChaoByName(GardenId system, string name)
         {
             var query = new Query("chao").WhereRaw(
                 "lower(name) = lower(?)",
@@ -37,7 +37,7 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Chao?>(query);
         }
 
-        public Task<Chao?> GetMemberByDisplayName(GardenId system, string name)
+        public Task<Chao?> GetChaoByDisplayName(GardenId system, string name)
         {
             var query = new Query("chao").WhereRaw(
                 "lower(display_name) = lower(?)",
@@ -46,7 +46,7 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Chao?>(query);
         }
 
-        public async Task<Chao> CreateMember(GardenId systemId, string chaoName, IPKConnection? conn = null)
+        public async Task<Chao> CreateChao(GardenId systemId, string chaoName, IPKConnection? conn = null)
         {
             var query = new Query("chao").AsInsert(new
             {
@@ -55,19 +55,19 @@ namespace ChaoWorld.Core
                 name = chaoName
             });
             var chao = await _db.QueryFirst<Chao>(conn, query, "returning *");
-            _logger.Information("Created {ChaoId} in {GardenId}: {MemberName}",
+            _logger.Information("Created {ChaoId} in {GardenId}: {ChaoName}",
                 chao.Id, systemId, chaoName);
             return chao;
         }
 
-        public Task<Chao> UpdateMember(ChaoId id, GardenPatch patch, IPKConnection? conn = null)
+        public Task<Chao> UpdateChao(ChaoId id, GardenPatch patch, IPKConnection? conn = null)
         {
             _logger.Information("Updated {ChaoId}: {@GardenPatch}", id, patch);
             var query = patch.Apply(new Query("chao").Where("id", id));
             return _db.QueryFirst<Chao>(conn, query, extraSql: "returning *");
         }
 
-        public Task DeleteMember(ChaoId id)
+        public Task DeleteChao(ChaoId id)
         {
             _logger.Information("Deleted {ChaoId}", id);
             var query = new Query("chao").AsDelete().Where("id", id);

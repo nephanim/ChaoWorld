@@ -96,19 +96,19 @@ namespace ChaoWorld.Bot
             return (messageId, channelId);
         }
 
-        public static async Task<List<Chao>> ParseMemberList(this Context ctx, GardenId? restrictToSystem)
+        public static async Task<List<Core.Chao>> ParseChaoList(this Context ctx, GardenId? restrictToSystem)
         {
-            var chao = new List<Chao>();
+            var chao = new List<Core.Chao>();
 
             // Loop through all the given arguments
             while (ctx.HasNext())
             {
                 // and attempt to match a chao 
-                var gardenChao = await ctx.MatchMember(restrictToSystem);
+                var gardenChao = await ctx.MatchChao(restrictToSystem);
 
                 if (gardenChao == null)
                     // if we can't, big error. Every chao name must be valid.
-                    throw new CWError(ctx.CreateMemberNotFoundError(ctx.PopArgument()));
+                    throw new CWError(ctx.CreateChaoNotFoundError(ctx.PopArgument()));
 
                 chao.Add(gardenChao); // Then add to the final output list
             }

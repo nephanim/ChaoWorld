@@ -47,8 +47,8 @@ namespace ChaoWorld.Bot
             // Commands
             builder.RegisterType<CommandTree>().AsSelf();
             builder.RegisterType<Help>().AsSelf();
-            builder.RegisterType<Member>().AsSelf();
-            builder.RegisterType<MemberEdit>().AsSelf();
+            builder.RegisterType<Chao>().AsSelf();
+            builder.RegisterType<ChaoEdit>().AsSelf();
             builder.RegisterType<Misc>().AsSelf();
             builder.RegisterType<Random>().AsSelf();
             builder.RegisterType<Garden>().AsSelf();

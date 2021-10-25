@@ -17,7 +17,7 @@ namespace ChaoWorld.Core
                 mid = msg.Mid,
                 guild = msg.Guild,
                 channel = msg.Channel,
-                chao = msg.Member,
+                chao = msg.Chao,
                 sender = msg.Sender,
                 original_mid = msg.OriginalMid,
             });
@@ -31,7 +31,7 @@ namespace ChaoWorld.Core
         public async Task<FullMessage?> GetMessage(IPKConnection conn, ulong id)
         {
             FullMessage Mapper(PKMessage msg, Chao chao, Garden system) =>
-                new FullMessage { Message = msg, System = system, Member = chao };
+                new FullMessage { Message = msg, System = system, Chao = chao };
 
             var result = await conn.QueryAsync<PKMessage, Chao, Garden, FullMessage>(
                 "select messages.*, chao.*, systems.* from messages, chao, systems where (mid = @Id or original_mid = @Id) and messages.chao = chao.id and systems.id = chao.system",
@@ -77,7 +77,7 @@ namespace ChaoWorld.Core
         public ulong Mid { get; set; }
         public ulong? Guild { get; set; } // null value means "no data" (ie. from before this field being added)
         public ulong Channel { get; set; }
-        public ChaoId Member { get; set; }
+        public ChaoId Chao { get; set; }
         public ulong Sender { get; set; }
         public ulong? OriginalMid { get; set; }
     }
@@ -85,7 +85,7 @@ namespace ChaoWorld.Core
     public class FullMessage
     {
         public PKMessage Message;
-        public Chao Member;
+        public Chao Chao;
         public Garden System;
     }
 }

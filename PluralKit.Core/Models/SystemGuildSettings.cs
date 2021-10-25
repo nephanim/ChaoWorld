@@ -5,7 +5,7 @@ namespace ChaoWorld.Core
         Off = 1,
         Front = 2,
         Latch = 3,
-        Member = 4
+        Chao = 4
     }
 
     public class SystemGuildSettings
@@ -15,7 +15,7 @@ namespace ChaoWorld.Core
         public bool ProxyEnabled { get; } = true;
 
         public AutoproxyMode AutoproxyMode { get; } = AutoproxyMode.Off;
-        public ChaoId? AutoproxyMember { get; }
+        public ChaoId? AutoproxyChao { get; }
 
         public string? Tag { get; }
         public bool TagEnabled { get; }

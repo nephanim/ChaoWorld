@@ -44,7 +44,7 @@ namespace ChaoWorld.Bot
             var triggerChannel = _cache.GetChannel(proxiedMessage.Channel);
 
             var system = await _repo.GetGarden(ctx.SystemId.Value);
-            var chao = await _repo.GetMember(proxiedMessage.Member);
+            var chao = await _repo.GetChao(proxiedMessage.Chao);
 
             // Send embed!
             var embed = _embed.CreateLoggedMessageEmbed(trigger, hookMessage, system.Hid, chao, triggerChannel.Name, oldContent);

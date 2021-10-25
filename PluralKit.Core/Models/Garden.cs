@@ -50,7 +50,7 @@ namespace ChaoWorld.Core
         public string UiTz { get; set; }
         public bool PingsEnabled { get; }
         public int? LatchTimeout { get; }
-        public int? MemberLimitOverride { get; }
+        public int? ChaoLimitOverride { get; }
         public int? GroupLimitOverride { get; }
 
         [JsonIgnore] public DateTimeZone Zone => DateTimeZoneProviders.Tzdb.GetZoneOrNull(UiTz);
