@@ -234,20 +234,8 @@ namespace ChaoWorld.Bot
             // Commands that have a member target (eg. pk;member <member> delete)
             if (ctx.Match("rename", "name", "changename", "setname"))
                 await ctx.Execute<MemberEdit>(MemberRename, m => m.Name(ctx, target));
-            else if (ctx.Match("description", "info", "bio", "text", "desc"))
-                await ctx.Execute<MemberEdit>(MemberDesc, m => m.Description(ctx, target));
-            else if (ctx.Match("pronouns", "pronoun"))
-                await ctx.Execute<MemberEdit>(MemberPronouns, m => m.Pronouns(ctx, target));
-            else if (ctx.Match("color", "colour"))
-                await ctx.Execute<MemberEdit>(MemberColor, m => m.Color(ctx, target));
-            else if (ctx.Match("birthday", "bday", "birthdate", "cakeday", "bdate"))
-                await ctx.Execute<MemberEdit>(MemberBirthday, m => m.Birthday(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
                 await ctx.Execute<MemberEdit>(MemberDelete, m => m.Delete(ctx, target));
-            else if (ctx.Match("displayname", "dn", "dname", "nick", "nickname", "dispname"))
-                await ctx.Execute<MemberEdit>(MemberDisplayName, m => m.DisplayName(ctx, target));
-            else if (ctx.Match("servername", "sn", "sname", "snick", "snickname", "servernick", "servernickname", "serverdisplayname", "guildname", "guildnick", "guildnickname", "serverdn"))
-                await ctx.Execute<MemberEdit>(MemberServerName, m => m.ServerName(ctx, target));
             else if (!ctx.HasNext()) // Bare command
                 await ctx.Execute<Member>(MemberInfo, m => m.ViewMember(ctx, target));
             else
