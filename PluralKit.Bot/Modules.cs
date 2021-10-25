@@ -61,7 +61,6 @@ namespace ChaoWorld.Bot
             builder.RegisterType<SystemEdit>().AsSelf();
             builder.RegisterType<SystemLink>().AsSelf();
             builder.RegisterType<SystemList>().AsSelf();
-            builder.RegisterType<Token>().AsSelf();
 
             // Bot core
             builder.RegisterType<Bot>().AsSelf().SingleInstance();

@@ -146,11 +146,6 @@ namespace ChaoWorld.Bot
                 return ctx.Execute<SystemLink>(Link, m => m.LinkSystem(ctx));
             if (ctx.Match("unlink"))
                 return ctx.Execute<SystemLink>(Unlink, m => m.UnlinkAccount(ctx));
-            if (ctx.Match("token"))
-                if (ctx.Match("refresh", "renew", "invalidate", "reroll", "regen"))
-                    return ctx.Execute<Token>(TokenRefresh, m => m.RefreshToken(ctx));
-                else
-                    return ctx.Execute<Token>(TokenGet, m => m.GetToken(ctx));
             if (ctx.Match("help"))
                 if (ctx.Match("commands"))
                     return ctx.Reply("For the list of commands, see the website: <https://pluralkit.me/commands>");
