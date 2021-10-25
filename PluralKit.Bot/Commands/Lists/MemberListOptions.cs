@@ -41,7 +41,6 @@ namespace ChaoWorld.Bot
             if (Search != null)
             {
                 str.Append($", searching for \"{Search}\"");
-                if (SearchDescription) str.Append(" (including description)");
             }
 
             return str.ToString();
@@ -50,8 +49,7 @@ namespace ChaoWorld.Bot
         public DatabaseViewsExt.ChaoListQueryOptions ToQueryOptions() =>
             new DatabaseViewsExt.ChaoListQueryOptions
             {
-                Search = Search,
-                SearchDescription = SearchDescription
+                Search = Search
             };
     }
 

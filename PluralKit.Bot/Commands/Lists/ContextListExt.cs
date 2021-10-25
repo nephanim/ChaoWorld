@@ -61,11 +61,11 @@ namespace ChaoWorld.Bot
             return p;
         }
 
-        public static async Task RenderChaoList(this Context ctx, IDatabase db, GardenId system, string embedTitle, string color, ChaoListOptions opts)
+        public static async Task RenderChaoList(this Context ctx, IDatabase db, GardenId garden, string embedTitle, string color, ChaoListOptions opts)
         {
             // We take an IDatabase instead of a IPKConnection so we don't keep the handle open for the entire runtime
             // We wanna release it as soon as the chao list is actually *fetched*, instead of potentially minutes later (paginate timeout)
-            var chao = (await db.Execute(conn => conn.QueryChaoList(system, opts.ToQueryOptions())))
+            var chao = (await db.Execute(conn => conn.QueryChaoList(garden, opts.ToQueryOptions())))
                 .SortByChaoListOptions(opts)
                 .ToList();
 
@@ -93,7 +93,7 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Hid}`] **{m.Name}** ";
+                    var ret = $"[`{m.Id}`] **{m.Name}** ";
 
                     switch (opts.SortProperty)
                     {
@@ -118,7 +118,7 @@ namespace ChaoWorld.Bot
                 var zone = ctx.System?.Zone ?? DateTimeZone.Utc;
                 foreach (var m in page)
                 {
-                    var profile = new StringBuilder($"**ID**: {m.Hid}");
+                    var profile = new StringBuilder($"**ID**: {m.Id}");
 
                     if (opts.IncludeCreated || opts.SortProperty == SortProperty.CreationDate)
                         profile.Append($"\n**Created on:** {m.Created.FormatZoned(zone)}");

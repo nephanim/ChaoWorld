@@ -19,17 +19,12 @@ namespace ChaoWorld.Bot
             if (target == null) throw Errors.NoGardenError;
 
             var opts = ctx.ParseChaoListOptions();
-            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(target, opts), target.Color, opts);
+            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(ctx, target, opts), target.Color, opts);
         }
 
-        private string GetEmbedTitle(Core.Garden target, ChaoListOptions opts)
+        private string GetEmbedTitle(Context ctx, Core.Garden target, ChaoListOptions opts)
         {
-            var title = new StringBuilder("Chao of ");
-
-            if (target.Name != null)
-                title.Append($"{target.Name} (`{target.Hid}`)");
-            else
-                title.Append($"`{target.Hid}`");
+            var title = new StringBuilder($"{ctx.Author.Username}'s Chao");
 
             if (opts.Search != null)
                 title.Append($" matching **{opts.Search}**");
