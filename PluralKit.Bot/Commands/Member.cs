@@ -64,7 +64,7 @@ namespace ChaoWorld.Bot
             // todo: move this to ModelRepository
             if (await _db.Execute(conn => conn.QuerySingleAsync<bool>("select has_private_chao(@Garden)",
                 new { System = ctx.System.Id }))) //if has private chao
-                await ctx.Reply($"{Emojis.Warn} This chao is currently **public**. To change this, use `pk;chao {chao.Hid} private`.");
+                await ctx.Reply($"{Emojis.Warn} This chao is currently **public**. To change this, use `!chao {chao.Hid} private`.");
             if (chaoName.Contains(" "))
                 await ctx.Reply($"{Emojis.Note} Note that this chao's name contains spaces. You will need to surround it with \"double quotes\" when using commands referring to it, or just use the chao's 5-character ID (which is `{chao.Hid}`).");
             if (chaoCount >= chaoLimit)

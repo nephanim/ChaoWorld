@@ -29,7 +29,7 @@ namespace ChaoWorld.Bot
 
         public async Task Name(Context ctx)
         {
-            var noNameSetMessage = "Your system does not have a name set. Type `pk;system name <name>` to set one.";
+            var noNameSetMessage = "Your system does not have a name set. Type `!system name <name>` to set one.";
 
             ctx.CheckGarden();
 
@@ -44,7 +44,7 @@ namespace ChaoWorld.Bot
             if (!ctx.HasNext(false))
             {
                 if (ctx.System.Name != null)
-                    await ctx.Reply($"Your garden's name is currently **{ctx.System.Name}**. Type `pk;system name -clear` to clear it.");
+                    await ctx.Reply($"Your garden's name is currently **{ctx.System.Name}**. Type `!system name -clear` to clear it.");
                 else
                     await ctx.Reply(noNameSetMessage);
                 return;
@@ -71,7 +71,7 @@ namespace ChaoWorld.Bot
 
         public async Task Description(Context ctx)
         {
-            var noDescriptionSetMessage = "Your system does not have a description set. To set one, type `pk;s description <description>`.";
+            var noDescriptionSetMessage = "Your system does not have a description set. To set one, type `!s description <description>`.";
 
             ctx.CheckGarden();
 
@@ -91,7 +91,7 @@ namespace ChaoWorld.Bot
                     await ctx.Reply(embed: new EmbedBuilder()
                         .Title("Garden description")
                         .Description(ctx.System.Description)
-                        .Footer(new("To print the description with formatting, type `pk;s description -raw`. To clear it, type `pk;s description -clear`. To change it, type `pk;s description <new description>`."))
+                        .Footer(new("To print the description with formatting, type `!s description -raw`. To clear it, type `!s description -clear`. To change it, type `!s description <new description>`."))
                         .Build());
                 return;
             }
@@ -128,13 +128,13 @@ namespace ChaoWorld.Bot
             {
                 if (ctx.System.Color == null)
                     await ctx.Reply(
-                            $"Your system does not have a color set. To set one, type `pk;system color <color>`.");
+                            $"Your system does not have a color set. To set one, type `!system color <color>`.");
                 else
                     await ctx.Reply(embed: new EmbedBuilder()
                         .Title("Garden color")
                         .Color(ctx.System.Color.ToDiscordColor())
                         .Thumbnail(new($"https://fakeimg.pl/256x256/{ctx.System.Color}/?text=%20"))
-                        .Description($"Your system's color is **#{ctx.System.Color}**. To clear it, type `pk;s color -clear`.")
+                        .Description($"Your system's color is **#{ctx.System.Color}**. To clear it, type `!s color -clear`.")
                         .Build());
             }
             else
@@ -189,9 +189,9 @@ namespace ChaoWorld.Bot
             else
             {
                 if (gs.ProxyEnabled)
-                    await ctx.Reply($"Proxying in {serverText} is currently **enabled** for your system. To disable it, type `pk;system proxy off`.");
+                    await ctx.Reply($"Proxying in {serverText} is currently **enabled** for your system. To disable it, type `!system proxy off`.");
                 else
-                    await ctx.Reply($"Proxying in {serverText} is currently **disabled** for your system. To enable it, type `pk;system proxy on`.");
+                    await ctx.Reply($"Proxying in {serverText} is currently **disabled** for your system. To enable it, type `!system proxy on`.");
                 return;
             }
 

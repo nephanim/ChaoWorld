@@ -37,8 +37,8 @@ namespace ChaoWorld.Bot
         public static CWError NotOwnGardenError => new CWError($"You can only run this command on your own garden.");
         public static CWError NotOwnChaoError => new CWError($"You can only run this command on your own chao.");
         public static CWError NotOwnGroupError => new CWError($"You can only run this command on your own group.");
-        public static CWError NoGardenError => new CWError("You do not have a garden registered with Chao World. To create one, type `pk;system new`.");
-        public static CWError ExistingGardenError => new CWError("You already have a garden registered with Chao World. To view it, type `pk;system`. If you'd like to delete your system and start anew, type `pk;system delete`, or if you'd like to unlink this account from it, type `pk;unlink`.");
+        public static CWError NoGardenError => new CWError("You do not have a garden registered with Chao World. To create one, type `!system new`.");
+        public static CWError ExistingGardenError => new CWError("You already have a garden registered with Chao World. To view it, type `!system`. If you'd like to delete your system and start anew, type `!system delete`, or if you'd like to unlink this account from it, type `!unlink`.");
         public static CWError MissingChaoError => new CWSyntaxError("You need to specify a chao to run this command on.");
 
         public static CWError StringTooLongError(string name, int length, int maxLength) => new CWError($"{name} too long ({length}/{maxLength} characters).");
@@ -62,8 +62,8 @@ namespace ChaoWorld.Bot
 
         public static CWError AccountAlreadyLinked => new CWError("That account is already linked to your system.");
         public static CWError AccountNotLinked => new CWError("That account isn't linked to your system.");
-        public static CWError AccountInOtherSystem(Core.Garden system) => new CWError($"The mentioned account is already linked to another system (see `pk;system {system.Hid}`).");
-        public static CWError UnlinkingLastAccount => new CWError("Since this is the only account linked to this system, you cannot unlink it (as that would leave your system account-less). If you would like to delete your system, use `pk;system delete`.");
+        public static CWError AccountInOtherSystem(Core.Garden system) => new CWError($"The mentioned account is already linked to another system (see `!system {system.Hid}`).");
+        public static CWError UnlinkingLastAccount => new CWError("Since this is the only account linked to this system, you cannot unlink it (as that would leave your system account-less). If you would like to delete your system, use `!system delete`.");
         public static CWError ChaoLinkCancelled => new CWError("Chao link cancelled.");
         public static CWError ChaoUnlinkCancelled => new CWError("Chao unlink cancelled.");
 

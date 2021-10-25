@@ -2,7 +2,7 @@ namespace ChaoWorld.Bot
 {
     public class BotConfig
     {
-        public static readonly string[] DefaultPrefixes = { "pk;", "pk!", "!" };
+        public static readonly string[] DefaultPrefixes = { "!" };
 
         public string Token { get; set; }
         public ulong? ClientId { get; set; }

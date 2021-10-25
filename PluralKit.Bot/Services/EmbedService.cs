@@ -61,9 +61,9 @@ namespace ChaoWorld.Bot
             eb.Field(new("Linked Accounts", string.Join("\n", users).Truncate(1000), true));
 
             if (chaoCount > 0)
-                eb.Field(new($"Chao ({chaoCount})", $"(see `pk;system {garden.Id} list` or `pk;system {garden.Id} list full`)", true));
+                eb.Field(new($"Chao ({chaoCount})", $"(see `!system {garden.Id} list` or `!system {garden.Id} list full`)", true));
             else
-                eb.Field(new($"Chao ({chaoCount})", "Add one with `pk;chao new`!", true));
+                eb.Field(new($"Chao ({chaoCount})", "Add one with `!chao new`!", true));
 
             return eb.Build();
         }
@@ -98,7 +98,7 @@ namespace ChaoWorld.Bot
                 // TODO: add URL of website when that's up
                 .Author(new(name, IconUrl: avatar.TryGetCleanCdnUrl()))
                 .Footer(new(
-                    $"Garden ID: {system.Hid} | Chao ID: {chao.Id} {$"| Created on {chao.Created.FormatZoned(system)}"}"));
+                    $"Garden ID: {system.Hid} | Chao ID: {chao.Id} {$"| Created on {chao.Created.FormatZoned(DateTimeZone.Utc)}"}"));
 
             if (avatar != null) eb.Thumbnail(new(avatar.TryGetCleanCdnUrl()));
             if (guild != null && guildDisplayName != null) eb.Field(new($"Server Nickname (for {guild.Name})", guildDisplayName.Truncate(1024), true));

@@ -189,7 +189,7 @@ namespace ChaoWorld.Bot
 
         private async Task HandleSystemCommandTargeted(Context ctx)
         {
-            // Commands that have a system target (eg. pk;system <system> fronthistory)
+            // Commands that have a system target (eg. !system <system> fronthistory)
             var target = await ctx.MatchSystem();
             if (target == null)
             {
@@ -229,7 +229,7 @@ namespace ChaoWorld.Bot
 
         private async Task HandleChaoCommandTargeted(Context ctx, Core.Chao target)
         {
-            // Commands that have a chao target (eg. pk;chao <chao> delete)
+            // Commands that have a chao target (eg. !chao <chao> delete)
             if (ctx.Match("rename", "name", "changename", "setname"))
                 await ctx.Execute<ChaoEdit>(ChaoRename, m => m.Name(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
@@ -245,7 +245,7 @@ namespace ChaoWorld.Bot
             if (!ctx.HasNext())
             {
                 await ctx.Reply($"Available command help targets: `system`, `chao`, `group`, `switch`, `autoproxy`, `log`, `blacklist`."
-                    + "\n- **pk;commands <target>** - *View commands related to a help target.*"
+                    + "\n- **!commands <target>** - *View commands related to a help target.*"
                     + "\n\nFor the full list of commands, see the website: <https://pluralkit.me/commands>");
                 return;
             }
@@ -272,7 +272,7 @@ namespace ChaoWorld.Bot
         {
             var commandListStr = CreatePotentialCommandList(potentialCommands);
             await ctx.Reply(
-                $"{Emojis.Error} Unknown command `pk;{ctx.FullCommand().Truncate(100)}`. Perhaps you meant to use one of the following commands?\n{commandListStr}\n\nFor a full list of possible commands, see <https://pluralkit.me/commands>.");
+                $"{Emojis.Error} Unknown command `!{ctx.FullCommand().Truncate(100)}`. Perhaps you meant to use one of the following commands?\n{commandListStr}\n\nFor a full list of possible commands, see <https://pluralkit.me/commands>.");
         }
 
         private async Task PrintCommandExpectedError(Context ctx, params Command[] potentialCommands)
@@ -284,7 +284,7 @@ namespace ChaoWorld.Bot
 
         private static string CreatePotentialCommandList(params Command[] potentialCommands)
         {
-            return string.Join("\n", potentialCommands.Select(cmd => $"- **pk;{cmd.Usage}** - *{cmd.Description}*"));
+            return string.Join("\n", potentialCommands.Select(cmd => $"- **!{cmd.Usage}** - *{cmd.Description}*"));
         }
 
         private async Task PrintCommandList(Context ctx, string subject, params Command[] commands)

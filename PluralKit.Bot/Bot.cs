@@ -292,7 +292,7 @@ namespace ChaoWorld.Bot
                         {
                             new ActivityPartial
                             {
-                                Name = $"pk;help | in {totalGuilds:N0} servers | shard #{shard.ShardId}",
+                                Name = $"!help | in {totalGuilds:N0} servers | shard #{shard.ShardId}",
                                 Type = ActivityType.Game,
                                 Url = "https://pluralkit.me/"
                             }

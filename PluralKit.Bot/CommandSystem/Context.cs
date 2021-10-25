@@ -114,7 +114,7 @@ namespace ChaoWorld.Bot
             }
             catch (CWSyntaxError e)
             {
-                await Reply($"{Emojis.Error} {e.Message}\n**Command usage:**\n> pk;{commandDef?.Usage}");
+                await Reply($"{Emojis.Error} {e.Message}\n**Command usage:**\n> !{commandDef?.Usage}");
             }
             catch (CWError e)
             {

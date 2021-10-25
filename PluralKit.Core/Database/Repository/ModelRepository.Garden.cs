@@ -61,7 +61,7 @@ namespace ChaoWorld.Core
         public Task AddAccount(GardenId garden, ulong accountId, IPKConnection? conn = null)
         {
             // We have "on conflict do nothing" since linking an account when it's already linked to the same garden is idempotent
-            // This is used in import/export, although the pk;link command checks for this case beforehand
+            // This is used in import/export, although the !link command checks for this case beforehand
 
             var query = new Query("accounts").AsInsert(new
             {
