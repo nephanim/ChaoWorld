@@ -73,14 +73,6 @@ namespace ChaoWorld.Bot
             if (system.DescriptionPrivacy.CanAccess(ctx))
                 eb.Image(new(system.BannerImage));
 
-            var latestSwitch = await _repo.GetLatestSwitch(system.Id);
-            if (latestSwitch != null && system.FrontPrivacy.CanAccess(ctx))
-            {
-                var switchMembers = await _db.Execute(conn => _repo.GetSwitchMembers(conn, latestSwitch.Id)).ToListAsync();
-                if (switchMembers.Count > 0)
-                    eb.Field(new("Fronter".ToQuantity(switchMembers.Count, ShowQuantityAs.None), string.Join(", ", switchMembers.Select(m => m.NameFor(ctx)))));
-            }
-
             if (system.Tag != null)
                 eb.Field(new("Tag", system.Tag.EscapeMarkdown(), true));
 
@@ -264,17 +256,6 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
-        public async Task<Embed> CreateFronterEmbed(PKSwitch sw, DateTimeZone zone, LookupContext ctx)
-        {
-            var members = await _db.Execute(c => _repo.GetSwitchMembers(c, sw.Id).ToListAsync().AsTask());
-            var timeSinceSwitch = SystemClock.Instance.GetCurrentInstant() - sw.Timestamp;
-            return new EmbedBuilder()
-                .Color(members.FirstOrDefault()?.Color?.ToDiscordColor() ?? DiscordUtils.Gray)
-                .Field(new($"Current {"fronter".ToQuantity(members.Count, ShowQuantityAs.None)}", members.Count > 0 ? string.Join(", ", members.Select(m => m.NameFor(ctx))) : "*(no fronter)*"))
-                .Field(new("Since", $"{sw.Timestamp.FormatZoned(zone)} ({timeSinceSwitch.FormatDuration()} ago)"))
-                .Build();
-        }
-
         public async Task<Embed> CreateMessageInfoEmbed(FullMessage msg)
         {
             var channel = await _cache.GetOrFetchChannel(_rest, msg.Message.Channel);
@@ -348,75 +329,6 @@ namespace ChaoWorld.Bot
             }
 
             return eb.Build();
-        }
-
-        public Task<Embed> CreateFrontPercentEmbed(FrontBreakdown breakdown, Garden system, PKGroup group, DateTimeZone tz, LookupContext ctx, string embedTitle, bool ignoreNoFronters, bool showFlat)
-        {
-            string color = system.Color;
-            if (group != null)
-            {
-                color = group.Color;
-            }
-
-            uint embedColor;
-            try
-            {
-                embedColor = color?.ToDiscordColor() ?? DiscordUtils.Gray;
-            }
-            catch (ArgumentException)
-            {
-                embedColor = DiscordUtils.Gray;
-            }
-
-            var eb = new EmbedBuilder()
-                .Title(embedTitle)
-                .Color(embedColor);
-
-            string footer = $"Since {breakdown.RangeStart.FormatZoned(tz)} ({(breakdown.RangeEnd - breakdown.RangeStart).FormatDuration()} ago)";
-
-            Duration period;
-
-            if (showFlat)
-            {
-                period = Duration.FromTicks(breakdown.MemberSwitchDurations.Values.ToList().Sum(i => i.TotalTicks));
-                footer += ". Showing flat list (percentages add up to 100%)";
-                if (!ignoreNoFronters) period += breakdown.NoFronterDuration;
-                else footer += ", ignoring switch-outs";
-            }
-            else if (ignoreNoFronters)
-            {
-                period = breakdown.RangeEnd - breakdown.RangeStart - breakdown.NoFronterDuration;
-                footer += ". Ignoring switch-outs";
-            }
-            else
-                period = breakdown.RangeEnd - breakdown.RangeStart;
-
-            eb.Footer(new(footer));
-
-            var maxEntriesToDisplay = 24; // max 25 fields allowed in embed - reserve 1 for "others"
-
-            // We convert to a list of pairs so we can add the no-fronter value
-            // Dictionary doesn't allow for null keys so we instead have a pair with a null key ;)
-            var pairs = breakdown.MemberSwitchDurations.ToList();
-            if (breakdown.NoFronterDuration != Duration.Zero && !ignoreNoFronters)
-                pairs.Add(new KeyValuePair<Chao, Duration>(null, breakdown.NoFronterDuration));
-
-            var membersOrdered = pairs.OrderByDescending(pair => pair.Value).Take(maxEntriesToDisplay).ToList();
-            foreach (var pair in membersOrdered)
-            {
-                var frac = pair.Value / period;
-                eb.Field(new(pair.Key?.NameFor(ctx) ?? "*(no fronter)*", $"{frac * 100:F0}% ({pair.Value.FormatDuration()})"));
-            }
-
-            if (membersOrdered.Count > maxEntriesToDisplay)
-            {
-                eb.Field(new("(others)",
-                    membersOrdered.Skip(maxEntriesToDisplay)
-                        .Aggregate(Duration.Zero, (prod, next) => prod + next.Value)
-                        .FormatDuration(), true));
-            }
-
-            return Task.FromResult(eb.Build());
         }
     }
 }

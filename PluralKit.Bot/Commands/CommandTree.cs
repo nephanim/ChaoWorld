@@ -138,8 +138,6 @@ namespace ChaoWorld.Bot
                 return HandleMemberCommand(ctx);
             if (ctx.Match("group", "g"))
                 return HandleGroupCommand(ctx);
-            if (ctx.Match("switch", "sw"))
-                return HandleSwitchCommand(ctx);
             if (ctx.Match("commands", "cmd", "c"))
                 return CommandHelpRoot(ctx);
             if (ctx.Match("ap", "autoproxy", "auto"))
@@ -155,10 +153,6 @@ namespace ChaoWorld.Bot
                     return ctx.Execute<Token>(TokenRefresh, m => m.RefreshToken(ctx));
                 else
                     return ctx.Execute<Token>(TokenGet, m => m.GetToken(ctx));
-            if (ctx.Match("import"))
-                return ctx.Execute<ImportExport>(Import, m => m.Import(ctx));
-            if (ctx.Match("export"))
-                return ctx.Execute<ImportExport>(Export, m => m.Export(ctx));
             if (ctx.Match("help"))
                 if (ctx.Match("commands"))
                     return ctx.Reply("For the list of commands, see the website: <https://pluralkit.me/commands>");
@@ -293,19 +287,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, ctx.System));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
                 await ctx.Execute<SystemList>(SystemFind, m => m.MemberList(ctx, ctx.System));
-            else if (ctx.Match("f", "front", "fronter", "fronters"))
-            {
-                if (ctx.Match("h", "history"))
-                    await ctx.Execute<SystemFront>(SystemFrontHistory, m => m.SystemFrontHistory(ctx, ctx.System));
-                else if (ctx.Match("p", "percent", "%"))
-                    await ctx.Execute<SystemFront>(SystemFrontPercent, m => m.SystemFrontPercent(ctx, ctx.System));
-                else
-                    await ctx.Execute<SystemFront>(SystemFronter, m => m.SystemFronter(ctx, ctx.System));
-            }
-            else if (ctx.Match("fh", "fronthistory", "history", "switches"))
-                await ctx.Execute<SystemFront>(SystemFrontHistory, m => m.SystemFrontHistory(ctx, ctx.System));
-            else if (ctx.Match("fp", "frontpercent", "front%", "frontbreakdown"))
-                await ctx.Execute<SystemFront>(SystemFrontPercent, m => m.SystemFrontPercent(ctx, ctx.System));
             else if (ctx.Match("privacy"))
                 await ctx.Execute<SystemEdit>(SystemPrivacy, m => m.SystemPrivacy(ctx));
             else if (ctx.Match("ping"))
@@ -332,19 +313,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, target));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
                 await ctx.Execute<SystemList>(SystemFind, m => m.MemberList(ctx, target));
-            else if (ctx.Match("f", "front", "fronter", "fronters"))
-            {
-                if (ctx.Match("h", "history"))
-                    await ctx.Execute<SystemFront>(SystemFrontHistory, m => m.SystemFrontHistory(ctx, target));
-                else if (ctx.Match("p", "percent", "%"))
-                    await ctx.Execute<SystemFront>(SystemFrontPercent, m => m.SystemFrontPercent(ctx, target));
-                else
-                    await ctx.Execute<SystemFront>(SystemFronter, m => m.SystemFronter(ctx, target));
-            }
-            else if (ctx.Match("fh", "fronthistory", "history", "switches"))
-                await ctx.Execute<SystemFront>(SystemFrontHistory, m => m.SystemFrontHistory(ctx, target));
-            else if (ctx.Match("fp", "frontpercent", "front%", "frontbreakdown"))
-                await ctx.Execute<SystemFront>(SystemFrontPercent, m => m.SystemFrontPercent(ctx, target));
             else if (ctx.Match("info", "view", "show"))
                 await ctx.Execute<System>(SystemInfo, m => m.Query(ctx, target));
             else if (ctx.Match("groups", "gs"))
@@ -463,8 +431,6 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<Groups>(GroupIcon, g => g.GroupIcon(ctx, target));
                 else if (ctx.Match("banner", "splash", "cover"))
                     await ctx.Execute<Groups>(GroupBannerImage, g => g.GroupBannerImage(ctx, target));
-                else if (ctx.Match("fp", "frontpercent", "front%", "frontbreakdown"))
-                    await ctx.Execute<Groups>(GroupFrontPercent, g => g.GroupFrontPercent(ctx, target));
                 else if (ctx.Match("color", "colour"))
                     await ctx.Execute<Groups>(GroupColor, g => g.GroupColor(ctx, target));
                 else if (!ctx.HasNext())
@@ -476,27 +442,6 @@ namespace ChaoWorld.Bot
                 await PrintCommandExpectedError(ctx, GroupCommands);
             else
                 await ctx.Reply($"{Emojis.Error} {ctx.CreateGroupNotFoundError(ctx.PopArgument())}");
-        }
-
-        private async Task HandleSwitchCommand(Context ctx)
-        {
-            if (ctx.Match("out"))
-                await ctx.Execute<Switch>(SwitchOut, m => m.SwitchOut(ctx));
-            else if (ctx.Match("move", "shift", "offset"))
-                await ctx.Execute<Switch>(SwitchMove, m => m.SwitchMove(ctx));
-            else if (ctx.Match("edit", "replace"))
-                if (ctx.Match("out"))
-                    await ctx.Execute<Switch>(SwitchEditOut, m => m.SwitchEditOut(ctx));
-                else
-                    await ctx.Execute<Switch>(SwitchEdit, m => m.SwitchEdit(ctx));
-            else if (ctx.Match("delete", "remove", "erase", "cancel", "yeet"))
-                await ctx.Execute<Switch>(SwitchDelete, m => m.SwitchDelete(ctx));
-            else if (ctx.Match("commands", "help"))
-                await PrintCommandList(ctx, "switching", SwitchCommands);
-            else if (ctx.HasNext()) // there are following arguments
-                await ctx.Execute<Switch>(Switch, m => m.SwitchDo(ctx));
-            else
-                await PrintCommandNotFoundError(ctx, Switch, SwitchOut, SwitchMove, SwitchEdit, SwitchEditOut, SwitchDelete, SystemFronter, SystemFrontHistory);
         }
 
         private async Task CommandHelpRoot(Context ctx)

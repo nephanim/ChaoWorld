@@ -52,7 +52,6 @@ namespace ChaoWorld.Bot
             builder.RegisterType<Fun>().AsSelf();
             builder.RegisterType<Groups>().AsSelf();
             builder.RegisterType<Help>().AsSelf();
-            builder.RegisterType<ImportExport>().AsSelf();
             builder.RegisterType<Member>().AsSelf();
             builder.RegisterType<MemberAvatar>().AsSelf();
             builder.RegisterType<MemberEdit>().AsSelf();
@@ -62,10 +61,8 @@ namespace ChaoWorld.Bot
             builder.RegisterType<ProxiedMessage>().AsSelf();
             builder.RegisterType<Random>().AsSelf();
             builder.RegisterType<ServerConfig>().AsSelf();
-            builder.RegisterType<Switch>().AsSelf();
             builder.RegisterType<System>().AsSelf();
             builder.RegisterType<SystemEdit>().AsSelf();
-            builder.RegisterType<SystemFront>().AsSelf();
             builder.RegisterType<SystemLink>().AsSelf();
             builder.RegisterType<SystemList>().AsSelf();
             builder.RegisterType<Token>().AsSelf();
@@ -86,7 +83,6 @@ namespace ChaoWorld.Bot
             builder.RegisterType<EmbedService>().AsSelf().SingleInstance();
             builder.RegisterType<ProxyService>().AsSelf().SingleInstance();
             builder.RegisterType<LogChannelService>().AsSelf().SingleInstance();
-            builder.RegisterType<DataFileService>().AsSelf().SingleInstance();
             builder.RegisterType<WebhookExecutorService>().AsSelf().SingleInstance();
             builder.RegisterType<WebhookCacheService>().AsSelf().SingleInstance();
             builder.RegisterType<ShardInfoService>().AsSelf().SingleInstance();

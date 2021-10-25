@@ -19,7 +19,6 @@ namespace ChaoWorld.Core
         public ChaoId? AutoproxyMember { get; }
         public ulong? LastMessage { get; }
         public ChaoId? LastMessageMember { get; }
-        public SwitchId? LastSwitch { get; }
         public ChaoId[] LastSwitchMembers { get; } = new ChaoId[0];
         public Instant? LastSwitchTimestamp { get; }
         public string? SystemTag { get; }
