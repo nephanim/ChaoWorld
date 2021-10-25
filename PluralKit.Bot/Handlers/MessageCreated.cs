@@ -24,7 +24,6 @@ namespace ChaoWorld.Bot
         private readonly LastMessageCacheService _lastMessageCache;
         private readonly LoggerCleanService _loggerClean;
         private readonly IMetrics _metrics;
-        private readonly ProxyService _proxy;
         private readonly ILifetimeScope _services;
         private readonly IDatabase _db;
         private readonly ModelRepository _repo;
@@ -32,13 +31,12 @@ namespace ChaoWorld.Bot
         private readonly DiscordApiClient _rest;
 
         public MessageCreated(LastMessageCacheService lastMessageCache, LoggerCleanService loggerClean,
-                              IMetrics metrics, ProxyService proxy,
+                              IMetrics metrics,
                               CommandTree tree, ILifetimeScope services, IDatabase db, BotConfig config, ModelRepository repo, IDiscordCache cache, Bot bot, DiscordApiClient rest)
         {
             _lastMessageCache = lastMessageCache;
             _loggerClean = loggerClean;
             _metrics = metrics;
-            _proxy = proxy;
             _tree = tree;
             _services = services;
             _db = db;
@@ -84,7 +82,6 @@ namespace ChaoWorld.Bot
 
             if (await TryHandleCommand(shard, evt, guild, channel, ctx))
                 return;
-            await TryHandleProxy(shard, evt, guild, channel, ctx);
         }
 
         private async ValueTask<bool> TryHandleLogClean(MessageCreateEvent evt, MessageContext ctx)
@@ -141,31 +138,6 @@ namespace ChaoWorld.Bot
             argPos = -1;
             if (DiscordUtils.HasMentionPrefix(message, ref argPos, out var id))
                 return id == currentUserId;
-
-            return false;
-        }
-
-        private async ValueTask<bool> TryHandleProxy(Shard shard, MessageCreateEvent evt, Guild guild, Channel channel, MessageContext ctx)
-        {
-            var botPermissions = _bot.PermissionsIn(channel.Id);
-
-            try
-            {
-                return await _proxy.HandleIncomingMessage(shard, evt, ctx, guild, channel, allowAutoproxy: ctx.AllowAutoproxy, botPermissions);
-            }
-
-            // Catch any failed proxy checks so they get ignored in the global error handler
-            catch (ProxyService.ProxyChecksFailedException) { }
-
-            catch (CWError e)
-            {
-                // User-facing errors, print to the channel properly formatted
-                if (botPermissions.HasFlag(PermissionSet.SendMessages))
-                {
-                    await _rest.CreateMessage(evt.ChannelId,
-                        new MessageRequest { Content = $"{Emojis.Error} {e.Message}" });
-                }
-            }
 
             return false;
         }

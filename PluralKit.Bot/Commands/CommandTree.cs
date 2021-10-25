@@ -178,17 +178,10 @@ namespace ChaoWorld.Bot
                 else if (ctx.Match("commands"))
                     return PrintCommandList(ctx, "channel blacklisting", BlacklistCommands);
                 else return PrintCommandExpectedError(ctx, BlacklistCommands);
-            if (ctx.Match("proxy"))
-                if (ctx.Match("debug"))
-                    return ctx.Execute<Checks>(ProxyCheck, m => m.MessageProxyCheck(ctx));
-                else
-                    return ctx.Execute<SystemEdit>(SystemProxy, m => m.SystemProxy(ctx));
             if (ctx.Match("invite")) return ctx.Execute<Misc>(Invite, m => m.Invite(ctx));
             if (ctx.Match("stats")) return ctx.Execute<Misc>(null, m => m.Stats(ctx));
             if (ctx.Match("permcheck"))
                 return ctx.Execute<Checks>(PermCheck, m => m.PermCheckGuild(ctx));
-            if (ctx.Match("proxycheck"))
-                return ctx.Execute<Checks>(ProxyCheck, m => m.MessageProxyCheck(ctx));
             if (ctx.Match("debug"))
                 return HandleDebugCommand(ctx);
             if (ctx.Match("random", "r"))
@@ -210,8 +203,6 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<Checks>(PermCheck, m => m.PermCheckGuild(ctx));
             else if (ctx.Match("channel"))
                 await ctx.Execute<Checks>(PermCheck, m => m.PermCheckChannel(ctx));
-            else if (ctx.Match("proxy", "proxying", "proxycheck"))
-                await ctx.Execute<Checks>(ProxyCheck, m => m.MessageProxyCheck(ctx));
             else if (!ctx.HasNext())
                 await ctx.Reply($"{Emojis.Error} You need to pass a command. {availableCommandsStr}");
             else
@@ -251,8 +242,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<SystemList>(SystemList, m => m.MemberList(ctx, ctx.System));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
                 await ctx.Execute<SystemList>(SystemFind, m => m.MemberList(ctx, ctx.System));
-            else if (ctx.Match("privacy"))
-                await ctx.Execute<SystemEdit>(SystemPrivacy, m => m.SystemPrivacy(ctx));
             else if (ctx.Match("ping"))
                 await ctx.Execute<SystemEdit>(SystemPing, m => m.SystemPing(ctx));
             else if (ctx.Match("commands", "help"))
@@ -330,14 +319,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<MemberEdit>(MemberAutoproxy, m => m.MemberAutoproxy(ctx, target));
             else if (ctx.Match("keepproxy", "keeptags", "showtags"))
                 await ctx.Execute<MemberEdit>(MemberKeepProxy, m => m.KeepProxy(ctx, target));
-            else if (ctx.Match("privacy"))
-                await ctx.Execute<MemberEdit>(MemberPrivacy, m => m.Privacy(ctx, target, null));
-            else if (ctx.Match("private", "hidden", "hide"))
-                await ctx.Execute<MemberEdit>(MemberPrivacy, m => m.Privacy(ctx, target, PrivacyLevel.Private));
-            else if (ctx.Match("public", "shown", "show"))
-                await ctx.Execute<MemberEdit>(MemberPrivacy, m => m.Privacy(ctx, target, PrivacyLevel.Public));
-            else if (ctx.Match("soulscream"))
-                await ctx.Execute<Member>(MemberInfo, m => m.Soulscream(ctx, target));
             else if (!ctx.HasNext()) // Bare command
                 await ctx.Execute<Member>(MemberInfo, m => m.ViewMember(ctx, target));
             else

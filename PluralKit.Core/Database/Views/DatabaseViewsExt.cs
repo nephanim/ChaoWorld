@@ -14,9 +14,6 @@ namespace ChaoWorld.Core
             StringBuilder query;
             query = new StringBuilder("select * from member_list where system = @system");
 
-            if (opts.PrivacyFilter != null)
-                query.Append($" and member_visibility = {(int)opts.PrivacyFilter}");
-
             if (opts.Search != null)
             {
                 static string Filter(string column) => $"(position(lower(@filter) in lower(coalesce({column}, ''))) > 0)";
@@ -27,8 +24,7 @@ namespace ChaoWorld.Core
                     // We need to account for the possibility of description privacy when searching
                     // If we're looking up from the outside, only search "public_description" (defined in the view; null if desc is private)
                     // If we're the owner, just search the full description
-                    var descriptionColumn = opts.Context == LookupContext.ByOwner ? "description" : "public_description";
-                    query.Append($"or {Filter(descriptionColumn)}");
+                    query.Append($"or {Filter("description")}");
                 }
                 query.Append(")");
             }
@@ -38,10 +34,8 @@ namespace ChaoWorld.Core
 
         public struct MemberListQueryOptions
         {
-            public PrivacyLevel? PrivacyFilter;
             public string? Search;
             public bool SearchDescription;
-            public LookupContext Context;
         }
     }
 }

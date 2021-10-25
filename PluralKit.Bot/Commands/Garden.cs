@@ -21,7 +21,7 @@ namespace ChaoWorld.Bot
         {
             if (system == null) throw Errors.NoGardenError;
 
-            await ctx.Reply(embed: await _embeds.CreateSystemEmbed(ctx, system, ctx.LookupContextFor(system)));
+            await ctx.Reply(embed: await _embeds.CreateSystemEmbed(ctx, system));
         }
 
         public async Task New(Context ctx)

@@ -170,7 +170,7 @@ namespace ChaoWorld.Bot
                 var dm = await _cache.GetOrCreateDmChannel(_rest, evt.UserId);
                 await _rest.CreateMessage(dm.Id, new MessageRequest
                 {
-                    Embed = await _embeds.CreateMemberEmbed(msg.System, msg.Member, guild, LookupContext.ByNonOwner)
+                    Embed = await _embeds.CreateMemberEmbed(msg.System, msg.Member, guild)
                 });
 
                 await _rest.CreateMessage(dm.Id, new MessageRequest

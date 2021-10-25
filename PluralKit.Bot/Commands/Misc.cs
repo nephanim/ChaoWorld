@@ -36,11 +36,10 @@ namespace ChaoWorld.Bot
         private readonly DiscordApiClient _rest;
         private readonly Cluster _cluster;
         private readonly Bot _bot;
-        private readonly ProxyService _proxy;
         private readonly ProxyMatcher _matcher;
 
         public Misc(BotConfig botConfig, IMetrics metrics, CpuStatService cpu, ShardInfoService shards, EmbedService embeds, ModelRepository repo,
-                                IDatabase db, IDiscordCache cache, DiscordApiClient rest, Bot bot, Cluster cluster, ProxyService proxy, ProxyMatcher matcher)
+                                IDatabase db, IDiscordCache cache, DiscordApiClient rest, Bot bot, Cluster cluster, ProxyMatcher matcher)
         {
             _botConfig = botConfig;
             _metrics = metrics;
@@ -53,7 +52,6 @@ namespace ChaoWorld.Bot
             _rest = rest;
             _bot = bot;
             _cluster = cluster;
-            _proxy = proxy;
             _matcher = matcher;
         }
 

@@ -45,20 +45,9 @@ namespace ChaoWorld.Core
             return _db.QueryStream<Chao>(query);
         }
 
-        public Task<int> GetSystemMemberCount(GardenId system, PrivacyLevel? privacyFilter = null)
+        public Task<int> GetSystemMemberCount(GardenId system)
         {
             var query = new Query("members").SelectRaw("count(*)").Where("system", system);
-            if (privacyFilter != null)
-                query.Where("member_visibility", (int)privacyFilter.Value);
-
-            return _db.QueryFirst<int>(query);
-        }
-
-        public Task<int> GetSystemGroupCount(GardenId system, PrivacyLevel? privacyFilter = null)
-        {
-            var query = new Query("groups").SelectRaw("count(*)").Where("system", system);
-            if (privacyFilter != null)
-                query.Where("visibility", (int)privacyFilter.Value);
 
             return _db.QueryFirst<int>(query);
         }

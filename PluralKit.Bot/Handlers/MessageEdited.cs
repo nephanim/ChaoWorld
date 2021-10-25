@@ -19,7 +19,6 @@ namespace ChaoWorld.Bot
     public class MessageEdited: IEventHandler<MessageUpdateEvent>
     {
         private readonly LastMessageCacheService _lastMessageCache;
-        private readonly ProxyService _proxy;
         private readonly IDatabase _db;
         private readonly ModelRepository _repo;
         private readonly IMetrics _metrics;
@@ -29,10 +28,9 @@ namespace ChaoWorld.Bot
         private readonly DiscordApiClient _rest;
         private readonly ILogger _logger;
 
-        public MessageEdited(LastMessageCacheService lastMessageCache, ProxyService proxy, IDatabase db, IMetrics metrics, ModelRepository repo, Cluster client, IDiscordCache cache, Bot bot, DiscordApiClient rest, ILogger logger)
+        public MessageEdited(LastMessageCacheService lastMessageCache, IDatabase db, IMetrics metrics, ModelRepository repo, Cluster client, IDiscordCache cache, Bot bot, DiscordApiClient rest, ILogger logger)
         {
             _lastMessageCache = lastMessageCache;
-            _proxy = proxy;
             _db = db;
             _metrics = metrics;
             _repo = repo;
@@ -65,62 +63,6 @@ namespace ChaoWorld.Bot
             MessageContext ctx;
             using (_metrics.Measure.Timer.Time(BotMetrics.MessageContextQueryTime))
                 ctx = await _repo.GetMessageContext(evt.Author.Value!.Id, channel.GuildId!.Value, evt.ChannelId);
-
-            var equivalentEvt = await GetMessageCreateEvent(evt, lastMessage, channel);
-            var botPermissions = _bot.PermissionsIn(channel.Id);
-
-            try
-            {
-                await _proxy.HandleIncomingMessage(shard, equivalentEvt, ctx, allowAutoproxy: false, guild: guild,
-                    channel: channel, botPermissions: botPermissions);
-            }
-            // Catch any failed proxy checks so they get ignored in the global error handler
-            catch (ProxyService.ProxyChecksFailedException) { }
-        }
-
-        private async Task<MessageCreateEvent> GetMessageCreateEvent(MessageUpdateEvent evt, CachedMessage lastMessage, Channel channel)
-        {
-            var referencedMessage = await GetReferencedMessage(evt.ChannelId, lastMessage.ReferencedMessage);
-
-            var messageReference = lastMessage.ReferencedMessage != null
-                ? new Message.Reference(channel.GuildId, evt.ChannelId, lastMessage.ReferencedMessage.Value)
-                : null;
-
-            var messageType = lastMessage.ReferencedMessage != null
-                ? Message.MessageType.Reply
-                : Message.MessageType.Default;
-
-            // TODO: is this missing anything?
-            var equivalentEvt = new MessageCreateEvent
-            {
-                Id = evt.Id,
-                ChannelId = evt.ChannelId,
-                GuildId = channel.GuildId,
-                Author = evt.Author.Value,
-                Member = evt.Member.Value,
-                Content = evt.Content.Value,
-                Attachments = evt.Attachments.Value ?? Array.Empty<Message.Attachment>(),
-                MessageReference = messageReference,
-                ReferencedMessage = referencedMessage,
-                Type = messageType,
-            };
-            return equivalentEvt;
-        }
-
-        private async Task<Message?> GetReferencedMessage(ulong channelId, ulong? referencedMessageId)
-        {
-            if (referencedMessageId == null)
-                return null;
-
-            var botPermissions = _bot.PermissionsIn(channelId);
-            if (!botPermissions.HasFlag(PermissionSet.ReadMessageHistory))
-            {
-                _logger.Warning("Tried to get referenced message in channel {ChannelId} to reply but bot does not have Read Message History",
-                    channelId);
-                return null;
-            }
-
-            return await _rest.GetMessage(channelId, referencedMessageId.Value);
         }
     }
 }

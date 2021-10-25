@@ -14,8 +14,6 @@ namespace ChaoWorld.Bot
     {
         public SortProperty SortProperty { get; set; } = SortProperty.Name;
         public bool Reverse { get; set; }
-
-        public PrivacyLevel? PrivacyFilter { get; set; } = PrivacyLevel.Public;
         public string? Search { get; set; }
         public bool SearchDescription { get; set; }
 
@@ -52,21 +50,12 @@ namespace ChaoWorld.Bot
                 if (SearchDescription) str.Append(" (including description)");
             }
 
-            str.Append(PrivacyFilter switch
-            {
-                null => ", showing all members",
-                PrivacyLevel.Private => ", showing only private members",
-                PrivacyLevel.Public => "", // (default, no extra line needed)
-                _ => new ArgumentOutOfRangeException($"Couldn't find readable string for privacy filter {PrivacyFilter}")
-            });
-
             return str.ToString();
         }
 
         public DatabaseViewsExt.MemberListQueryOptions ToQueryOptions() =>
             new DatabaseViewsExt.MemberListQueryOptions
             {
-                PrivacyFilter = PrivacyFilter,
                 Search = Search,
                 SearchDescription = SearchDescription
             };
@@ -74,7 +63,7 @@ namespace ChaoWorld.Bot
 
     public static class MemberListOptionsExt
     {
-        public static IEnumerable<ListedMember> SortByMemberListOptions(this IEnumerable<ListedMember> input, MemberListOptions opts, LookupContext ctx)
+        public static IEnumerable<ListedMember> SortByMemberListOptions(this IEnumerable<ListedMember> input, MemberListOptions opts)
         {
             IComparer<T> ReverseMaybe<T>(IComparer<T> c) =>
                 opts.Reverse ? Comparer<T>.Create((a, b) => c.Compare(b, a)) : c;
@@ -87,7 +76,7 @@ namespace ChaoWorld.Bot
                 // As for the OrderByDescending HasValue calls: https://www.jerriepelser.com/blog/orderby-with-null-values/
                 // We want nulls last no matter what, even if orders are reversed
                 SortProperty.Hid => input.OrderBy(m => m.Hid, ReverseMaybe(culture)),
-                SortProperty.Name => input.OrderBy(m => m.NameFor(ctx), ReverseMaybe(culture)),
+                SortProperty.Name => input.OrderBy(m => m.Name, ReverseMaybe(culture)),
                 SortProperty.CreationDate => input.OrderBy(m => m.Created, ReverseMaybe(Comparer<Instant>.Default)),
                 SortProperty.MessageCount => input.OrderByDescending(m => m.MessageCount, ReverseMaybe(Comparer<int>.Default)),
                 SortProperty.DisplayName => input
@@ -107,7 +96,7 @@ namespace ChaoWorld.Bot
                 _ => throw new ArgumentOutOfRangeException($"Unknown sort property {opts.SortProperty}")
             })
                 // Lastly, add a by-name fallback order for collisions (generally hits w/ lots of null values)
-                .ThenBy(m => m.NameFor(ctx), culture);
+                .ThenBy(m => m.Name, culture);
         }
     }
 

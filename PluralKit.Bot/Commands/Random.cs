@@ -29,14 +29,11 @@ namespace ChaoWorld.Bot
 
             var members = await _repo.GetSystemMembers(ctx.System.Id).ToListAsync();
 
-            if (!ctx.MatchFlag("all", "a"))
-                members = members.Where(m => m.MemberVisibility == PrivacyLevel.Public).ToList();
-
             if (members == null || !members.Any())
                 throw new CWError("Your system has no members! Please create at least one member before using this command.");
 
             var randInt = randGen.Next(members.Count);
-            await ctx.Reply(embed: await _embeds.CreateMemberEmbed(ctx.System, members[randInt], ctx.Guild, ctx.LookupContextFor(ctx.System)));
+            await ctx.Reply(embed: await _embeds.CreateMemberEmbed(ctx.System, members[randInt], ctx.Guild));
         }
     }
 }

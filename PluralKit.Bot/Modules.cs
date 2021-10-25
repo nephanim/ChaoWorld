@@ -74,7 +74,6 @@ namespace ChaoWorld.Bot
 
             // Bot services
             builder.RegisterType<EmbedService>().AsSelf().SingleInstance();
-            builder.RegisterType<ProxyService>().AsSelf().SingleInstance();
             builder.RegisterType<LogChannelService>().AsSelf().SingleInstance();
             builder.RegisterType<WebhookExecutorService>().AsSelf().SingleInstance();
             builder.RegisterType<WebhookCacheService>().AsSelf().SingleInstance();

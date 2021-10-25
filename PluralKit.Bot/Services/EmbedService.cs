@@ -44,14 +44,14 @@ namespace ChaoWorld.Bot
             return Task.WhenAll(ids.Select(Inner));
         }
 
-        public async Task<Embed> CreateSystemEmbed(Context cctx, Core.Garden system, LookupContext ctx)
+        public async Task<Embed> CreateSystemEmbed(Context cctx, Core.Garden system)
         {
 
             // Fetch/render info for all accounts simultaneously
             var accounts = await _repo.GetSystemAccounts(system.Id);
             var users = (await GetUsers(accounts)).Select(x => x.User?.NameAndMention() ?? $"(deleted account {x.Id})");
 
-            var memberCount = cctx.MatchPrivateFlag(ctx) ? await _repo.GetSystemMemberCount(system.Id, PrivacyLevel.Public) : await _repo.GetSystemMemberCount(system.Id);
+            var memberCount = await _repo.GetSystemMemberCount(system.Id);
 
             uint color;
             try
@@ -70,8 +70,7 @@ namespace ChaoWorld.Bot
                 .Footer(new($"Garden ID: {system.Hid} | Created on {system.Created.FormatZoned(system)}"))
                 .Color(color);
 
-            if (system.DescriptionPrivacy.CanAccess(ctx))
-                eb.Image(new(system.BannerImage));
+            eb.Image(new(system.BannerImage));
 
             if (system.Tag != null)
                 eb.Field(new("Tag", system.Tag.EscapeMarkdown(), true));
@@ -92,15 +91,12 @@ namespace ChaoWorld.Bot
 
             eb.Field(new("Linked accounts", string.Join("\n", users).Truncate(1000), true));
 
-            if (system.MemberListPrivacy.CanAccess(ctx))
-            {
-                if (memberCount > 0)
-                    eb.Field(new($"Members ({memberCount})", $"(see `pk;system {system.Hid} list` or `pk;system {system.Hid} list full`)", true));
-                else
-                    eb.Field(new($"Members ({memberCount})", "Add one with `pk;member new`!", true));
-            }
+            if (memberCount > 0)
+                eb.Field(new($"Members ({memberCount})", $"(see `pk;system {system.Hid} list` or `pk;system {system.Hid} list full`)", true));
+            else
+                eb.Field(new($"Members ({memberCount})", "Add one with `pk;member new`!", true));
 
-            if (system.DescriptionFor(ctx) is { } desc)
+            if (system.Description is { } desc)
                 eb.Field(new("Description", desc.NormalizeLineEndSpacing().Truncate(1024), false));
 
             return eb.Build();
@@ -112,10 +108,7 @@ namespace ChaoWorld.Bot
             var timestamp = DiscordUtils.SnowflakeToInstant(proxiedMessage.Id);
             var name = proxiedMessage.Author.Username;
             // sometimes Discord will just... not return the avatar hash with webhook messages
-            var avatar = proxiedMessage.Author.Avatar != null ? proxiedMessage.Author.AvatarUrl() : member.AvatarFor(LookupContext.ByNonOwner);
             var embed = new EmbedBuilder()
-                .Author(new($"#{channelName}: {name}", IconUrl: avatar))
-                .Thumbnail(new(avatar))
                 .Description(proxiedMessage.Content?.NormalizeLineEndSpacing())
                 .Footer(new($"Garden ID: {systemHid} | Member ID: {member.Hid} | Sender: {triggerMessage.Author.Username}#{triggerMessage.Author.Discriminator} ({triggerMessage.Author.Id}) | Message ID: {proxiedMessage.Id} | Original Message ID: {triggerMessage.Id}"))
                 .Timestamp(timestamp.ToDateTimeOffset().ToString("O"));
@@ -126,12 +119,9 @@ namespace ChaoWorld.Bot
             return embed.Build();
         }
 
-        public async Task<Embed> CreateMemberEmbed(Core.Garden system, Chao member, Guild guild, LookupContext ctx)
+        public async Task<Embed> CreateMemberEmbed(Core.Garden system, Chao member, Guild guild)
         {
-
-            // string FormatTimestamp(Instant timestamp) => DateTimeFormats.ZonedDateTimeFormat.Format(timestamp.InZone(system.Zone));
-
-            var name = member.NameFor(ctx);
+            var name = member.Name;
             if (system.Name != null) name = $"{name} ({system.Name})";
 
             uint color;
@@ -149,7 +139,7 @@ namespace ChaoWorld.Bot
 
             var guildSettings = guild != null ? await _repo.GetMemberGuild(guild.Id, member.Id) : null;
             var guildDisplayName = guildSettings?.DisplayName;
-            var avatar = guildSettings?.AvatarUrl ?? member.AvatarFor(ctx);
+            var avatar = guildSettings?.AvatarUrl;
 
             var eb = new EmbedBuilder()
                 // TODO: add URL of website when that's up
@@ -157,27 +147,14 @@ namespace ChaoWorld.Bot
                 // .WithColor(member.ColorPrivacy.CanAccess(ctx) ? color : DiscordUtils.Gray)
                 .Color(color)
                 .Footer(new(
-                    $"Garden ID: {system.Hid} | Member ID: {member.Hid} {(member.MetadataPrivacy.CanAccess(ctx) ? $"| Created on {member.Created.FormatZoned(system)}" : "")}"));
+                    $"Garden ID: {system.Hid} | Member ID: {member.Hid} {$"| Created on {member.Created.FormatZoned(system)}"}"));
 
-            if (member.DescriptionPrivacy.CanAccess(ctx))
-                eb.Image(new(member.BannerImage));
-
-            var description = "";
-            if (member.MemberVisibility == PrivacyLevel.Private) description += "*(this member is hidden)*\n";
-            if (guildSettings?.AvatarUrl != null)
-                if (member.AvatarFor(ctx) != null)
-                    description += $"*(this member has a server-specific avatar set; [click here]({member.AvatarUrl.TryGetCleanCdnUrl()}) to see the global avatar)*\n";
-                else
-                    description += "*(this member has a server-specific avatar set)*\n";
-            if (description != "") eb.Description(description);
+            eb.Image(new(member.BannerImage));
 
             if (avatar != null) eb.Thumbnail(new(avatar.TryGetCleanCdnUrl()));
 
-            if (!member.DisplayName.EmptyOrNull() && member.NamePrivacy.CanAccess(ctx)) eb.Field(new("Display Name", member.DisplayName.Truncate(1024), true));
+            if (!member.DisplayName.EmptyOrNull()) eb.Field(new("Display Name", member.DisplayName.Truncate(1024), true));
             if (guild != null && guildDisplayName != null) eb.Field(new($"Server Nickname (for {guild.Name})", guildDisplayName.Truncate(1024), true));
-            if (member.BirthdayFor(ctx) != null) eb.Field(new("Birthdate", member.BirthdayString, true));
-            if (member.PronounsFor(ctx) is { } pronouns && !string.IsNullOrWhiteSpace(pronouns)) eb.Field(new("Pronouns", pronouns.Truncate(1024), true));
-            if (member.MessageCountFor(ctx) is { } count && count > 0) eb.Field(new("Message Count", member.MessageCount.ToString(), true));
             if (member.HasProxyTags) eb.Field(new("Proxy Tags", member.ProxyTagsString("\n").Truncate(1024), true));
             // --- For when this gets added to the member object itself or however they get added
             // if (member.LastMessage != null && member.MetadataPrivacy.CanAccess(ctx)) eb.AddField("Last message:" FormatTimestamp(DiscordUtils.SnowflakeToInstant(m.LastMessage.Value)));
@@ -185,7 +162,7 @@ namespace ChaoWorld.Bot
             // if (!member.Color.EmptyOrNull() && member.ColorPrivacy.CanAccess(ctx)) eb.AddField("Color", $"#{member.Color}", true);
             if (!member.Color.EmptyOrNull()) eb.Field(new("Color", $"#{member.Color}", true));
 
-            if (member.DescriptionFor(ctx) is { } desc)
+            if (member.Description is { } desc)
                 eb.Field(new("Description", member.Description.NormalizeLineEndSpacing(), false));
 
             return eb.Build();
@@ -194,7 +171,6 @@ namespace ChaoWorld.Bot
         public async Task<Embed> CreateMessageInfoEmbed(FullMessage msg)
         {
             var channel = await _cache.GetOrFetchChannel(_rest, msg.Message.Channel);
-            var ctx = LookupContext.ByNonOwner;
 
             Message serverMsg = null;
             try
@@ -243,12 +219,11 @@ namespace ChaoWorld.Bot
 
             // Put it all together
             var eb = new EmbedBuilder()
-                .Author(new(msg.Member.NameFor(ctx), IconUrl: msg.Member.AvatarFor(ctx).TryGetCleanCdnUrl()))
                 .Description(serverMsg?.Content?.NormalizeLineEndSpacing() ?? "*(message contents deleted or inaccessible)*")
                 .Image(new(serverMsg?.Attachments?.FirstOrDefault()?.Url))
                 .Field(new("Garden",
                     msg.System.Name != null ? $"{msg.System.Name} (`{msg.System.Hid}`)" : $"`{msg.System.Hid}`", true))
-                .Field(new("Member", $"{msg.Member.NameFor(ctx)} (`{msg.Member.Hid}`)", true))
+                .Field(new("Member", $"{msg.Member.Name} (`{msg.Member.Hid}`)", true))
                 .Field(new("Sent by", userStr, true))
                 .Timestamp(DiscordUtils.SnowflakeToInstant(msg.Message.Mid).ToDateTimeOffset().ToString("O"));
 

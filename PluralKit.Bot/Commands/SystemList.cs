@@ -17,10 +17,9 @@ namespace ChaoWorld.Bot
         public async Task MemberList(Context ctx, Core.Garden target)
         {
             if (target == null) throw Errors.NoGardenError;
-            ctx.CheckSystemPrivacy(target, target.MemberListPrivacy);
 
-            var opts = ctx.ParseMemberListOptions(ctx.LookupContextFor(target));
-            await ctx.RenderMemberList(ctx.LookupContextFor(target), _db, target.Id, GetEmbedTitle(target, opts), target.Color, opts);
+            var opts = ctx.ParseMemberListOptions();
+            await ctx.RenderMemberList(_db, target.Id, GetEmbedTitle(target, opts), target.Color, opts);
         }
 
         private string GetEmbedTitle(Core.Garden target, MemberListOptions opts)

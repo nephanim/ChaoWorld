@@ -21,11 +21,6 @@ namespace ChaoWorld.Core
         public Partial<string?> Color { get; set; }
         public Partial<string?> Token { get; set; }
         public Partial<string> UiTz { get; set; }
-        public Partial<PrivacyLevel> DescriptionPrivacy { get; set; }
-        public Partial<PrivacyLevel> MemberListPrivacy { get; set; }
-        public Partial<PrivacyLevel> GroupListPrivacy { get; set; }
-        public Partial<PrivacyLevel> FrontPrivacy { get; set; }
-        public Partial<PrivacyLevel> FrontHistoryPrivacy { get; set; }
         public Partial<bool> PingsEnabled { get; set; }
         public Partial<int?> LatchTimeout { get; set; }
         public Partial<int?> MemberLimitOverride { get; set; }
@@ -41,11 +36,6 @@ namespace ChaoWorld.Core
             .With("color", Color)
             .With("token", Token)
             .With("ui_tz", UiTz)
-            .With("description_privacy", DescriptionPrivacy)
-            .With("member_list_privacy", MemberListPrivacy)
-            .With("group_list_privacy", GroupListPrivacy)
-            .With("front_privacy", FrontPrivacy)
-            .With("front_history_privacy", FrontHistoryPrivacy)
             .With("pings_enabled", PingsEnabled)
             .With("latch_timeout", LatchTimeout)
             .With("member_limit_override", MemberLimitOverride)
@@ -87,10 +77,6 @@ namespace ChaoWorld.Core
             // todo: remove in APIv2
             if (o.ContainsKey("tz")) patch.UiTz = o.Value<string>("tz") ?? "UTC";
 
-            if (o.ContainsKey("description_privacy")) patch.DescriptionPrivacy = o.ParsePrivacy("description_privacy");
-            if (o.ContainsKey("member_list_privacy")) patch.MemberListPrivacy = o.ParsePrivacy("member_list_privacy");
-            if (o.ContainsKey("front_privacy")) patch.FrontPrivacy = o.ParsePrivacy("front_privacy");
-            if (o.ContainsKey("front_history_privacy")) patch.FrontHistoryPrivacy = o.ParsePrivacy("front_history_privacy");
             return patch;
         }
     }

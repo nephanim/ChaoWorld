@@ -15,7 +15,7 @@ namespace ChaoWorld.Bot
 {
     public static class ContextListExt
     {
-        public static MemberListOptions ParseMemberListOptions(this Context ctx, LookupContext lookupCtx)
+        public static MemberListOptions ParseMemberListOptions(this Context ctx)
         {
             var p = new MemberListOptions();
 
@@ -46,16 +46,6 @@ namespace ChaoWorld.Bot
             if (ctx.MatchFlag("r", "rev", "reverse"))
                 p.Reverse = true;
 
-            // Privacy filter (default is public only)
-            if (ctx.MatchFlag("a", "all")) p.PrivacyFilter = null;
-            if (ctx.MatchFlag("private-only", "private", "priv")) p.PrivacyFilter = PrivacyLevel.Private;
-            if (ctx.MatchFlag("public-only", "public", "pub")) p.PrivacyFilter = PrivacyLevel.Public;
-
-            // PERM CHECK: If we're trying to access non-public members of another system, error
-            if (p.PrivacyFilter != PrivacyLevel.Public && lookupCtx != LookupContext.ByOwner)
-                // TODO: should this just return null instead of throwing or something? >.>
-                throw new CWError("You cannot look up private members of another system.");
-
             // Additional fields to include in the search results
             if (ctx.MatchFlag("with-last-switch", "with-last-fronted", "with-last-front", "wls", "wlf"))
                 p.IncludeLastSwitch = true;
@@ -80,12 +70,12 @@ namespace ChaoWorld.Bot
             return p;
         }
 
-        public static async Task RenderMemberList(this Context ctx, LookupContext lookupCtx, IDatabase db, GardenId system, string embedTitle, string color, MemberListOptions opts)
+        public static async Task RenderMemberList(this Context ctx, IDatabase db, GardenId system, string embedTitle, string color, MemberListOptions opts)
         {
             // We take an IDatabase instead of a IPKConnection so we don't keep the handle open for the entire runtime
             // We wanna release it as soon as the member list is actually *fetched*, instead of potentially minutes later (paginate timeout)
             var members = (await db.Execute(conn => conn.QueryMemberList(system, opts.ToQueryOptions())))
-                .SortByMemberListOptions(opts, lookupCtx)
+                .SortByMemberListOptions(opts)
                 .ToList();
 
             var itemsPerPage = opts.Type == ListType.Short ? 25 : 5;
@@ -112,60 +102,19 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Hid}`] **{m.NameFor(ctx)}** ";
+                    var ret = $"[`{m.Hid}`] **{m.Name}** ";
 
                     switch (opts.SortProperty)
                     {
-                        case SortProperty.Birthdate:
-                            {
-                                var birthday = m.BirthdayFor(lookupCtx);
-                                if (birthday != null)
-                                    ret += $"(birthday: {m.BirthdayString})";
-                                break;
-                            }
-                        case SortProperty.MessageCount:
-                            {
-                                if (m.MessageCountFor(lookupCtx) is { } count)
-                                    ret += $"({count} messages)";
-                                break;
-                            }
-                        case SortProperty.LastSwitch:
-                            {
-                                if (m.MetadataPrivacy.TryGet(lookupCtx, m.LastSwitchTime, out var lastSw))
-                                    ret += $"(last switched in: <t:{lastSw.Value.ToUnixTimeSeconds()}>)";
-                                break;
-                            }
-                        case SortProperty.LastMessage:
-                            {
-                                if (m.MetadataPrivacy.TryGet(lookupCtx, m.LastMessage, out var lastMsg))
-                                    ret += $"(last message: <t:{DiscordUtils.SnowflakeToInstant(lastMsg.Value).ToUnixTimeSeconds()}>)";
-                                break;
-                            }
                         case SortProperty.CreationDate:
                             {
-                                if (m.MetadataPrivacy.TryGet(lookupCtx, m.Created, out var created))
-                                    ret += $"(created at <t:{created.ToUnixTimeSeconds()}>)";
+                                ret += $"(created at <t:{m.Created.ToUnixTimeSeconds()}>)";
                                 break;
                             }
                         default:
                             {
-                                if (opts.IncludeMessageCount && m.MessageCountFor(lookupCtx) is { } count)
-                                    ret += $"({count} messages)";
-                                else if (opts.IncludeLastSwitch && m.MetadataPrivacy.TryGet(lookupCtx, m.LastSwitchTime, out var lastSw))
-                                    ret += $"(last switched in: <t:{lastSw.Value.ToUnixTimeSeconds()}>)";
-                                else if (opts.IncludeLastMessage && m.MetadataPrivacy.TryGet(lookupCtx, m.LastMessage, out var lastMsg))
-                                    ret += $"(last message: <t:{DiscordUtils.SnowflakeToInstant(lastMsg.Value).ToUnixTimeSeconds()}>)";
-                                else if (opts.IncludeCreated && m.MetadataPrivacy.TryGet(lookupCtx, m.Created, out var created))
-                                    ret += $"(created at <t:{created.ToUnixTimeSeconds()}>)";
-                                else if (opts.IncludePronouns && m.PronounsFor(lookupCtx) is { } pronouns)
-                                    ret += $"({pronouns})";
-                                else if (m.HasProxyTags)
-                                {
-                                    var proxyTagsString = m.ProxyTagsString();
-                                    if (proxyTagsString.Length > 100) // arbitrary threshold for now, tweak?
-                                        proxyTagsString = "tags too long, see member card";
-                                    ret += $"*(*{proxyTagsString}*)*";
-                                }
+                                if (opts.IncludeCreated)
+                                    ret += $"(created at <t:{m.Created.ToUnixTimeSeconds()}>)";
                                 break;
                             }
                     }
@@ -180,40 +129,16 @@ namespace ChaoWorld.Bot
                 {
                     var profile = new StringBuilder($"**ID**: {m.Hid}");
 
-                    if (m.DisplayName != null && m.NamePrivacy.CanAccess(lookupCtx))
+                    if (m.DisplayName != null)
                         profile.Append($"\n**Display name**: {m.DisplayName}");
-
-                    if (m.PronounsFor(lookupCtx) is { } pronouns)
-                        profile.Append($"\n**Pronouns**: {pronouns}");
-
-                    if (m.BirthdayFor(lookupCtx) != null)
-                        profile.Append($"\n**Birthdate**: {m.BirthdayString}");
 
                     if (m.ProxyTags.Count > 0)
                         profile.Append($"\n**Proxy tags**: {m.ProxyTagsString()}");
 
-                    if ((opts.IncludeMessageCount || opts.SortProperty == SortProperty.MessageCount) && m.MessageCountFor(lookupCtx) is { } count && count > 0)
-                        profile.Append($"\n**Message count:** {count}");
+                    if (opts.IncludeCreated || opts.SortProperty == SortProperty.CreationDate)
+                        profile.Append($"\n**Created on:** {m.Created.FormatZoned(zone)}");
 
-                    if ((opts.IncludeLastMessage || opts.SortProperty == SortProperty.LastMessage) && m.MetadataPrivacy.TryGet(lookupCtx, m.LastMessage, out var lastMsg))
-                        profile.Append($"\n**Last message:** {DiscordUtils.SnowflakeToInstant(lastMsg.Value).FormatZoned(zone)}");
-
-                    if ((opts.IncludeLastSwitch || opts.SortProperty == SortProperty.LastSwitch) && m.MetadataPrivacy.TryGet(lookupCtx, m.LastSwitchTime, out var lastSw))
-                        profile.Append($"\n**Last switched in:** {lastSw.Value.FormatZoned(zone)}");
-
-                    if ((opts.IncludeCreated || opts.SortProperty == SortProperty.CreationDate) && m.MetadataPrivacy.TryGet(lookupCtx, m.Created, out var created))
-                        profile.Append($"\n**Created on:** {created.FormatZoned(zone)}");
-
-                    if (opts.IncludeAvatar && m.AvatarFor(lookupCtx) is { } avatar)
-                        profile.Append($"\n**Avatar URL:** {avatar.TryGetCleanCdnUrl()}");
-
-                    if (m.DescriptionFor(lookupCtx) is { } desc)
-                        profile.Append($"\n\n{desc}");
-
-                    if (m.MemberVisibility == PrivacyLevel.Private)
-                        profile.Append("\n*(this member is hidden)*");
-
-                    eb.Field(new(m.NameFor(ctx), profile.ToString().Truncate(1024)));
+                    eb.Field(new(m.Name, profile.ToString().Truncate(1024)));
                 }
             }
         }

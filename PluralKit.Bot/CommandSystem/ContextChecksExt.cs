@@ -16,12 +16,6 @@ namespace ChaoWorld.Bot
             throw new CWError("This command can not be run in a DM.");
         }
 
-        public static Context CheckSystemPrivacy(this Context ctx, Core.Garden target, PrivacyLevel level)
-        {
-            if (level.CanAccess(ctx.LookupContextFor(target))) return ctx;
-            throw new CWError("You do not have permission to access this information.");
-        }
-
         public static Context CheckOwnMember(this Context ctx, Chao member)
         {
             if (member.Garden != ctx.System?.Id)

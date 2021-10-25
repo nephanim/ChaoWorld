@@ -38,7 +38,7 @@ namespace ChaoWorld.Bot
             var existingMember = await _repo.GetMemberByName(ctx.System.Id, newName);
             if (existingMember != null && existingMember.Id != target.Id)
             {
-                var msg = $"{Emojis.Warn} You already have a member in your system with the name \"{existingMember.NameFor(ctx)}\" (`{existingMember.Hid}`). Do you want to rename this member to that name too?";
+                var msg = $"{Emojis.Warn} You already have a member in your system with the name \"{existingMember.Name}\" (`{existingMember.Hid}`). Do you want to rename this member to that name too?";
                 if (!await ctx.PromptYesNo(msg, "Rename")) throw new CWError("Member renaming cancelled.");
             }
 
@@ -63,9 +63,6 @@ namespace ChaoWorld.Bot
             var noDescriptionSetMessage = "This member does not have a description set.";
             if (ctx.System?.Id == target.Garden)
                 noDescriptionSetMessage += $" To set one, type `pk;member {target.Reference()} description <description>`.";
-
-            if (!target.DescriptionPrivacy.CanAccess(ctx.LookupContextFor(target.Garden)))
-                throw Errors.LookupNotAllowed;
 
             if (ctx.MatchRaw())
             {
@@ -116,9 +113,6 @@ namespace ChaoWorld.Bot
             if (ctx.System?.Id == target.Garden)
                 noPronounsSetMessage += $"To set some, type `pk;member {target.Reference()} pronouns <pronouns>`.";
 
-            if (!target.PronounPrivacy.CanAccess(ctx.LookupContextFor(target.Garden)))
-                throw Errors.LookupNotAllowed;
-
             if (ctx.MatchRaw())
             {
                 if (target.Pronouns == null)
@@ -132,7 +126,7 @@ namespace ChaoWorld.Bot
                 if (target.Pronouns == null)
                     await ctx.Reply(noPronounsSetMessage);
                 else
-                    await ctx.Reply($"**{target.NameFor(ctx)}**'s pronouns are **{target.Pronouns}**.\nTo print the pronouns with formatting, type `pk;member {target.Reference()} pronouns -raw`."
+                    await ctx.Reply($"**{target.Name}**'s pronouns are **{target.Pronouns}**.\nTo print the pronouns with formatting, type `pk;member {target.Reference()} pronouns -raw`."
                         + (ctx.System?.Id == target.Garden ? $" To clear them, type `pk;member {target.Reference()} pronouns -clear`." : ""));
                 return;
             }
@@ -194,7 +188,7 @@ namespace ChaoWorld.Bot
                 if ((target.BannerImage?.Trim() ?? "").Length > 0)
                 {
                     var eb = new EmbedBuilder()
-                        .Title($"{target.NameFor(ctx)}'s banner image")
+                        .Title($"{target.Name}'s banner image")
                         .Image(new(target.BannerImage))
                         .Description($"To clear, use `pk;member {target.Hid} banner clear`.");
                     await ctx.Reply(embed: eb.Build());
@@ -273,9 +267,6 @@ namespace ChaoWorld.Bot
             }
             else if (!ctx.HasNext())
             {
-                if (!target.BirthdayPrivacy.CanAccess(ctx.LookupContextFor(target.Garden)))
-                    throw Errors.LookupNotAllowed;
-
                 if (target.Birthday == null)
                     await ctx.Reply("This member does not have a birthdate set."
                         + (ctx.System?.Id == target.Garden ? $" To set one, type `pk;member {target.Reference()} birthdate <birthdate>`." : ""));
@@ -300,8 +291,6 @@ namespace ChaoWorld.Bot
 
         private async Task<EmbedBuilder> CreateMemberNameInfoEmbed(Context ctx, Chao target)
         {
-            var lcx = ctx.LookupContextFor(target);
-
             MemberGuildSettings memberGuildConfig = null;
             if (ctx.Guild != null)
                 memberGuildConfig = await _repo.GetMemberGuild(ctx.Guild.Id, target.Id);
@@ -311,17 +300,14 @@ namespace ChaoWorld.Bot
                 .Footer(new($"Member ID: {target.Hid} | Active name in bold. Server name overrides display name, which overrides base name."));
 
             if (target.DisplayName == null && memberGuildConfig?.DisplayName == null)
-                eb.Field(new("Name", $"**{target.NameFor(ctx)}**"));
+                eb.Field(new("Name", $"**{target.Name}**"));
             else
-                eb.Field(new("Name", target.NameFor(ctx)));
+                eb.Field(new("Name", target.Name));
 
-            if (target.NamePrivacy.CanAccess(lcx))
-            {
-                if (target.DisplayName != null && memberGuildConfig?.DisplayName == null)
-                    eb.Field(new("Display Name", $"**{target.DisplayName}**"));
-                else
-                    eb.Field(new("Display Name", target.DisplayName ?? "*(none)*"));
-            }
+            if (target.DisplayName != null && memberGuildConfig?.DisplayName == null)
+                eb.Field(new("Display Name", $"**{target.DisplayName}**"));
+            else
+                eb.Field(new("Display Name", target.DisplayName ?? "*(none)*"));
 
             if (ctx.Guild != null)
             {
@@ -381,7 +367,7 @@ namespace ChaoWorld.Bot
                 var patch = new MemberPatch { DisplayName = Partial<string>.Null() };
                 await _repo.UpdateMember(target.Id, patch);
 
-                await PrintSuccess($"{Emojis.Success} Member display name cleared. This member will now be proxied using their member name \"{target.NameFor(ctx)}\".");
+                await PrintSuccess($"{Emojis.Success} Member display name cleared. This member will now be proxied using their member name \"{target.Name}\".");
             }
             else
             {
@@ -432,7 +418,7 @@ namespace ChaoWorld.Bot
                 if (target.DisplayName != null)
                     await ctx.Reply($"{Emojis.Success} Member server name cleared. This member will now be proxied using their global display name \"{target.DisplayName}\" in this server ({ctx.Guild.Name}).");
                 else
-                    await ctx.Reply($"{Emojis.Success} Member server name cleared. This member will now be proxied using their member name \"{target.NameFor(ctx)}\" in this server ({ctx.Guild.Name}).");
+                    await ctx.Reply($"{Emojis.Success} Member server name cleared. This member will now be proxied using their member name \"{target.Name}\" in this server ({ctx.Guild.Name}).");
             }
             else
             {
@@ -497,101 +483,11 @@ namespace ChaoWorld.Bot
                 await ctx.Reply($"{Emojis.Success} Latch / front autoproxy have been **disabled** for this member.");
         }
 
-        public async Task Privacy(Context ctx, Chao target, PrivacyLevel? newValueFromCommand)
-        {
-            ctx.CheckGarden().CheckOwnMember(target);
-
-            // Display privacy settings
-            if (!ctx.HasNext() && newValueFromCommand == null)
-            {
-                await ctx.Reply(embed: new EmbedBuilder()
-                    .Title($"Current privacy settings for {target.NameFor(ctx)}")
-                    .Field(new("Name (replaces name with display name if member has one)", target.NamePrivacy.Explanation()))
-                    .Field(new("Description", target.DescriptionPrivacy.Explanation()))
-                    .Field(new("Avatar", target.AvatarPrivacy.Explanation()))
-                    .Field(new("Birthday", target.BirthdayPrivacy.Explanation()))
-                    .Field(new("Pronouns", target.PronounPrivacy.Explanation()))
-                    .Field(new("Meta (message count, last front, last message)", target.MetadataPrivacy.Explanation()))
-                    .Field(new("Visibility", target.MemberVisibility.Explanation()))
-                    .Description("To edit privacy settings, use the command:\n`pk;member <member> privacy <subject> <level>`\n\n- `subject` is one of `name`, `description`, `avatar`, `birthday`, `pronouns`, `created`, `messages`, `visibility`, or `all`\n- `level` is either `public` or `private`.")
-                    .Build());
-                return;
-            }
-
-            // Get guild settings (mostly for warnings and such)
-            MemberGuildSettings guildSettings = null;
-            if (ctx.Guild != null)
-                guildSettings = await _repo.GetMemberGuild(ctx.Guild.Id, target.Id);
-
-            async Task SetAll(PrivacyLevel level)
-            {
-                await _repo.UpdateMember(target.Id, new MemberPatch().WithAllPrivacy(level));
-
-                if (level == PrivacyLevel.Private)
-                    await ctx.Reply($"{Emojis.Success} All {target.NameFor(ctx)}'s privacy settings have been set to **{level.LevelName()}**. Other accounts will now see nothing on the member card.");
-                else
-                    await ctx.Reply($"{Emojis.Success} All {target.NameFor(ctx)}'s privacy settings have been set to **{level.LevelName()}**. Other accounts will now see everything on the member card.");
-            }
-
-            async Task SetLevel(MemberPrivacySubject subject, PrivacyLevel level)
-            {
-                await _repo.UpdateMember(target.Id, new MemberPatch().WithPrivacy(subject, level));
-
-                var subjectName = subject switch
-                {
-                    MemberPrivacySubject.Name => "name privacy",
-                    MemberPrivacySubject.Description => "description privacy",
-                    MemberPrivacySubject.Avatar => "avatar privacy",
-                    MemberPrivacySubject.Pronouns => "pronoun privacy",
-                    MemberPrivacySubject.Birthday => "birthday privacy",
-                    MemberPrivacySubject.Metadata => "metadata privacy",
-                    MemberPrivacySubject.Visibility => "visibility",
-                    _ => throw new ArgumentOutOfRangeException($"Unknown privacy subject {subject}")
-                };
-
-                var explanation = (subject, level) switch
-                {
-                    (MemberPrivacySubject.Name, PrivacyLevel.Private) => "This member's name is now hidden from other systems, and will be replaced by the member's display name.",
-                    (MemberPrivacySubject.Description, PrivacyLevel.Private) => "This member's description is now hidden from other systems.",
-                    (MemberPrivacySubject.Avatar, PrivacyLevel.Private) => "This member's avatar is now hidden from other systems.",
-                    (MemberPrivacySubject.Birthday, PrivacyLevel.Private) => "This member's birthday is now hidden from other systems.",
-                    (MemberPrivacySubject.Pronouns, PrivacyLevel.Private) => "This member's pronouns are now hidden from other systems.",
-                    (MemberPrivacySubject.Metadata, PrivacyLevel.Private) => "This member's metadata (eg. created timestamp, message count, etc) is now hidden from other systems.",
-                    (MemberPrivacySubject.Visibility, PrivacyLevel.Private) => "This member is now hidden from member lists.",
-
-                    (MemberPrivacySubject.Name, PrivacyLevel.Public) => "This member's name is no longer hidden from other systems.",
-                    (MemberPrivacySubject.Description, PrivacyLevel.Public) => "This member's description is no longer hidden from other systems.",
-                    (MemberPrivacySubject.Avatar, PrivacyLevel.Public) => "This member's avatar is no longer hidden from other systems.",
-                    (MemberPrivacySubject.Birthday, PrivacyLevel.Public) => "This member's birthday is no longer hidden from other systems.",
-                    (MemberPrivacySubject.Pronouns, PrivacyLevel.Public) => "This member's pronouns are no longer hidden other systems.",
-                    (MemberPrivacySubject.Metadata, PrivacyLevel.Public) => "This member's metadata (eg. created timestamp, message count, etc) is no longer hidden from other systems.",
-                    (MemberPrivacySubject.Visibility, PrivacyLevel.Public) => "This member is no longer hidden from member lists.",
-
-                    _ => throw new InvalidOperationException($"Invalid subject/level tuple ({subject}, {level})")
-                };
-
-                await ctx.Reply($"{Emojis.Success} {target.NameFor(ctx)}'s **{subjectName}** has been set to **{level.LevelName()}**. {explanation}");
-
-                // Name privacy only works given a display name
-                if (subject == MemberPrivacySubject.Name && level == PrivacyLevel.Private && target.DisplayName == null)
-                    await ctx.Reply($"{Emojis.Warn} This member does not have a display name set, and name privacy **will not take effect**.");
-
-                // Avatar privacy doesn't apply when proxying if no server avatar is set
-                if (subject == MemberPrivacySubject.Avatar && level == PrivacyLevel.Private && guildSettings?.AvatarUrl == null)
-                    await ctx.Reply($"{Emojis.Warn} This member does not have a server avatar set, so *proxying* will **still show the member avatar**. If you want to hide your avatar when proxying here, set a server avatar: `pk;member {target.Reference()} serveravatar`");
-            }
-
-            if (ctx.Match("all") || newValueFromCommand != null)
-                await SetAll(newValueFromCommand ?? ctx.PopPrivacyLevel());
-            else
-                await SetLevel(ctx.PopMemberPrivacySubject(), ctx.PopPrivacyLevel());
-        }
-
         public async Task Delete(Context ctx, Chao target)
         {
             ctx.CheckGarden().CheckOwnMember(target);
 
-            await ctx.Reply($"{Emojis.Warn} Are you sure you want to delete \"{target.NameFor(ctx)}\"? If so, reply to this message with the member's ID (`{target.Hid}`). __***This cannot be undone!***__");
+            await ctx.Reply($"{Emojis.Warn} Are you sure you want to delete \"{target.Name}\"? If so, reply to this message with the member's ID (`{target.Hid}`). __***This cannot be undone!***__");
             if (!await ctx.ConfirmWithReply(target.Hid)) throw Errors.MemberDeleteCancelled;
 
             await _repo.DeleteMember(target.Id);

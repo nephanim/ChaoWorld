@@ -7,12 +7,6 @@ namespace ChaoWorld.Bot
 {
     public static class ModelUtils
     {
-        public static string NameFor(this Chao member, Context ctx) =>
-            member.NameFor(ctx.LookupContextFor(member));
-
-        public static string AvatarFor(this Chao member, Context ctx) =>
-            member.AvatarFor(ctx.LookupContextFor(member)).TryGetCleanCdnUrl();
-
         public static string DisplayName(this Chao member) =>
             member.DisplayName ?? member.Name;
 

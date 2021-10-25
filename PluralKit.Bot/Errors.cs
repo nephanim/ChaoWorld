@@ -67,48 +67,21 @@ namespace ChaoWorld.Bot
         public static CWError MemberLinkCancelled => new CWError("Member link cancelled.");
         public static CWError MemberUnlinkCancelled => new CWError("Member unlink cancelled.");
 
-        public static CWError SameSwitch(ICollection<Chao> members, LookupContext ctx)
-        {
-            if (members.Count == 0) return new CWError("There's already no one in front.");
-            if (members.Count == 1) return new CWError($"Member {members.First().NameFor(ctx)} is already fronting.");
-            return new CWError($"Members {string.Join(", ", members.Select(m => m.NameFor(ctx)))} are already fronting.");
-        }
-
-        public static CWError DuplicateSwitchMembers => new CWError("Duplicate members in member list.");
-        public static CWError SwitchMemberNotInSystem => new CWError("One or more switch members aren't in your own system.");
-
         public static CWError InvalidDateTime(string str) => new CWError($"Could not parse '{str}' as a valid date/time. Try using a syntax such as \"May 21, 12:30 PM\" or \"3d12h\" (ie. 3 days, 12 hours ago).");
-        public static CWError SwitchTimeInFuture => new CWError("Can't move switch to a time in the future.");
-        public static CWError NoRegisteredSwitches => new CWError("There are no registered switches for this system.");
 
-        public static CWError SwitchMoveBeforeSecondLast(ZonedDateTime time) => new CWError($"Can't move switch to before last switch time ({time.FormatZoned()}), as it would cause conflicts.");
-        public static CWError SwitchMoveCancelled => new CWError("Switch move cancelled.");
-        public static CWError SwitchEditCancelled => new CWError("Switch edit cancelled.");
-        public static CWError SwitchDeleteCancelled => new CWError("Switch deletion cancelled.");
         public static CWError TimezoneParseError(string timezone) => new CWError($"Could not parse timezone offset {timezone}. Offset must be a value like 'UTC+5' or 'GMT-4:30'.");
 
         public static CWError InvalidTimeZone(string zoneStr) => new CWError($"Invalid time zone ID '{zoneStr}'. To find your time zone ID, use the following website: <https://xske.github.io/tz>");
         public static CWError TimezoneChangeCancelled => new CWError("Time zone change cancelled.");
         public static CWError AmbiguousTimeZone(string zoneStr, int count) => new CWError($"The time zone query '{zoneStr}' resulted in **{count}** different time zone regions. Try being more specific - e.g. pass an exact time zone specifier from the following website: <https://xske.github.io/tz>");
-        public static CWError NoImportFilePassed => new CWError("You must either pass an URL to a file as a command parameter, or as an attachment to the message containing the command.");
-        public static CWError InvalidImportFile => new CWError("Imported data file invalid. Make sure this is a .json file directly exported from ChaoWorld or Tupperbox.");
-        public static CWError ImportCancelled => new CWError("Import cancelled.");
         public static CWError MessageNotFound(ulong id) => new CWError($"Message with ID '{id}' not found. Are you sure it's a message proxied by ChaoWorld?");
 
         public static CWError DurationParseError(string durationStr) => new CWError($"Could not parse {durationStr.AsCode()} as a valid duration. Try a format such as `30d`, `1d3h` or `20m30s`.");
-        public static CWError FrontPercentTimeInFuture => new CWError("Cannot get the front percent between now and a time in the future.");
 
         public static CWError GuildNotFound(ulong guildId) => new CWError($"Guild with ID `{guildId}` not found, or I cannot access it. Note that you must be a member of the guild you are querying.");
 
         public static CWError DisplayNameTooLong(string displayName, int maxLength) => new CWError(
             $"Display name too long ({displayName.Length} > {maxLength} characters). Use a shorter display name, or shorten your system tag.");
-        public static CWError ProxyNameTooShort(string name) => new CWError($"The webhook's name, {name.AsCode()}, is shorter than two characters, and thus cannot be proxied. Please change the member name or use a longer system tag.");
-        public static CWError ProxyNameTooLong(string name) => new CWError($"The webhook's name, {name.AsCode()}, is too long ({name.Length} > {Limits.MaxProxyNameLength} characters), and thus cannot be proxied. Please change the member name, display name or server display name, or use a shorter system tag.");
-
-        public static CWError ProxyTagAlreadyExists(ProxyTag tagToAdd, Chao member) => new CWError($"That member already has the proxy tag {tagToAdd.ProxyString.AsCode()}. The member currently has these tags: {member.ProxyTagsString()}");
-        public static CWError ProxyTagDoesNotExist(ProxyTag tagToRemove, Chao member) => new CWError($"That member does not have the proxy tag {tagToRemove.ProxyString.AsCode()}. The member currently has these tags: {member.ProxyTagsString()}");
-        public static CWError LegacyAlreadyHasProxyTag(ProxyTag requested, Chao member) => new CWError($"This member already has more than one proxy tag set: {member.ProxyTagsString()}\nConsider using the {$"pk;member {member.Reference()} proxy add {requested.ProxyString}".AsCode()} command instead.");
-        public static CWError EmptyProxyTags(Chao member) => new CWError($"The example proxy `text` is equivalent to having no proxy tags at all, since there are no symbols or brackets on either end. If you'd like to clear your proxy tags, use `pk;member {member.Reference()} proxy clear`.");
 
         public static CWError GenericCancelled() => new CWError("Operation cancelled.");
 

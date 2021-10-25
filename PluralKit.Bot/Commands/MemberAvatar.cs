@@ -44,8 +44,7 @@ namespace ChaoWorld.Bot
         private async Task AvatarShow(AvatarLocation location, Context ctx, Chao target, MemberGuildSettings? guildData)
         {
             var currentValue = location == AvatarLocation.Member ? target.AvatarUrl : guildData?.AvatarUrl;
-            var canAccess = location != AvatarLocation.Member || target.AvatarPrivacy.CanAccess(ctx.LookupContextFor(target));
-            if (string.IsNullOrEmpty(currentValue) || !canAccess)
+            if (string.IsNullOrEmpty(currentValue))
             {
                 if (location == AvatarLocation.Member)
                 {
@@ -62,7 +61,7 @@ namespace ChaoWorld.Bot
             var cmd = location == AvatarLocation.Server ? "serveravatar" : "avatar";
 
             var eb = new EmbedBuilder()
-                .Title($"{target.NameFor(ctx)}'s {field}")
+                .Title($"{target.Name}'s {field}")
                 .Image(new(currentValue?.TryGetCleanCdnUrl()));
             if (target.Garden == ctx.System?.Id)
                 eb.Description($"To clear, use `pk;member {target.Reference()} {cmd} clear`.");

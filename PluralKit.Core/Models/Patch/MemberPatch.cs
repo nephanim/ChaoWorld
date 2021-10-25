@@ -25,13 +25,6 @@ namespace ChaoWorld.Core
         public Partial<bool> KeepProxy { get; set; }
         public Partial<int> MessageCount { get; set; }
         public Partial<bool> AllowAutoproxy { get; set; }
-        public Partial<PrivacyLevel> Visibility { get; set; }
-        public Partial<PrivacyLevel> NamePrivacy { get; set; }
-        public Partial<PrivacyLevel> DescriptionPrivacy { get; set; }
-        public Partial<PrivacyLevel> PronounPrivacy { get; set; }
-        public Partial<PrivacyLevel> BirthdayPrivacy { get; set; }
-        public Partial<PrivacyLevel> AvatarPrivacy { get; set; }
-        public Partial<PrivacyLevel> MetadataPrivacy { get; set; }
 
         public override Query Apply(Query q) => q.ApplyPatch(wrapper => wrapper
             .With("name", Name)
@@ -47,13 +40,6 @@ namespace ChaoWorld.Core
             .With("keep_proxy", KeepProxy)
             .With("message_count", MessageCount)
             .With("allow_autoproxy", AllowAutoproxy)
-            .With("member_visibility", Visibility)
-            .With("name_privacy", NamePrivacy)
-            .With("description_privacy", DescriptionPrivacy)
-            .With("pronoun_privacy", PronounPrivacy)
-            .With("birthday_privacy", BirthdayPrivacy)
-            .With("avatar_privacy", AvatarPrivacy)
-            .With("metadata_privacy", MetadataPrivacy)
         );
 
         public new void AssertIsValid()
@@ -116,31 +102,6 @@ namespace ChaoWorld.Core
                     .OfType<JObject>().Select(o => new ProxyTag(o.Value<string>("prefix"), o.Value<string>("suffix")))
                     .Where(p => p.Valid)
                     .ToArray();
-
-            if (o.ContainsKey("privacy")) //TODO: Deprecate this completely in api v2
-            {
-                var plevel = o.ParsePrivacy("privacy");
-
-                patch.Visibility = plevel;
-                patch.NamePrivacy = plevel;
-                patch.AvatarPrivacy = plevel;
-                patch.DescriptionPrivacy = plevel;
-                patch.BirthdayPrivacy = plevel;
-                patch.PronounPrivacy = plevel;
-                // member.ColorPrivacy = plevel;
-                patch.MetadataPrivacy = plevel;
-            }
-            else
-            {
-                if (o.ContainsKey("visibility")) patch.Visibility = o.ParsePrivacy("visibility");
-                if (o.ContainsKey("name_privacy")) patch.NamePrivacy = o.ParsePrivacy("name_privacy");
-                if (o.ContainsKey("description_privacy")) patch.DescriptionPrivacy = o.ParsePrivacy("description_privacy");
-                if (o.ContainsKey("avatar_privacy")) patch.AvatarPrivacy = o.ParsePrivacy("avatar_privacy");
-                if (o.ContainsKey("birthday_privacy")) patch.BirthdayPrivacy = o.ParsePrivacy("birthday_privacy");
-                if (o.ContainsKey("pronoun_privacy")) patch.PronounPrivacy = o.ParsePrivacy("pronoun_privacy");
-                // if (o.ContainsKey("color_privacy")) member.ColorPrivacy = o.ParsePrivacy("member");
-                if (o.ContainsKey("metadata_privacy")) patch.MetadataPrivacy = o.ParsePrivacy("metadata_privacy");
-            }
 
             return patch;
         }

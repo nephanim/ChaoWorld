@@ -136,15 +136,6 @@ namespace ChaoWorld.Bot
             }
         }
 
-        public LookupContext LookupContextFor(Core.Garden target) =>
-            System?.Id == target.Id ? LookupContext.ByOwner : LookupContext.ByNonOwner;
-
-        public LookupContext LookupContextFor(GardenId systemId) =>
-            System?.Id == systemId ? LookupContext.ByOwner : LookupContext.ByNonOwner;
-
-        public LookupContext LookupContextFor(Chao target) =>
-            System?.Id == target.Garden ? LookupContext.ByOwner : LookupContext.ByNonOwner;
-
         public IComponentContext Services => _provider;
     }
 }

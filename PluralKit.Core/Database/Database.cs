@@ -79,7 +79,6 @@ namespace ChaoWorld.Core
             // Register our custom types to Npgsql
             // Without these it'll still *work* but break at the first launch + probably cause other small issues
             NpgsqlConnection.GlobalTypeMapper.MapComposite<ProxyTag>("proxy_tag");
-            NpgsqlConnection.GlobalTypeMapper.MapEnum<PrivacyLevel>("privacy_level");
         }
 
         public async Task<IPKConnection> Obtain()

@@ -43,7 +43,7 @@ namespace ChaoWorld.Bot
             var existingMember = await _repo.GetMemberByName(ctx.System.Id, memberName);
             if (existingMember != null)
             {
-                var msg = $"{Emojis.Warn} You already have a member in your system with the name \"{existingMember.NameFor(ctx)}\" (with ID `{existingMember.Hid}`). Do you want to create another member with the same name?";
+                var msg = $"{Emojis.Warn} You already have a member in your system with the name \"{existingMember.Name}\" (with ID `{existingMember.Hid}`). Do you want to create another member with the same name?";
                 if (!await ctx.PromptYesNo(msg, "Create")) throw new CWError("Member creation cancelled.");
             }
 
@@ -97,30 +97,7 @@ namespace ChaoWorld.Bot
         public async Task ViewMember(Context ctx, Chao target)
         {
             var system = await _repo.GetSystem(target.Garden);
-            await ctx.Reply(embed: await _embeds.CreateMemberEmbed(system, target, ctx.Guild, ctx.LookupContextFor(system)));
-        }
-
-        public async Task Soulscream(Context ctx, Chao target)
-        {
-            // this is for a meme, please don't take this code seriously. :)
-
-            var name = target.NameFor(ctx.LookupContextFor(target));
-            var encoded = HttpUtility.UrlEncode(name);
-
-            var resp = await _client.GetAsync($"https://onomancer.sibr.dev/api/generateStats2?name={encoded}");
-            if (resp.StatusCode != HttpStatusCode.OK)
-                // lol
-                return;
-
-            var data = JObject.Parse(await resp.Content.ReadAsStringAsync());
-            var scream = data["soulscream"]!.Value<string>();
-
-            var eb = new EmbedBuilder()
-                .Color(DiscordUtils.Red)
-                .Title(name)
-                .Url($"https://onomancer.sibr.dev/reflect?name={encoded}")
-                .Description($"*{scream}*");
-            await ctx.Reply(embed: eb.Build());
+            await ctx.Reply(embed: await _embeds.CreateMemberEmbed(system, target, ctx.Guild));
         }
     }
 }
