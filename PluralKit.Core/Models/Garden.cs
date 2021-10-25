@@ -54,7 +54,5 @@ namespace ChaoWorld.Core
         public int? LatchTimeout { get; }
         public int? ChaoLimitOverride { get; }
         public int? GroupLimitOverride { get; }
-
-        [JsonIgnore] public DateTimeZone Zone => DateTimeZoneProviders.Tzdb.GetZoneOrNull(UiTz);
     }
 }

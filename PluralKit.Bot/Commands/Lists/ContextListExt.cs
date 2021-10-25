@@ -115,7 +115,7 @@ namespace ChaoWorld.Bot
 
             void LongRenderer(EmbedBuilder eb, IEnumerable<ListedChao> page)
             {
-                var zone = ctx.System?.Zone ?? DateTimeZone.Utc;
+                var zone = DateTimeZone.Utc;
                 foreach (var m in page)
                 {
                     var profile = new StringBuilder($"**ID**: {m.Id}");
