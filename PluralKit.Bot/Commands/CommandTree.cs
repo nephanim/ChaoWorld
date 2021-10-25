@@ -191,12 +191,6 @@ namespace ChaoWorld.Bot
                 else
                     return ctx.Execute<SystemEdit>(SystemProxy, m => m.SystemProxy(ctx));
             if (ctx.Match("invite")) return ctx.Execute<Misc>(Invite, m => m.Invite(ctx));
-            if (ctx.Match("mn")) return ctx.Execute<Fun>(null, m => m.Mn(ctx));
-            if (ctx.Match("fire")) return ctx.Execute<Fun>(null, m => m.Fire(ctx));
-            if (ctx.Match("thunder")) return ctx.Execute<Fun>(null, m => m.Thunder(ctx));
-            if (ctx.Match("freeze")) return ctx.Execute<Fun>(null, m => m.Freeze(ctx));
-            if (ctx.Match("starstorm")) return ctx.Execute<Fun>(null, m => m.Starstorm(ctx));
-            if (ctx.Match("flash")) return ctx.Execute<Fun>(null, m => m.Flash(ctx));
             if (ctx.Match("stats")) return ctx.Execute<Misc>(null, m => m.Stats(ctx));
             if (ctx.Match("permcheck"))
                 return ctx.Execute<Checks>(PermCheck, m => m.PermCheckGuild(ctx));
