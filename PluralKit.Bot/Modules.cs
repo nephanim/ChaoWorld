@@ -49,7 +49,6 @@ namespace ChaoWorld.Bot
             builder.RegisterType<Checks>().AsSelf();
             builder.RegisterType<Help>().AsSelf();
             builder.RegisterType<Member>().AsSelf();
-            builder.RegisterType<MemberAvatar>().AsSelf();
             builder.RegisterType<MemberEdit>().AsSelf();
             builder.RegisterType<Misc>().AsSelf();
             builder.RegisterType<Random>().AsSelf();

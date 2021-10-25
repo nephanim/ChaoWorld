@@ -301,12 +301,8 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<MemberEdit>(MemberBirthday, m => m.Birthday(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
                 await ctx.Execute<MemberEdit>(MemberDelete, m => m.Delete(ctx, target));
-            else if (ctx.Match("avatar", "profile", "picture", "icon", "image", "pfp", "pic"))
-                await ctx.Execute<MemberAvatar>(MemberAvatar, m => m.Avatar(ctx, target));
             else if (ctx.Match("banner", "splash", "cover"))
                 await ctx.Execute<MemberEdit>(MemberBannerImage, m => m.BannerImage(ctx, target));
-            else if (ctx.Match("serveravatar", "servericon", "serverimage", "serverpfp", "serverpic", "savatar", "spic", "guildavatar", "guildpic", "guildicon", "sicon"))
-                await ctx.Execute<MemberAvatar>(MemberServerAvatar, m => m.ServerAvatar(ctx, target));
             else if (ctx.Match("displayname", "dn", "dname", "nick", "nickname", "dispname"))
                 await ctx.Execute<MemberEdit>(MemberDisplayName, m => m.DisplayName(ctx, target));
             else if (ctx.Match("servername", "sn", "sname", "snick", "snickname", "servernick", "servernickname", "serverdisplayname", "guildname", "guildnick", "guildnickname", "serverdn"))
