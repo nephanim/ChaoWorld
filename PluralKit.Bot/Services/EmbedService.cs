@@ -151,11 +151,6 @@ namespace ChaoWorld.Bot
             var guildDisplayName = guildSettings?.DisplayName;
             var avatar = guildSettings?.AvatarUrl ?? member.AvatarFor(ctx);
 
-            var groups = await _repo.GetMemberGroups(member.Id)
-                .Where(g => g.Visibility.CanAccess(ctx))
-                .OrderBy(g => g.Name, StringComparer.InvariantCultureIgnoreCase)
-                .ToListAsync();
-
             var eb = new EmbedBuilder()
                 // TODO: add URL of website when that's up
                 .Author(new(name, IconUrl: avatar.TryGetCleanCdnUrl()))
@@ -190,68 +185,8 @@ namespace ChaoWorld.Bot
             // if (!member.Color.EmptyOrNull() && member.ColorPrivacy.CanAccess(ctx)) eb.AddField("Color", $"#{member.Color}", true);
             if (!member.Color.EmptyOrNull()) eb.Field(new("Color", $"#{member.Color}", true));
 
-            if (groups.Count > 0)
-            {
-                // More than 5 groups show in "compact" format without ID
-                var content = groups.Count > 5
-                    ? string.Join(", ", groups.Select(g => g.DisplayName ?? g.Name))
-                    : string.Join("\n", groups.Select(g => $"[`{g.Hid}`] **{g.DisplayName ?? g.Name}**"));
-                eb.Field(new($"Groups ({groups.Count})", content.Truncate(1000)));
-            }
-
             if (member.DescriptionFor(ctx) is { } desc)
                 eb.Field(new("Description", member.Description.NormalizeLineEndSpacing(), false));
-
-            return eb.Build();
-        }
-
-        public async Task<Embed> CreateGroupEmbed(Context ctx, Garden system, PKGroup target)
-        {
-            var pctx = ctx.LookupContextFor(system);
-            var memberCount = ctx.MatchPrivateFlag(pctx) ? await _repo.GetGroupMemberCount(target.Id, PrivacyLevel.Public) : await _repo.GetGroupMemberCount(target.Id);
-
-            var nameField = target.Name;
-            if (system.Name != null)
-                nameField = $"{nameField} ({system.Name})";
-
-            uint color;
-            try
-            {
-                color = target.Color?.ToDiscordColor() ?? DiscordUtils.Gray;
-            }
-            catch (ArgumentException)
-            {
-                // There's no API for group colors yet, but defaulting to a blank color regardless
-                color = DiscordUtils.Gray;
-            }
-
-            var eb = new EmbedBuilder()
-                .Author(new(nameField, IconUrl: target.IconFor(pctx)))
-                .Color(color)
-                .Footer(new($"Garden ID: {system.Hid} | Group ID: {target.Hid} | Created on {target.Created.FormatZoned(system)}"));
-
-            if (target.DescriptionPrivacy.CanAccess(ctx.LookupContextFor(target.System)))
-                eb.Image(new(target.BannerImage));
-
-            if (target.DisplayName != null)
-                eb.Field(new("Display Name", target.DisplayName, true));
-
-            if (!target.Color.EmptyOrNull()) eb.Field(new("Color", $"#{target.Color}", true));
-
-            if (target.ListPrivacy.CanAccess(pctx))
-            {
-                if (memberCount == 0 && pctx == LookupContext.ByOwner)
-                    // Only suggest the add command if this is actually the owner lol
-                    eb.Field(new("Members (0)", $"Add one with `pk;group {target.Reference()} add <member>`!", false));
-                else
-                    eb.Field(new($"Members ({memberCount})", $"(see `pk;group {target.Reference()} list`)", false));
-            }
-
-            if (target.DescriptionFor(pctx) is { } desc)
-                eb.Field(new("Description", desc));
-
-            if (target.IconFor(pctx) is { } icon)
-                eb.Thumbnail(new(icon.TryGetCleanCdnUrl()));
 
             return eb.Build();
         }

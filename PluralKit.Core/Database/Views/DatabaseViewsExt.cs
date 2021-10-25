@@ -12,16 +12,10 @@ namespace ChaoWorld.Core
         public static Task<IEnumerable<SystemFronter>> QueryCurrentFronters(this IPKConnection conn, GardenId system) =>
             conn.QueryAsync<SystemFronter>("select * from system_fronters where system = @system", new { system });
 
-        public static Task<IEnumerable<ListedGroup>> QueryGroupList(this IPKConnection conn, GardenId system) =>
-            conn.QueryAsync<ListedGroup>("select * from group_list where system = @Garden", new { System = system });
-
         public static Task<IEnumerable<ListedMember>> QueryMemberList(this IPKConnection conn, GardenId system, MemberListQueryOptions opts)
         {
             StringBuilder query;
-            if (opts.GroupFilter == null)
-                query = new StringBuilder("select * from member_list where system = @system");
-            else
-                query = new StringBuilder("select member_list.* from group_members inner join member_list on member_list.id = group_members.member_id where group_id = @groupFilter");
+            query = new StringBuilder("select * from member_list where system = @system");
 
             if (opts.PrivacyFilter != null)
                 query.Append($" and member_visibility = {(int)opts.PrivacyFilter}");
@@ -42,7 +36,7 @@ namespace ChaoWorld.Core
                 query.Append(")");
             }
 
-            return conn.QueryAsync<ListedMember>(query.ToString(), new { system, filter = opts.Search, groupFilter = opts.GroupFilter });
+            return conn.QueryAsync<ListedMember>(query.ToString(), new { system, filter = opts.Search });
         }
 
         public struct MemberListQueryOptions
@@ -51,7 +45,6 @@ namespace ChaoWorld.Core
             public string? Search;
             public bool SearchDescription;
             public LookupContext Context;
-            public GroupId? GroupFilter;
         }
     }
 }

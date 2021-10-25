@@ -29,13 +29,6 @@ namespace ChaoWorld.Bot
             return ctx;
         }
 
-        public static Context CheckOwnGroup(this Context ctx, PKGroup group)
-        {
-            if (group.System != ctx.System?.Id)
-                throw Errors.NotOwnGroupError;
-            return ctx;
-        }
-
         public static Context CheckGarden(this Context ctx)
         {
             if (ctx.System == null)

@@ -45,12 +45,6 @@ namespace ChaoWorld.Core
             return _db.QueryStream<Chao>(query);
         }
 
-        public IAsyncEnumerable<PKGroup> GetSystemGroups(GardenId system)
-        {
-            var query = new Query("groups").Where("system", system);
-            return _db.QueryStream<PKGroup>(query);
-        }
-
         public Task<int> GetSystemMemberCount(GardenId system, PrivacyLevel? privacyFilter = null)
         {
             var query = new Query("members").SelectRaw("count(*)").Where("system", system);

@@ -16,7 +16,6 @@ namespace ChaoWorld.Bot
         public bool Reverse { get; set; }
 
         public PrivacyLevel? PrivacyFilter { get; set; } = PrivacyLevel.Public;
-        public GroupId? GroupFilter { get; set; }
         public string? Search { get; set; }
         public bool SearchDescription { get; set; }
 
@@ -68,7 +67,6 @@ namespace ChaoWorld.Bot
             new DatabaseViewsExt.MemberListQueryOptions
             {
                 PrivacyFilter = PrivacyFilter,
-                GroupFilter = GroupFilter,
                 Search = Search,
                 SearchDescription = SearchDescription
             };

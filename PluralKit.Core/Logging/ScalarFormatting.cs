@@ -14,8 +14,6 @@ namespace ChaoWorld.Core
                 output.Write(si.Value);
             else if (value is ChaoId mi)
                 output.Write(mi.Value);
-            else if (value is GroupId gi)
-                output.Write(gi.Value);
             else
                 return false;
             return true;
@@ -34,7 +32,6 @@ namespace ChaoWorld.Core
             {
                 AddLiteralWriter(typeof(GardenId), WriteV);
                 AddLiteralWriter(typeof(ChaoId), WriteV);
-                AddLiteralWriter(typeof(GroupId), WriteV);
             }
         }
 

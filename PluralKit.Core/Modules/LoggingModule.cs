@@ -56,7 +56,6 @@ namespace ChaoWorld.Core
                 // Actual formatting for these is handled in ScalarFormatting
                 .Destructure.AsScalar<GardenId>()
                 .Destructure.AsScalar<ChaoId>()
-                .Destructure.AsScalar<GroupId>()
                 .Destructure.ByTransforming<ProxyTag>(t => new { t.Prefix, t.Suffix })
                 .Destructure.With<PatchObjectDestructuring>()
 

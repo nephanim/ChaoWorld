@@ -17,7 +17,6 @@ namespace ChaoWorld.Bot
             member.DisplayName ?? member.Name;
 
         public static string Reference(this Chao member) => EntityReference(member.Hid, member.Name);
-        public static string Reference(this PKGroup group) => EntityReference(group.Hid, group.Name);
 
         private static string EntityReference(string hid, string name)
         {

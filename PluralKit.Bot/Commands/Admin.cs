@@ -65,29 +65,6 @@ namespace ChaoWorld.Bot
             await ctx.Reply($"{Emojis.Success} Member ID updated (`{target.Hid}` -> `{newHid}`).");
         }
 
-        public async Task UpdateGroupId(Context ctx)
-        {
-            ctx.AssertBotAdmin();
-
-            var target = await ctx.MatchGroup();
-            if (target == null)
-                throw new CWError("Unknown group.");
-
-            var newHid = ctx.PopArgument();
-            if (!Regex.IsMatch(newHid, "^[a-z]{5}$"))
-                throw new CWError($"Invalid new group ID `{newHid}`.");
-
-            var existingGroup = await _repo.GetGroupByHid(newHid);
-            if (existingGroup != null)
-                throw new CWError($"Another group already exists with ID `{newHid}`.");
-
-            if (!await ctx.PromptYesNo($"Change group ID of **{target.Name}** (`{target.Hid}`) to `{newHid}`?", "Change"))
-                throw new CWError("ID change cancelled.");
-
-            await _repo.UpdateGroup(target.Id, new() { Hid = newHid });
-            await ctx.Reply($"{Emojis.Success} Group ID updated (`{target.Hid}` -> `{newHid}`).");
-        }
-
         public async Task SystemMemberLimit(Context ctx)
         {
             ctx.AssertBotAdmin();

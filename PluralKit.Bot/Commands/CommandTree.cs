@@ -136,8 +136,6 @@ namespace ChaoWorld.Bot
                 return HandleSystemCommand(ctx);
             if (ctx.Match("member", "m"))
                 return HandleMemberCommand(ctx);
-            if (ctx.Match("group", "g"))
-                return HandleGroupCommand(ctx);
             if (ctx.Match("commands", "cmd", "c"))
                 return CommandHelpRoot(ctx);
             if (ctx.Match("ap", "autoproxy", "auto"))
@@ -209,10 +207,7 @@ namespace ChaoWorld.Bot
             if (ctx.Match("admin"))
                 return HandleAdminCommand(ctx);
             if (ctx.Match("random", "r"))
-                if (ctx.Match("group", "g") || ctx.MatchFlag("group", "g"))
-                    return ctx.Execute<Random>(GroupRandom, r => r.Group(ctx));
-                else
-                    return ctx.Execute<Random>(MemberRandom, m => m.Member(ctx));
+                return ctx.Execute<Random>(MemberRandom, m => m.Member(ctx));
 
             // remove compiler warning
             return ctx.Reply(
@@ -225,8 +220,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<Admin>(Admin, a => a.UpdateSystemId(ctx));
             else if (ctx.Match("umid", "updatememberid"))
                 await ctx.Execute<Admin>(Admin, a => a.UpdateMemberId(ctx));
-            else if (ctx.Match("ugid", "updategroupid"))
-                await ctx.Execute<Admin>(Admin, a => a.UpdateGroupId(ctx));
             else if (ctx.Match("uml", "updatememberlimit"))
                 await ctx.Execute<Admin>(Admin, a => a.SystemMemberLimit(ctx));
             else if (ctx.Match("ugl", "updategrouplimit"))
@@ -293,8 +286,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<SystemEdit>(SystemPing, m => m.SystemPing(ctx));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "systems", SystemCommands);
-            else if (ctx.Match("groups", "gs", "g"))
-                await ctx.Execute<Groups>(GroupList, g => g.ListSystemGroups(ctx, null));
             else
                 await HandleSystemCommandTargeted(ctx);
         }
@@ -315,8 +306,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<SystemList>(SystemFind, m => m.MemberList(ctx, target));
             else if (ctx.Match("info", "view", "show"))
                 await ctx.Execute<System>(SystemInfo, m => m.Query(ctx, target));
-            else if (ctx.Match("groups", "gs"))
-                await ctx.Execute<Groups>(GroupList, g => g.ListSystemGroups(ctx, target));
             else if (!ctx.HasNext())
                 await ctx.Execute<System>(SystemInfo, m => m.Query(ctx, target));
             else
@@ -362,13 +351,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<MemberAvatar>(MemberAvatar, m => m.Avatar(ctx, target));
             else if (ctx.Match("banner", "splash", "cover"))
                 await ctx.Execute<MemberEdit>(MemberBannerImage, m => m.BannerImage(ctx, target));
-            else if (ctx.Match("group", "groups"))
-                if (ctx.Match("add", "a"))
-                    await ctx.Execute<MemberGroup>(MemberGroupAdd, m => m.AddRemove(ctx, target, Groups.AddRemoveOperation.Add));
-                else if (ctx.Match("remove", "rem"))
-                    await ctx.Execute<MemberGroup>(MemberGroupRemove, m => m.AddRemove(ctx, target, Groups.AddRemoveOperation.Remove));
-                else
-                    await ctx.Execute<MemberGroup>(MemberGroups, m => m.List(ctx, target));
             else if (ctx.Match("serveravatar", "servericon", "serverimage", "serverpfp", "serverpic", "savatar", "spic", "guildavatar", "guildpic", "guildicon", "sicon"))
                 await ctx.Execute<MemberAvatar>(MemberServerAvatar, m => m.ServerAvatar(ctx, target));
             else if (ctx.Match("displayname", "dn", "dname", "nick", "nickname", "dispname"))
@@ -391,57 +373,6 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<Member>(MemberInfo, m => m.ViewMember(ctx, target));
             else
                 await PrintCommandNotFoundError(ctx, MemberInfo, MemberRename, MemberDisplayName, MemberServerName, MemberDesc, MemberPronouns, MemberColor, MemberBirthday, MemberProxy, MemberDelete, MemberAvatar, SystemList);
-        }
-
-        private async Task HandleGroupCommand(Context ctx)
-        {
-            // Commands with no group argument
-            if (ctx.Match("n", "new"))
-                await ctx.Execute<Groups>(GroupNew, g => g.CreateGroup(ctx));
-            else if (ctx.Match("list", "l"))
-                await ctx.Execute<Groups>(GroupList, g => g.ListSystemGroups(ctx, null));
-            else if (ctx.Match("commands", "help"))
-                await PrintCommandList(ctx, "groups", GroupCommands);
-            else if (await ctx.MatchGroup() is { } target)
-            {
-                // Commands with group argument
-                if (ctx.Match("rename", "name", "changename", "setname"))
-                    await ctx.Execute<Groups>(GroupRename, g => g.RenameGroup(ctx, target));
-                else if (ctx.Match("nick", "dn", "displayname", "nickname"))
-                    await ctx.Execute<Groups>(GroupDisplayName, g => g.GroupDisplayName(ctx, target));
-                else if (ctx.Match("description", "info", "bio", "text", "desc"))
-                    await ctx.Execute<Groups>(GroupDesc, g => g.GroupDescription(ctx, target));
-                else if (ctx.Match("add", "a"))
-                    await ctx.Execute<Groups>(GroupAdd, g => g.AddRemoveMembers(ctx, target, Groups.AddRemoveOperation.Add));
-                else if (ctx.Match("remove", "rem", "r"))
-                    await ctx.Execute<Groups>(GroupRemove, g => g.AddRemoveMembers(ctx, target, Groups.AddRemoveOperation.Remove));
-                else if (ctx.Match("members", "list", "ms", "l"))
-                    await ctx.Execute<Groups>(GroupMemberList, g => g.ListGroupMembers(ctx, target));
-                else if (ctx.Match("random"))
-                    await ctx.Execute<Random>(GroupMemberRandom, r => r.GroupMember(ctx, target));
-                else if (ctx.Match("privacy"))
-                    await ctx.Execute<Groups>(GroupPrivacy, g => g.GroupPrivacy(ctx, target, null));
-                else if (ctx.Match("public", "pub"))
-                    await ctx.Execute<Groups>(GroupPrivacy, g => g.GroupPrivacy(ctx, target, PrivacyLevel.Public));
-                else if (ctx.Match("private", "priv"))
-                    await ctx.Execute<Groups>(GroupPrivacy, g => g.GroupPrivacy(ctx, target, PrivacyLevel.Private));
-                else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
-                    await ctx.Execute<Groups>(GroupDelete, g => g.DeleteGroup(ctx, target));
-                else if (ctx.Match("avatar", "picture", "icon", "image", "pic", "pfp"))
-                    await ctx.Execute<Groups>(GroupIcon, g => g.GroupIcon(ctx, target));
-                else if (ctx.Match("banner", "splash", "cover"))
-                    await ctx.Execute<Groups>(GroupBannerImage, g => g.GroupBannerImage(ctx, target));
-                else if (ctx.Match("color", "colour"))
-                    await ctx.Execute<Groups>(GroupColor, g => g.GroupColor(ctx, target));
-                else if (!ctx.HasNext())
-                    await ctx.Execute<Groups>(GroupInfo, g => g.ShowGroupCard(ctx, target));
-                else
-                    await PrintCommandNotFoundError(ctx, GroupCommandsTargeted);
-            }
-            else if (!ctx.HasNext())
-                await PrintCommandExpectedError(ctx, GroupCommands);
-            else
-                await ctx.Reply($"{Emojis.Error} {ctx.CreateGroupNotFoundError(ctx.PopArgument())}");
         }
 
         private async Task CommandHelpRoot(Context ctx)

@@ -50,12 +50,10 @@ namespace ChaoWorld.Bot
             builder.RegisterType<Autoproxy>().AsSelf();
             builder.RegisterType<Checks>().AsSelf();
             builder.RegisterType<Fun>().AsSelf();
-            builder.RegisterType<Groups>().AsSelf();
             builder.RegisterType<Help>().AsSelf();
             builder.RegisterType<Member>().AsSelf();
             builder.RegisterType<MemberAvatar>().AsSelf();
             builder.RegisterType<MemberEdit>().AsSelf();
-            builder.RegisterType<MemberGroup>().AsSelf();
             builder.RegisterType<MemberProxy>().AsSelf();
             builder.RegisterType<Misc>().AsSelf();
             builder.RegisterType<ProxiedMessage>().AsSelf();

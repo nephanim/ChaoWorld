@@ -73,10 +73,8 @@ namespace ChaoWorld.Core
             // Add ID types to Dapper
             SqlMapper.AddTypeHandler(new NumericIdHandler<GardenId, int>(i => new GardenId(i)));
             SqlMapper.AddTypeHandler(new NumericIdHandler<ChaoId, int>(i => new ChaoId(i)));
-            SqlMapper.AddTypeHandler(new NumericIdHandler<GroupId, int>(i => new GroupId(i)));
             SqlMapper.AddTypeHandler(new NumericIdArrayHandler<GardenId, int>(i => new GardenId(i)));
             SqlMapper.AddTypeHandler(new NumericIdArrayHandler<ChaoId, int>(i => new ChaoId(i)));
-            SqlMapper.AddTypeHandler(new NumericIdArrayHandler<GroupId, int>(i => new GroupId(i)));
 
             // Register our custom types to Npgsql
             // Without these it'll still *work* but break at the first launch + probably cause other small issues

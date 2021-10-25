@@ -100,27 +100,6 @@ namespace ChaoWorld.Bot
             return member;
         }
 
-        public static async Task<PKGroup> PeekGroup(this Context ctx, GardenId? restrictToSystem = null)
-        {
-            var input = ctx.PeekArgument();
-
-            if (ctx.System != null && await ctx.Repository.GetGroupByName(ctx.System.Id, input) is { } byName)
-                return byName;
-            if (await ctx.Repository.GetGroupByHid(input, restrictToSystem) is { } byHid)
-                return byHid;
-            if (await ctx.Repository.GetGroupByDisplayName(ctx.System.Id, input) is { } byDisplayName)
-                return byDisplayName;
-
-            return null;
-        }
-
-        public static async Task<PKGroup> MatchGroup(this Context ctx, GardenId? restrictToSystem = null)
-        {
-            var group = await ctx.PeekGroup(restrictToSystem);
-            if (group != null) ctx.PopArgument();
-            return group;
-        }
-
         public static string CreateMemberNotFoundError(this Context ctx, string input)
         {
             // TODO: does this belong here?
