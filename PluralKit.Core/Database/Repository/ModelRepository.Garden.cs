@@ -44,7 +44,7 @@ namespace ChaoWorld.Core
         {
             var query = new Query("gardens").AsInsert(new
             {
-                name = gardenName
+                ringbalance = 0
             });
             var garden = await _db.QueryFirst<Garden>(conn, query, extraSql: "returning *");
             _logger.Information("Created {GardenId}", garden.Id);

@@ -44,60 +44,26 @@ namespace ChaoWorld.Bot
             return Task.WhenAll(ids.Select(Inner));
         }
 
-        public async Task<Embed> CreateSystemEmbed(Context cctx, Core.Garden system)
+        public async Task<Embed> CreateSystemEmbed(Context cctx, Core.Garden garden)
         {
 
             // Fetch/render info for all accounts simultaneously
-            var accounts = await _repo.GetGardenAccounts(system.Id);
+            var accounts = await _repo.GetGardenAccounts(garden.Id);
             var users = (await GetUsers(accounts)).Select(x => x.User?.NameAndMention() ?? $"(deleted account {x.Id})");
 
-            var chaoCount = await _repo.GetGardenChaoCount(system.Id);
-
-            uint color;
-            try
-            {
-                color = system.Color?.ToDiscordColor() ?? DiscordUtils.Gray;
-            }
-            catch (ArgumentException)
-            {
-                // There's no API for system colors yet, but defaulting to a blank color in advance can't be a bad idea
-                color = DiscordUtils.Gray;
-            }
+            var chaoCount = await _repo.GetGardenChaoCount(garden.Id);
 
             var eb = new EmbedBuilder()
-                .Title(system.Name)
-                .Thumbnail(new(system.AvatarUrl.TryGetCleanCdnUrl()))
-                .Footer(new($"Garden ID: {system.Hid} | Created on {system.Created.FormatZoned(system)}"))
-                .Color(color);
+                .Title($"{cctx.Author.Username}'s Garden")
+                .Footer(new($"Garden ID: {garden.Id} | Created on {garden.CreatedOn}"));
 
-            eb.Image(new(system.BannerImage));
-
-            if (system.Tag != null)
-                eb.Field(new("Tag", system.Tag.EscapeMarkdown(), true));
-
-            if (cctx.Guild != null)
-            {
-                var guildSettings = await _repo.GetSystemGuild(cctx.Guild.Id, system.Id);
-
-                if (guildSettings.Tag != null && guildSettings.TagEnabled)
-                    eb.Field(new($"Tag (in server '{cctx.Guild.Name}')", guildSettings.Tag
-                        .EscapeMarkdown(), true));
-
-                if (!guildSettings.TagEnabled)
-                    eb.Field(new($"Tag (in server '{cctx.Guild.Name}')", "*(tag is disabled in this server)*"));
-            }
-
-            if (!system.Color.EmptyOrNull()) eb.Field(new("Color", $"#{system.Color}", true));
-
-            eb.Field(new("Linked accounts", string.Join("\n", users).Truncate(1000), true));
+            eb.Field(new("Rings", garden.RingBalance.ToString(), true));
+            eb.Field(new("Linked Accounts", string.Join("\n", users).Truncate(1000), true));
 
             if (chaoCount > 0)
-                eb.Field(new($"Chao ({chaoCount})", $"(see `pk;system {system.Hid} list` or `pk;system {system.Hid} list full`)", true));
+                eb.Field(new($"Chao ({chaoCount})", $"(see `pk;system {garden.Id} list` or `pk;system {garden.Id} list full`)", true));
             else
                 eb.Field(new($"Chao ({chaoCount})", "Add one with `pk;chao new`!", true));
-
-            if (system.Description is { } desc)
-                eb.Field(new("Description", desc.NormalizeLineEndSpacing().Truncate(1024), false));
 
             return eb.Build();
         }

@@ -132,11 +132,11 @@ namespace ChaoWorld.Bot
 
         public Task ExecuteCommand(Context ctx)
         {
-            if (ctx.Match("system", "s"))
+            if (ctx.Match("garden", "g"))
                 return HandleSystemCommand(ctx);
-            if (ctx.Match("chao", "m"))
+            if (ctx.Match("chao", "c"))
                 return HandleChaoCommand(ctx);
-            if (ctx.Match("commands", "cmd", "c"))
+            if (ctx.Match("commands", "cmd"))
                 return CommandHelpRoot(ctx);
             if (ctx.Match("list", "find", "chao", "search", "query", "l", "f", "fd"))
                 return ctx.Execute<SystemList>(SystemList, m => m.ChaoList(ctx, ctx.System));
@@ -147,8 +147,6 @@ namespace ChaoWorld.Bot
             if (ctx.Match("help"))
                 if (ctx.Match("commands"))
                     return ctx.Reply("For the list of commands, see the website: <https://pluralkit.me/commands>");
-                else if (ctx.Match("proxy"))
-                    return ctx.Reply("The proxy help page has been moved! See the website: https://pluralkit.me/guide#proxying");
                 else return ctx.Execute<Help>(Help, m => m.HelpRoot(ctx));
             if (ctx.Match("explain"))
                 return ctx.Execute<Help>(Explain, m => m.Explain(ctx));
@@ -254,36 +252,14 @@ namespace ChaoWorld.Bot
 
             switch (ctx.PeekArgument())
             {
-                case "system":
-                case "systems":
-                case "s":
-                    await PrintCommandList(ctx, "systems", SystemCommands);
+                case "garden":
+                case "gardens":
+                case "g":
+                    await PrintCommandList(ctx, "gardens", SystemCommands);
                     break;
                 case "chao":
-                case "m":
+                case "c":
                     await PrintCommandList(ctx, "chao", ChaoCommands);
-                    break;
-                case "group":
-                case "groups":
-                case "g":
-                    await PrintCommandList(ctx, "groups", GroupCommands);
-                    break;
-                case "switch":
-                case "switches":
-                case "switching":
-                case "sw":
-                    await PrintCommandList(ctx, "switching", SwitchCommands);
-                    break;
-                case "log":
-                    await PrintCommandList(ctx, "message logging", LogCommands);
-                    break;
-                case "blacklist":
-                case "bl":
-                    await PrintCommandList(ctx, "channel blacklisting", BlacklistCommands);
-                    break;
-                case "autoproxy":
-                case "ap":
-                    await PrintCommandList(ctx, "autoproxy", AutoproxyCommands);
                     break;
                 // todo: are there any commands that still need to be added?
                 default:

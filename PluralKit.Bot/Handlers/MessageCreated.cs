@@ -72,26 +72,12 @@ namespace ChaoWorld.Bot
             using (_metrics.Measure.Timer.Time(BotMetrics.MessageContextQueryTime))
                 ctx = await _repo.GetMessageContext(evt.Author.Id, evt.GuildId ?? default, rootChannel.Id);
 
-            // Try each handler until we find one that succeeds
-            if (await TryHandleLogClean(evt, ctx))
-                return;
-
             // Only do command/proxy handling if it's a user account
             if (evt.Author.Bot || evt.WebhookId != null || evt.Author.System == true)
                 return;
 
             if (await TryHandleCommand(shard, evt, guild, channel, ctx))
                 return;
-        }
-
-        private async ValueTask<bool> TryHandleLogClean(MessageCreateEvent evt, MessageContext ctx)
-        {
-            var channel = _cache.GetChannel(evt.ChannelId);
-            if (!evt.Author.Bot || channel.Type != Channel.ChannelType.GuildText ||
-                !ctx.LogCleanupEnabled) return false;
-
-            await _loggerClean.HandleLoggerBotCleanup(evt);
-            return true;
         }
 
         private async ValueTask<bool> TryHandleCommand(Shard shard, MessageCreateEvent evt, Guild? guild, Channel channel, MessageContext ctx)
@@ -110,7 +96,7 @@ namespace ChaoWorld.Bot
 
             try
             {
-                var system = ctx.SystemId != null ? await _repo.GetGarden(ctx.SystemId.Value) : null;
+                var system = ctx.GardenId != null ? await _repo.GetGarden(ctx.GardenId.Value) : null;
                 await _tree.ExecuteCommand(new Context(_services, shard, guild, channel, evt, cmdStart, system, ctx));
             }
             catch (CWError)

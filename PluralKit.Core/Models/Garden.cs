@@ -37,6 +37,8 @@ namespace ChaoWorld.Core
     public class Garden
     {
         [Key] public GardenId Id { get; }
+
+        public long RingBalance { get; private set; }
         public string Hid { get; }
         public Guid Uuid { get; private set; }
         public string Name { get; }
@@ -46,7 +48,7 @@ namespace ChaoWorld.Core
         public string BannerImage { get; }
         public string Color { get; }
         public string Token { get; }
-        public Instant Created { get; }
+        public Instant CreatedOn { get; }
         public string UiTz { get; set; }
         public bool PingsEnabled { get; }
         public int? LatchTimeout { get; }

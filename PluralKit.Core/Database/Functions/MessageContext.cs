@@ -9,23 +9,8 @@ namespace ChaoWorld.Core
     /// </summary>
     public class MessageContext
     {
-        public GardenId? SystemId { get; }
-        public ulong? LogChannel { get; }
-        public bool InBlacklist { get; }
-        public bool InLogBlacklist { get; }
-        public bool LogCleanupEnabled { get; }
-        public bool ProxyEnabled { get; }
-        public AutoproxyMode AutoproxyMode { get; }
-        public ChaoId? AutoproxyChao { get; }
-        public ulong? LastMessage { get; }
-        public ChaoId? LastMessageChao { get; }
-        public ChaoId[] LastSwitchChao { get; } = new ChaoId[0];
-        public Instant? LastSwitchTimestamp { get; }
-        public string? SystemTag { get; }
-        public string? SystemGuildTag { get; }
-        public bool TagEnabled { get; }
-        public string? SystemAvatar { get; }
-        public bool AllowAutoproxy { get; }
-        public int? LatchTimeout { get; }
+        public GardenId? GardenId { get; }
+
+        //public ulong? LastMessage { get; }
     }
 }
