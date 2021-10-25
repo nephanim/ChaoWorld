@@ -1,0 +1,24 @@
+# .NET build files
+bin/
+obj/
+
+# IDE files
+.idea/
+.run/
+.vscode/
+.vs/
+tags/
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# User configuration
+.env
+pluralkit.conf
+pluralkit.*.conf
+*.DotSettings.user
+
+# Generated
+logs/
+.version

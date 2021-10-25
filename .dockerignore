@@ -1,0 +1,13 @@
+# Start by excluding everything
+*
+
+# Include project code and build files
+!PluralKit.*/
+!Myriad/
+!PluralKit.sln
+!nuget.config
+!.git
+
+# Re-exclude host build artifact directories
+**/bin
+**/obj
