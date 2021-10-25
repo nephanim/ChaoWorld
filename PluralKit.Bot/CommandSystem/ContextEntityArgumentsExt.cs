@@ -61,40 +61,40 @@ namespace ChaoWorld.Bot
 
             // Member references can have one of three forms, depending on
             // whether you're in a system or not:
-            // - A member hid
-            // - A textual name of a member *in your own system*
-            // - a textual display name of a member *in your own system*
+            // - A chao hid
+            // - A textual name of a chao *in your own system*
+            // - a textual display name of a chao *in your own system*
 
-            // First, if we have a system, try finding by member name in system
-            if (ctx.System != null && await ctx.Repository.GetMemberByName(ctx.System.Id, input) is Chao memberByName)
-                return memberByName;
+            // First, if we have a system, try finding by chao name in system
+            if (ctx.System != null && await ctx.Repository.GetMemberByName(ctx.System.Id, input) is Chao chaoByName)
+                return chaoByName;
 
-            // Then, try member HID parsing:
-            if (await ctx.Repository.GetMemberByHid(input, restrictToSystem) is Chao memberByHid)
-                return memberByHid;
+            // Then, try chao HID parsing:
+            if (await ctx.Repository.GetMemberByHid(input, restrictToSystem) is Chao chaoByHid)
+                return chaoByHid;
 
-            // And if that again fails, we try finding a member with a display name matching the argument from the system
-            if (ctx.System != null && await ctx.Repository.GetMemberByDisplayName(ctx.System.Id, input) is Chao memberByDisplayName)
-                return memberByDisplayName;
+            // And if that again fails, we try finding a chao with a display name matching the argument from the system
+            if (ctx.System != null && await ctx.Repository.GetMemberByDisplayName(ctx.System.Id, input) is Chao chaoByDisplayName)
+                return chaoByDisplayName;
 
             // We didn't find anything, so we return null.
             return null;
         }
 
         /// <summary>
-        /// Attempts to pop a member descriptor from the stack, returning it if present. If a member could not be
+        /// Attempts to pop a chao descriptor from the stack, returning it if present. If a chao could not be
         /// resolved by the next word in the argument stack, does *not* touch the stack, and returns null.
         /// </summary>
         public static async Task<Chao> MatchMember(this Context ctx, GardenId? restrictToSystem = null)
         {
-            // First, peek a member
-            var member = await ctx.PeekMember(restrictToSystem);
+            // First, peek a chao
+            var chao = await ctx.PeekMember(restrictToSystem);
 
             // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
-            if (member != null) ctx.PopArgument();
+            if (chao != null) ctx.PopArgument();
 
-            // Finally, we return the member value.
-            return member;
+            // Finally, we return the chao value.
+            return chao;
         }
 
         public static string CreateMemberNotFoundError(this Context ctx, string input)
@@ -108,8 +108,8 @@ namespace ChaoWorld.Bot
             }
 
             if (ctx.System != null)
-                return $"Member with name \"{input}\" not found. Note that a member ID is 5 characters long.";
-            return $"Member not found. Note that a member ID is 5 characters long.";
+                return $"Member with name \"{input}\" not found. Note that a chao ID is 5 characters long.";
+            return $"Member not found. Note that a chao ID is 5 characters long.";
         }
 
         public static string CreateGroupNotFoundError(this Context ctx, string input)

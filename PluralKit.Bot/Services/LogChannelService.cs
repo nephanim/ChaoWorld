@@ -44,10 +44,10 @@ namespace ChaoWorld.Bot
             var triggerChannel = _cache.GetChannel(proxiedMessage.Channel);
 
             var system = await _repo.GetGarden(ctx.SystemId.Value);
-            var member = await _repo.GetMember(proxiedMessage.Member);
+            var chao = await _repo.GetMember(proxiedMessage.Member);
 
             // Send embed!
-            var embed = _embed.CreateLoggedMessageEmbed(trigger, hookMessage, system.Hid, member, triggerChannel.Name, oldContent);
+            var embed = _embed.CreateLoggedMessageEmbed(trigger, hookMessage, system.Hid, chao, triggerChannel.Name, oldContent);
             var url = $"https://discord.com/channels/{proxiedMessage.Guild.Value}/{proxiedMessage.Channel}/{proxiedMessage.Mid}";
             await _rest.CreateMessage(logChannel.Id, new() { Content = url, Embed = embed });
         }

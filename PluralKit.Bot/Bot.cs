@@ -80,8 +80,8 @@ namespace ChaoWorld.Bot
 
             if (channel.GuildId != null)
             {
-                var member = _guildMembers.GetValueOrDefault(channel.GuildId.Value);
-                return _cache.PermissionsFor(channelId, _cluster.User?.Id ?? default, member);
+                var chao = _guildMembers.GetValueOrDefault(channel.GuildId.Value);
+                return _cache.PermissionsFor(channelId, _cluster.User?.Id ?? default, chao);
             }
 
             return PermissionSet.Dm;

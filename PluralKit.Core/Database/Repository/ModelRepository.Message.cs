@@ -17,7 +17,7 @@ namespace ChaoWorld.Core
                 mid = msg.Mid,
                 guild = msg.Guild,
                 channel = msg.Channel,
-                member = msg.Member,
+                chao = msg.Member,
                 sender = msg.Sender,
                 original_mid = msg.OriginalMid,
             });
@@ -30,11 +30,11 @@ namespace ChaoWorld.Core
         // todo: add a Mapper to QuerySingle and move this to SqlKata
         public async Task<FullMessage?> GetMessage(IPKConnection conn, ulong id)
         {
-            FullMessage Mapper(PKMessage msg, Chao member, Garden system) =>
-                new FullMessage { Message = msg, System = system, Member = member };
+            FullMessage Mapper(PKMessage msg, Chao chao, Garden system) =>
+                new FullMessage { Message = msg, System = system, Member = chao };
 
             var result = await conn.QueryAsync<PKMessage, Chao, Garden, FullMessage>(
-                "select messages.*, members.*, systems.* from messages, members, systems where (mid = @Id or original_mid = @Id) and messages.member = members.id and systems.id = members.system",
+                "select messages.*, chao.*, systems.* from messages, chao, systems where (mid = @Id or original_mid = @Id) and messages.chao = chao.id and systems.id = chao.system",
                 Mapper, new { Id = id });
             return result.FirstOrDefault();
         }

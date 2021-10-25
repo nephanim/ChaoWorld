@@ -42,7 +42,7 @@ namespace Myriad.Rest
             _client.Get<User>($"/users/{id}", ("GetUser", default));
 
         public Task<GuildMember?> GetGuildMember(ulong guildId, ulong userId) =>
-            _client.Get<GuildMember>($"/guilds/{guildId}/members/{userId}",
+            _client.Get<GuildMember>($"/guilds/{guildId}/chao/{userId}",
                 ("GetGuildMember", guildId));
 
         public Task<Message> CreateMessage(ulong channelId, MessageRequest request, MultipartFile[]? files = null) =>
@@ -103,7 +103,7 @@ namespace Myriad.Rest
                 ("CreateInteractionResponse", interactionId), response);
 
         public Task ModifyGuildMember(ulong guildId, ulong userId, ModifyGuildMemberRequest request) =>
-            _client.Patch<object>($"/guilds/{guildId}/members/{userId}",
+            _client.Patch<object>($"/guilds/{guildId}/chao/{userId}",
                 ("ModifyGuildMember", guildId), request);
 
         public Task<Webhook> CreateWebhook(ulong channelId, CreateWebhookRequest request) =>

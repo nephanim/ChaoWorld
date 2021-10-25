@@ -43,7 +43,7 @@ namespace ChaoWorld.Bot
 
         public static CWError StringTooLongError(string name, int length, int maxLength) => new CWError($"{name} too long ({length}/{maxLength} characters).");
 
-        public static CWError MemberLimitReachedError(int limit) => new CWError($"Garden has reached the maximum number of members ({limit}). Please delete unused members first in order to create new ones.");
+        public static CWError MemberLimitReachedError(int limit) => new CWError($"Garden has reached the maximum number of chao ({limit}). Please delete unused chao first in order to create new ones.");
 
         public static CWError InvalidColorError(string color) => new CWError($"\"{color}\" is not a valid color. Color must be in 6-digit RGB hex format (eg. #ff0000).");
         public static CWError BirthdayParseError(string birthday) => new CWError($"\"{birthday}\" could not be parsed as a valid date. Try a format like \"2016-12-24\" or \"May 3 1996\".");
@@ -78,7 +78,7 @@ namespace ChaoWorld.Bot
 
         public static CWError DurationParseError(string durationStr) => new CWError($"Could not parse {durationStr.AsCode()} as a valid duration. Try a format such as `30d`, `1d3h` or `20m30s`.");
 
-        public static CWError GuildNotFound(ulong guildId) => new CWError($"Guild with ID `{guildId}` not found, or I cannot access it. Note that you must be a member of the guild you are querying.");
+        public static CWError GuildNotFound(ulong guildId) => new CWError($"Guild with ID `{guildId}` not found, or I cannot access it. Note that you must be a chao of the guild you are querying.");
 
         public static CWError DisplayNameTooLong(string displayName, int maxLength) => new CWError(
             $"Display name too long ({displayName.Length} > {maxLength} characters). Use a shorter display name, or shorten your system tag.");

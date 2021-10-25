@@ -226,7 +226,7 @@ namespace ChaoWorld.Core
                     yield return val;
         }
 
-        // the procedures (message_context and proxy_members, as of writing) have their own metrics tracking elsewhere
+        // the procedures (message_context and proxy_chao, as of writing) have their own metrics tracking elsewhere
         // still, including them here for consistency
 
         public async Task<T> QuerySingleProcedure<T>(string queryName, object param)

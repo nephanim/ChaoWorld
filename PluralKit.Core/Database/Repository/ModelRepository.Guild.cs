@@ -41,22 +41,22 @@ namespace ChaoWorld.Core
         }
 
 
-        public Task<MemberGuildSettings> GetMemberGuild(ulong guild, ChaoId member)
+        public Task<MemberGuildSettings> GetMemberGuild(ulong guild, ChaoId chao)
         {
-            var query = new Query("member_guild").AsInsert(new
+            var query = new Query("chao_guild").AsInsert(new
             {
                 guild = guild,
-                member = member
+                chao = chao
             });
             return _db.QueryFirst<MemberGuildSettings>(query,
-                extraSql: "on conflict (guild, member) do update set guild = $1, member = $2 returning *"
+                extraSql: "on conflict (guild, chao) do update set guild = $1, chao = $2 returning *"
             );
         }
 
-        public Task UpdateMemberGuild(ChaoId member, ulong guild, MemberGuildPatch patch)
+        public Task UpdateMemberGuild(ChaoId chao, ulong guild, MemberGuildPatch patch)
         {
-            _logger.Information("Updated {ChaoId} in guild {GuildId}: {@MemberGuildPatch}", member, guild, patch);
-            var query = patch.Apply(new Query("member_guild").Where("member", member).Where("guild", guild));
+            _logger.Information("Updated {ChaoId} in guild {GuildId}: {@MemberGuildPatch}", chao, guild, patch);
+            var query = patch.Apply(new Query("chao_guild").Where("chao", chao).Where("guild", guild));
             return _db.ExecuteQuery(query, extraSql: "returning *");
         }
     }

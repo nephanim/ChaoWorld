@@ -106,7 +106,7 @@ namespace ChaoWorld.Bot
                 .Field(new("Memory usage", $"{memoryUsage / 1024 / 1024} MiB", true))
                 .Field(new("Latency", $"API: {apiLatency.TotalMilliseconds:F0} ms, shard: {shardInfo.ShardLatency.Milliseconds} ms", true))
                 .Field(new("Total numbers", $"{counts.SystemCount:N0} systems,"
-                    + $" {counts.MemberCount:N0} members,"
+                    + $" {counts.MemberCount:N0} chao,"
                     + $" {counts.GroupCount:N0} groups,"
                     + $" {counts.SwitchCount:N0} switches,"
                     + $" {counts.MessageCount:N0} messages"))

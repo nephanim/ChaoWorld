@@ -98,23 +98,23 @@ namespace ChaoWorld.Bot
 
         public static async Task<List<Chao>> ParseMemberList(this Context ctx, GardenId? restrictToSystem)
         {
-            var members = new List<Chao>();
+            var chao = new List<Chao>();
 
             // Loop through all the given arguments
             while (ctx.HasNext())
             {
-                // and attempt to match a member 
-                var member = await ctx.MatchMember(restrictToSystem);
+                // and attempt to match a chao 
+                var gardenChao = await ctx.MatchMember(restrictToSystem);
 
-                if (member == null)
-                    // if we can't, big error. Every member name must be valid.
+                if (gardenChao == null)
+                    // if we can't, big error. Every chao name must be valid.
                     throw new CWError(ctx.CreateMemberNotFoundError(ctx.PopArgument()));
 
-                members.Add(member); // Then add to the final output list
+                chao.Add(gardenChao); // Then add to the final output list
             }
-            if (members.Count == 0) throw new CWSyntaxError($"You must input at least one member.");
+            if (chao.Count == 0) throw new CWSyntaxError($"You must input at least one chao.");
 
-            return members;
+            return chao;
         }
     }
 }

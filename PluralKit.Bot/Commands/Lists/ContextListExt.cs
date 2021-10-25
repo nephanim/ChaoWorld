@@ -33,13 +33,7 @@ namespace ChaoWorld.Bot
 
             // Sort property (default is by name, but adding a flag anyway, 'cause why not)
             if (ctx.MatchFlag("by-name", "bn")) p.SortProperty = SortProperty.Name;
-            if (ctx.MatchFlag("by-display-name", "bdn")) p.SortProperty = SortProperty.DisplayName;
-            if (ctx.MatchFlag("by-id", "bid")) p.SortProperty = SortProperty.Hid;
-            if (ctx.MatchFlag("by-message-count", "bmc")) p.SortProperty = SortProperty.MessageCount;
             if (ctx.MatchFlag("by-created", "bc", "bcd")) p.SortProperty = SortProperty.CreationDate;
-            if (ctx.MatchFlag("by-last-fronted", "by-last-front", "by-last-switch", "blf", "bls")) p.SortProperty = SortProperty.LastSwitch;
-            if (ctx.MatchFlag("by-last-message", "blm", "blp")) p.SortProperty = SortProperty.LastMessage;
-            if (ctx.MatchFlag("by-birthday", "by-birthdate", "bbd")) p.SortProperty = SortProperty.Birthdate;
             if (ctx.MatchFlag("random")) p.SortProperty = SortProperty.Random;
 
             // Sort reverse?
@@ -61,9 +55,6 @@ namespace ChaoWorld.Bot
                 p.IncludePronouns = true;
 
             // Always show the sort property, too
-            if (p.SortProperty == SortProperty.LastSwitch) p.IncludeLastSwitch = true;
-            if (p.SortProperty == SortProperty.LastMessage) p.IncludeLastMessage = true;
-            if (p.SortProperty == SortProperty.MessageCount) p.IncludeMessageCount = true;
             if (p.SortProperty == SortProperty.CreationDate) p.IncludeCreated = true;
 
             // Done!
@@ -73,19 +64,19 @@ namespace ChaoWorld.Bot
         public static async Task RenderMemberList(this Context ctx, IDatabase db, GardenId system, string embedTitle, string color, MemberListOptions opts)
         {
             // We take an IDatabase instead of a IPKConnection so we don't keep the handle open for the entire runtime
-            // We wanna release it as soon as the member list is actually *fetched*, instead of potentially minutes later (paginate timeout)
-            var members = (await db.Execute(conn => conn.QueryMemberList(system, opts.ToQueryOptions())))
+            // We wanna release it as soon as the chao list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            var chao = (await db.Execute(conn => conn.QueryMemberList(system, opts.ToQueryOptions())))
                 .SortByMemberListOptions(opts)
                 .ToList();
 
             var itemsPerPage = opts.Type == ListType.Short ? 25 : 5;
-            await ctx.Paginate(members.ToAsyncEnumerable(), members.Count, itemsPerPage, embedTitle, color, Renderer);
+            await ctx.Paginate(chao.ToAsyncEnumerable(), chao.Count, itemsPerPage, embedTitle, color, Renderer);
 
             // Base renderer, dispatches based on type
             Task Renderer(EmbedBuilder eb, IEnumerable<ListedMember> page)
             {
                 // Add a global footer with the filter/sort string + result count
-                eb.Footer(new($"{opts.CreateFilterString()}. {"result".ToQuantity(members.Count)}."));
+                eb.Footer(new($"{opts.CreateFilterString()}. {"result".ToQuantity(chao.Count)}."));
 
                 // Then call the specific renderers
                 if (opts.Type == ListType.Short)

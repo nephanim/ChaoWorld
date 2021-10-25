@@ -12,7 +12,7 @@ namespace ChaoWorld.Core
         public static Task<IEnumerable<ListedMember>> QueryMemberList(this IPKConnection conn, GardenId system, MemberListQueryOptions opts)
         {
             StringBuilder query;
-            query = new StringBuilder("select * from member_list where system = @system");
+            query = new StringBuilder("select * from chao_list where system = @system");
 
             if (opts.Search != null)
             {

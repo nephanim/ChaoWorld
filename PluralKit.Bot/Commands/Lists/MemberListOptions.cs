@@ -32,7 +32,7 @@ namespace ChaoWorld.Bot
             if (SortProperty != SortProperty.Random) str.Append("by ");
             str.Append(SortProperty switch
             {
-                SortProperty.Name => "member name",
+                SortProperty.Name => "chao name",
                 SortProperty.CreationDate => "creation date",
                 SortProperty.Random => "randomly",
                 _ => new ArgumentOutOfRangeException($"Couldn't find readable string for sort property {SortProperty}")

@@ -51,7 +51,7 @@ namespace ChaoWorld.Bot
             var accounts = await _repo.GetGardenAccounts(system.Id);
             var users = (await GetUsers(accounts)).Select(x => x.User?.NameAndMention() ?? $"(deleted account {x.Id})");
 
-            var memberCount = await _repo.GetGardenMemberCount(system.Id);
+            var chaoCount = await _repo.GetGardenMemberCount(system.Id);
 
             uint color;
             try
@@ -91,10 +91,10 @@ namespace ChaoWorld.Bot
 
             eb.Field(new("Linked accounts", string.Join("\n", users).Truncate(1000), true));
 
-            if (memberCount > 0)
-                eb.Field(new($"Members ({memberCount})", $"(see `pk;system {system.Hid} list` or `pk;system {system.Hid} list full`)", true));
+            if (chaoCount > 0)
+                eb.Field(new($"Members ({chaoCount})", $"(see `pk;system {system.Hid} list` or `pk;system {system.Hid} list full`)", true));
             else
-                eb.Field(new($"Members ({memberCount})", "Add one with `pk;member new`!", true));
+                eb.Field(new($"Members ({chaoCount})", "Add one with `pk;chao new`!", true));
 
             if (system.Description is { } desc)
                 eb.Field(new("Description", desc.NormalizeLineEndSpacing().Truncate(1024), false));
@@ -102,7 +102,7 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
-        public Embed CreateLoggedMessageEmbed(Message triggerMessage, Message proxiedMessage, string systemHid, Chao member, string channelName, string oldContent = null)
+        public Embed CreateLoggedMessageEmbed(Message triggerMessage, Message proxiedMessage, string systemHid, Chao chao, string channelName, string oldContent = null)
         {
             // TODO: pronouns in ?-reacted response using this card
             var timestamp = DiscordUtils.SnowflakeToInstant(proxiedMessage.Id);
@@ -110,7 +110,7 @@ namespace ChaoWorld.Bot
             // sometimes Discord will just... not return the avatar hash with webhook messages
             var embed = new EmbedBuilder()
                 .Description(proxiedMessage.Content?.NormalizeLineEndSpacing())
-                .Footer(new($"Garden ID: {systemHid} | Member ID: {member.Hid} | Sender: {triggerMessage.Author.Username}#{triggerMessage.Author.Discriminator} ({triggerMessage.Author.Id}) | Message ID: {proxiedMessage.Id} | Original Message ID: {triggerMessage.Id}"))
+                .Footer(new($"Garden ID: {systemHid} | Member ID: {chao.Hid} | Sender: {triggerMessage.Author.Username}#{triggerMessage.Author.Discriminator} ({triggerMessage.Author.Id}) | Message ID: {proxiedMessage.Id} | Original Message ID: {triggerMessage.Id}"))
                 .Timestamp(timestamp.ToDateTimeOffset().ToString("O"));
 
             if (oldContent != null)
@@ -119,15 +119,15 @@ namespace ChaoWorld.Bot
             return embed.Build();
         }
 
-        public async Task<Embed> CreateMemberEmbed(Core.Garden system, Chao member, Guild guild)
+        public async Task<Embed> CreateMemberEmbed(Core.Garden system, Chao chao, Guild guild)
         {
-            var name = member.Name;
+            var name = chao.Name;
             if (system.Name != null) name = $"{name} ({system.Name})";
 
             uint color;
             try
             {
-                color = member.Color?.ToDiscordColor() ?? DiscordUtils.Gray;
+                color = chao.Color?.ToDiscordColor() ?? DiscordUtils.Gray;
             }
             catch (ArgumentException)
             {
@@ -137,33 +137,33 @@ namespace ChaoWorld.Bot
                 color = DiscordUtils.Gray;
             }
 
-            var guildSettings = guild != null ? await _repo.GetMemberGuild(guild.Id, member.Id) : null;
+            var guildSettings = guild != null ? await _repo.GetMemberGuild(guild.Id, chao.Id) : null;
             var guildDisplayName = guildSettings?.DisplayName;
             var avatar = guildSettings?.AvatarUrl;
 
             var eb = new EmbedBuilder()
                 // TODO: add URL of website when that's up
                 .Author(new(name, IconUrl: avatar.TryGetCleanCdnUrl()))
-                // .WithColor(member.ColorPrivacy.CanAccess(ctx) ? color : DiscordUtils.Gray)
+                // .WithColor(chao.ColorPrivacy.CanAccess(ctx) ? color : DiscordUtils.Gray)
                 .Color(color)
                 .Footer(new(
-                    $"Garden ID: {system.Hid} | Member ID: {member.Hid} {$"| Created on {member.Created.FormatZoned(system)}"}"));
+                    $"Garden ID: {system.Hid} | Member ID: {chao.Hid} {$"| Created on {chao.Created.FormatZoned(system)}"}"));
 
-            eb.Image(new(member.BannerImage));
+            eb.Image(new(chao.BannerImage));
 
             if (avatar != null) eb.Thumbnail(new(avatar.TryGetCleanCdnUrl()));
 
-            if (!member.DisplayName.EmptyOrNull()) eb.Field(new("Display Name", member.DisplayName.Truncate(1024), true));
+            if (!chao.DisplayName.EmptyOrNull()) eb.Field(new("Display Name", chao.DisplayName.Truncate(1024), true));
             if (guild != null && guildDisplayName != null) eb.Field(new($"Server Nickname (for {guild.Name})", guildDisplayName.Truncate(1024), true));
-            if (member.HasProxyTags) eb.Field(new("Proxy Tags", member.ProxyTagsString("\n").Truncate(1024), true));
-            // --- For when this gets added to the member object itself or however they get added
-            // if (member.LastMessage != null && member.MetadataPrivacy.CanAccess(ctx)) eb.AddField("Last message:" FormatTimestamp(DiscordUtils.SnowflakeToInstant(m.LastMessage.Value)));
-            // if (member.LastSwitchTime != null && m.MetadataPrivacy.CanAccess(ctx)) eb.AddField("Last switched in:", FormatTimestamp(member.LastSwitchTime.Value));
-            // if (!member.Color.EmptyOrNull() && member.ColorPrivacy.CanAccess(ctx)) eb.AddField("Color", $"#{member.Color}", true);
-            if (!member.Color.EmptyOrNull()) eb.Field(new("Color", $"#{member.Color}", true));
+            if (chao.HasProxyTags) eb.Field(new("Proxy Tags", chao.ProxyTagsString("\n").Truncate(1024), true));
+            // --- For when this gets added to the chao object itself or however they get added
+            // if (chao.LastMessage != null && chao.MetadataPrivacy.CanAccess(ctx)) eb.AddField("Last message:" FormatTimestamp(DiscordUtils.SnowflakeToInstant(m.LastMessage.Value)));
+            // if (chao.LastSwitchTime != null && m.MetadataPrivacy.CanAccess(ctx)) eb.AddField("Last switched in:", FormatTimestamp(chao.LastSwitchTime.Value));
+            // if (!chao.Color.EmptyOrNull() && chao.ColorPrivacy.CanAccess(ctx)) eb.AddField("Color", $"#{chao.Color}", true);
+            if (!chao.Color.EmptyOrNull()) eb.Field(new("Color", $"#{chao.Color}", true));
 
-            if (member.Description is { } desc)
-                eb.Field(new("Description", member.Description.NormalizeLineEndSpacing(), false));
+            if (chao.Description is { } desc)
+                eb.Field(new("Description", chao.Description.NormalizeLineEndSpacing(), false));
 
             return eb.Build();
         }
@@ -185,26 +185,26 @@ namespace ChaoWorld.Bot
             // Need this whole dance to handle cases where:
             // - the user is deleted (userInfo == null)
             // - the bot's no longer in the server we're querying (channel == null)
-            // - the member is no longer in the server we're querying (memberInfo == null)
+            // - the chao is no longer in the server we're querying (chaoInfo == null)
             // TODO: optimize ordering here a bit with new cache impl; and figure what happens if bot leaves server -> channel still cached -> hits this bit and 401s?
-            GuildMemberPartial memberInfo = null;
+            GuildMemberPartial chaoInfo = null;
             User userInfo = null;
             if (channel != null)
             {
-                GuildMember member = null;
+                GuildMember chao = null;
                 try
                 {
-                    member = await _rest.GetGuildMember(channel.GuildId!.Value, msg.Message.Sender);
+                    chao = await _rest.GetGuildMember(channel.GuildId!.Value, msg.Message.Sender);
                 }
                 catch (ForbiddenException)
                 {
                     // no permission, couldn't fetch, oh well
                 }
 
-                if (member != null)
-                    // Don't do an extra request if we already have this info from the member lookup
-                    userInfo = member.User;
-                memberInfo = member;
+                if (chao != null)
+                    // Don't do an extra request if we already have this info from the chao lookup
+                    userInfo = chao.User;
+                chaoInfo = chao;
             }
 
             if (userInfo == null)
@@ -212,8 +212,8 @@ namespace ChaoWorld.Bot
 
             // Calculate string displayed under "Sent by"
             string userStr;
-            if (memberInfo != null && memberInfo.Nick != null)
-                userStr = $"**Username:** {userInfo.NameAndMention()}\n**Nickname:** {memberInfo.Nick}";
+            if (chaoInfo != null && chaoInfo.Nick != null)
+                userStr = $"**Username:** {userInfo.NameAndMention()}\n**Nickname:** {chaoInfo.Nick}";
             else if (userInfo != null) userStr = userInfo.NameAndMention();
             else userStr = $"*(deleted user {msg.Message.Sender})*";
 
@@ -227,7 +227,7 @@ namespace ChaoWorld.Bot
                 .Field(new("Sent by", userStr, true))
                 .Timestamp(DiscordUtils.SnowflakeToInstant(msg.Message.Mid).ToDateTimeOffset().ToString("O"));
 
-            var roles = memberInfo?.Roles?.ToList();
+            var roles = chaoInfo?.Roles?.ToList();
             if (roles != null && roles.Count > 0)
             {
                 // TODO: what if role isn't in cache? figure out a fallback

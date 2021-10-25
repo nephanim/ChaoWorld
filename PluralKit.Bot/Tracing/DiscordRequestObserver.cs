@@ -39,7 +39,7 @@ namespace ChaoWorld.Bot
         {
             url = Regex.Replace(url, @"/channels/\d+", "/channels/{channel_id}");
             url = Regex.Replace(url, @"/messages/\d+", "/messages/{message_id}");
-            url = Regex.Replace(url, @"/members/\d+", "/members/{user_id}");
+            url = Regex.Replace(url, @"/chao/\d+", "/chao/{user_id}");
             url = Regex.Replace(url, @"/webhooks/\d+/[^/]+", "/webhooks/{webhook_id}/{webhook_token}");
             url = Regex.Replace(url, @"/webhooks/\d+", "/webhooks/{webhook_id}");
             url = Regex.Replace(url, @"/users/\d+", "/users/{user_id}");

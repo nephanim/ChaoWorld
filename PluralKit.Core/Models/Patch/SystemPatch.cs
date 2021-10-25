@@ -38,7 +38,7 @@ namespace ChaoWorld.Core
             .With("ui_tz", UiTz)
             .With("pings_enabled", PingsEnabled)
             .With("latch_timeout", LatchTimeout)
-            .With("member_limit_override", MemberLimitOverride)
+            .With("chao_limit_override", MemberLimitOverride)
             .With("group_limit_override", GroupLimitOverride)
         );
 

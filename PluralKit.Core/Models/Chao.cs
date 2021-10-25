@@ -56,7 +56,7 @@ namespace ChaoWorld.Core
         public int MessageCount { get; private set; }
         public bool AllowAutoproxy { get; private set; }
 
-        /// Returns a formatted string representing the member's birthday, taking into account that a year of "0001" or "0004" is hidden
+        /// Returns a formatted string representing the chao's birthday, taking into account that a year of "0001" or "0004" is hidden
         /// Before Feb 10 2020, the sentinel year was 0001, now it is 0004.
         [JsonIgnore]
         public string BirthdayString

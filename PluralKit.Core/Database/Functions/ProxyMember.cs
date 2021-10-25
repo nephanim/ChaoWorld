@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ChaoWorld.Core
 {
     /// <summary>
-    /// Model for the `proxy_members` PL/pgSQL function in `functions.sql`
+    /// Model for the `proxy_chao` PL/pgSQL function in `functions.sql`
     /// </summary>
     public class ProxyMember
     {
@@ -25,15 +25,15 @@ namespace ChaoWorld.Core
 
         public string ProxyName(MessageContext ctx)
         {
-            var memberName = ServerName ?? DisplayName ?? Name;
+            var chaoName = ServerName ?? DisplayName ?? Name;
             if (!ctx.TagEnabled)
-                return memberName;
+                return chaoName;
 
             if (ctx.SystemGuildTag != null)
-                return $"{memberName} {ctx.SystemGuildTag}";
+                return $"{chaoName} {ctx.SystemGuildTag}";
             else if (ctx.SystemTag != null)
-                return $"{memberName} {ctx.SystemTag}";
-            else return memberName;
+                return $"{chaoName} {ctx.SystemTag}";
+            else return chaoName;
         }
         public string? ProxyAvatar(MessageContext ctx) => ServerAvatar ?? Avatar ?? ctx.SystemAvatar;
 

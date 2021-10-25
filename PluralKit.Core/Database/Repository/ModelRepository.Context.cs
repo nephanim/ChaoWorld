@@ -14,7 +14,7 @@ namespace ChaoWorld.Core
             });
 
         public Task<IEnumerable<ProxyMember>> GetProxyMembers(ulong account, ulong guild)
-            => _db.QueryProcedure<ProxyMember>("proxy_members", new
+            => _db.QueryProcedure<ProxyMember>("proxy_chao", new
             {
                 account_id = account,
                 guild_id = guild
