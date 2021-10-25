@@ -91,10 +91,6 @@ namespace ChaoWorld.Bot
                 .As<ISentryEnricher<MessageReactionAddEvent>>()
                 .SingleInstance();
 
-            // Proxy stuff
-            builder.RegisterType<ProxyMatcher>().AsSelf().SingleInstance();
-            builder.RegisterType<ProxyTagParser>().AsSelf().SingleInstance();
-
             // Utils
             builder.Register(c => new HttpClient
             {
