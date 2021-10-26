@@ -32,7 +32,7 @@ namespace ChaoWorld.Bot
 
         public async Task NewChao(Context ctx)
         {
-            if (ctx.Chao == null) throw Errors.NoGardenError;
+            if (ctx.Member == null) throw Errors.NoGardenError;
             var chaoName = ctx.RemainderOrNull() ?? throw new CWSyntaxError("You must pass a chao name.");
 
             // Hard name length cap

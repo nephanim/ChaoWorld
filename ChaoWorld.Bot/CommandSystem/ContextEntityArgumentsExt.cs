@@ -66,12 +66,12 @@ namespace ChaoWorld.Bot
             // - a textual display name of a chao *in your own system*
 
             // First, if we have a garden, try finding by chao name in garden
-            if (ctx.Chao != null && await ctx.Repository.GetChaoByName(ctx.Garden.Id, input) is Core.Chao chaoByName)
+            if (ctx.Member != null && await ctx.Repository.GetChaoByName(ctx.Garden.Id, input) is Core.Chao chaoByName)
                 return chaoByName;
 
             // Try looking it up by its ID
             long.TryParse(input.Replace("#", string.Empty), out long id);
-            if (ctx.Chao != null && await ctx.Repository.GetChao(id) is Core.Chao chaoById)
+            if (ctx.Member != null && await ctx.Repository.GetChao(id) is Core.Chao chaoById)
                 return chaoById;
 
             // We didn't find anything, so we return null.
@@ -99,12 +99,12 @@ namespace ChaoWorld.Bot
             // TODO: does this belong here?
             if (input.Length == 5)
             {
-                if (ctx.Chao != null)
+                if (ctx.Member != null)
                     return $"Chao with ID or name \"{input}\" not found.";
                 return $"Chao with ID \"{input}\" not found."; // Accounts without systems can't query by name
             }
 
-            if (ctx.Chao != null)
+            if (ctx.Member != null)
                 return $"Chao with name \"{input}\" not found. Note that a chao ID is 5 characters long.";
             return $"Chao not found. Note that a chao ID is 5 characters long.";
         }
@@ -114,12 +114,12 @@ namespace ChaoWorld.Bot
             // TODO: does this belong here?
             if (input.Length == 5)
             {
-                if (ctx.Chao != null)
+                if (ctx.Member != null)
                     return $"Group with ID or name \"{input}\" not found.";
                 return $"Group with ID \"{input}\" not found."; // Accounts without systems can't query by name
             }
 
-            if (ctx.Chao != null)
+            if (ctx.Member != null)
                 return $"Group with name \"{input}\" not found. Note that a group ID is 5 characters long.";
             return $"Group not found. Note that a group ID is 5 characters long.";
         }

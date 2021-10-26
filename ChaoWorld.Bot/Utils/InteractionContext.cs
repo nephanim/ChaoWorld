@@ -22,7 +22,7 @@ namespace ChaoWorld.Bot
 
         public ulong ChannelId => _evt.ChannelId;
         public ulong? MessageId => _evt.Message?.Id;
-        public GuildMember? Chao => _evt.Member;
+        public GuildMember? Member => _evt.Member;
         public User User => _evt.Member?.User ?? _evt.User;
         public string Token => _evt.Token;
         public string? CustomId => _evt.Data?.CustomId;

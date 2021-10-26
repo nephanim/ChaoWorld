@@ -47,7 +47,7 @@ namespace ChaoWorld.Bot
         public static bool CheckBotAdmin(this Context ctx)
         {
             var botConfig = ctx.Services.Resolve<BotConfig>();
-            return botConfig.AdminRole != null && ctx.Chao != null && ctx.Chao.Roles.Contains(botConfig.AdminRole.Value);
+            return botConfig.AdminRole != null && ctx.Member != null && ctx.Member.Roles.Contains(botConfig.AdminRole.Value);
         }
 
         public static Context AssertBotAdmin(this Context ctx)
