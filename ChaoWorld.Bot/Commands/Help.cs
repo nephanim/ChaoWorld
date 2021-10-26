@@ -2,8 +2,6 @@ using System.Threading.Tasks;
 
 using Myriad.Builders;
 
-using ChaoWorld.Core;
-
 namespace ChaoWorld.Bot
 {
     public class Help
@@ -11,22 +9,15 @@ namespace ChaoWorld.Bot
         public async Task HelpRoot(Context ctx)
         {
             await ctx.Reply(embed: new EmbedBuilder()
-                .Title("ChaoWorld")
-                .Description("ChaoWorld is a bot designed for plural communities on Discord. It allows you to register systems, maintain system information, set up message proxying, log switches, and more.")
-                .Field(new("What is this for? What are systems?", "This bot detects messages with certain tags associated with a profile, then replaces that message under a \"pseudo-account\" of that profile using webhooks. This is useful for multiple people sharing one body (aka \"systems\"), people who wish to roleplay as different characters without having several accounts, or anyone else who may want to post messages as a different person from the same account."))
-                .Field(new("Why are people's names saying [BOT] next to them?", "These people are not actually bots, this is just a Discord limitation. See [the documentation](https://pluralkit.me/guide#proxying) for an in-depth explanation."))
-                .Field(new("How do I get started?", "To get started using ChaoWorld, try running the following commands (of course replacing the relevant names with your own):\n**1**. `!system new` - Create a system (if you haven't already)\n**2**. `!chao add John` - Add a new chao to your system\n**3**. `!chao John proxy [text]` - Set up [square brackets] as proxy tags\n**4**. You're done! You can now type [a message in brackets] and it'll be proxied appropriately.\n**5**. Optionally, you may set an avatar from the URL of an image with `!chao John avatar [link to image]`, or from a file by typing `!chao John avatar` and sending the message with an attached image.\n\nSee [the Getting Started guide](https://pluralkit.me/start) for more information."))
-                .Field(new("Useful tips", $"React with {Emojis.Error} on a proxied message to delete it (only if you sent it!)\nReact with {Emojis.RedQuestion} on a proxied message to look up information about it (like who sent it)\nReact with {Emojis.Bell} on a proxied message to \"ping\" the sender\nType **`!invite`** to get a link to invite this bot to your own server!"))
-                .Field(new("More information", "For a full list of commands, see [the command list](https://pluralkit.me/commands).\nFor a more in-depth explanation of message proxying, see [the documentation](https://pluralkit.me/guide#proxying).\nIf you're an existing user of Tupperbox, type `!import` and attach a Tupperbox export file (from `tul!export`) to import your data from there."))
-                .Field(new("Support server", "We also have a Discord server for support, discussion, suggestions, announcements, etc: https://discord.gg/PczBt78"))
-                .Footer(new($"By @Ske#6201 | Myriad by @Layl#8888 | GitHub: https://github.com/xSke/ChaoWorld/ | Website: https://pluralkit.me/"))
+                .Title("Chao World")
+                .Description("Chao World is a Discord bot inspired by chao raising minigames from Sega's *Sonic the Hedgehog* series. You can raise your own chao, race them, fight in karate tournaments, and more!")
+                .Field(new("What's a chao?", "Chao were introduced in Sega's 1998 Dreamcast game *Sonic Adventure*. They have featured in several Sonic titles and made cameos in other franchises since."))
+                .Field(new("How do I get one?", "Try using the following commands:\n**•** `!garden new` - Create a garden (if you haven't already)\n**•** `!garden list` - See a list of chao in your garden\n**•** `!chao Unnamed name {name}` - Pick a name for your chao (you can always change it later)\n**•** `!chao {name}` - See details about your new chao"))
+                .Field(new("Can I get more chao?", "While the starter chao comes with your garden, you'll have to purchase eggs from the Black Market with rings to get additional chao. Use `!collect` to gather rings once per day. You will also earn rings by participating in races and tournaments."))
+                .Field(new("How do I use the bot?", "For a full list of commands, see [the command list](https://bytebarcafe.com/chao/commands.php). If you have any questions, just ask!"))
+                .Footer(new($"Sonic the Hedgehog and Chao are property of Sega and Sonic Team."))
                 .Color(DiscordUtils.Blue)
                 .Build());
-        }
-
-        public async Task Explain(Context ctx)
-        {
-            await ctx.Reply("> **About ChaoWorld**\nPluralKit detects messages enclosed in specific tags associated with a profile, then replaces that message under a \"pseudo-account\" of that profile using Discord webhooks.\n\nThis is useful for multiple people sharing one body (aka. *systems*), people who wish to role-play as different characters without having multiple Discord accounts, or anyone else who may want to post messages under a different identity from the same Discord account.\n\nDue to Discord limitations, these messages will show up with the `[BOT]` tag - however, they are not bots.");
         }
     }
 }

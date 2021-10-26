@@ -97,13 +97,14 @@ namespace ChaoWorld.Core
                 if (IsTwoTone && SecondaryColor.HasValue)
                     typeDescription += $"Two-Tone {PrimaryColor}/{SecondaryColor} ";
                 typeDescription += $"{PrimaryColor}";
-                if (EvolutionState == Core.Chao.EvolutionStates.Egg)
-                    typeDescription += $" Egg";
-                else if (EvolutionState == Core.Chao.EvolutionStates.Child)
+                //if (EvolutionState == Core.Chao.EvolutionStates.Egg)
+                    //typeDescription += $" Egg";
+                //else
+                if (EvolutionState == EvolutionStates.Child)
                     typeDescription += $" Child";
-                else if (EvolutionState == Core.Chao.EvolutionStates.First)
+                else if (EvolutionState == EvolutionStates.First)
                     typeDescription += $" {Alignment} {FirstEvolutionType}";
-                else if (EvolutionState == Core.Chao.EvolutionStates.Second && SecondEvolutionType.HasValue)
+                else if (EvolutionState == EvolutionStates.Second && SecondEvolutionType.HasValue)
                     typeDescription += $" {Alignment} {FirstEvolutionType}/{SecondEvolutionType}";
                 return typeDescription;
             }
@@ -116,7 +117,8 @@ namespace ChaoWorld.Core
 
         public enum EvolutionStates
         {
-            Egg, Child, First, Second
+            //Egg,
+            Child, First, Second
         }
 
         public enum Alignments
