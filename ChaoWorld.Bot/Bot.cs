@@ -285,6 +285,7 @@ namespace ChaoWorld.Bot
 
             try // DiscordClient may throw an exception if the socket is closed (e.g just after OP 7 received)
             {
+                
                 Task UpdateStatus(Shard shard) =>
                     shard.UpdateStatus(new GatewayStatusUpdate
                     {
@@ -292,9 +293,10 @@ namespace ChaoWorld.Bot
                         {
                             new ActivityPartial
                             {
-                                Name = $"!help | in {totalGuilds:N0} servers | shard #{shard.ShardId}",
+                                Name = "with Chao",
+                                //Name = $"!help | in {totalGuilds:N0} servers | shard #{shard.ShardId}",
                                 Type = ActivityType.Game,
-                                Url = "https://pluralkit.me/"
+                                Url = "https://chaoworld.online"
                             }
                         }
                     });

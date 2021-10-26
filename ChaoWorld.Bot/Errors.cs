@@ -34,23 +34,18 @@ namespace ChaoWorld.Bot
         // TODO: is returning constructed errors and throwing them at call site a good idea, or should these be methods that insta-throw instead?
         // or should we just like... go back to inlining them? at least for the one-time-use commands
 
-        public static CWError NotOwnGardenError => new CWError($"You can only run this command on your own garden.");
         public static CWError NotOwnChaoError => new CWError($"You can only run this command on your own chao.");
-        public static CWError NotOwnGroupError => new CWError($"You can only run this command on your own group.");
-        public static CWError NoGardenError => new CWError("You do not have a garden registered with Chao World. To create one, type `!system new`.");
-        public static CWError ExistingGardenError => new CWError("You already have a garden registered with Chao World. To view it, type `!system`. If you'd like to delete your system and start anew, type `!system delete`, or if you'd like to unlink this account from it, type `!unlink`.");
+        public static CWError NoGardenError => new CWError("You do not have a chao garden registered. To create one, type `!garden new`.");
+        public static CWError ExistingGardenError => new CWError("You already have a chao garden registered. To view it, type `!garden`.");
         public static CWError MissingChaoError => new CWSyntaxError("You need to specify a chao to run this command on.");
 
         public static CWError StringTooLongError(string name, int length, int maxLength) => new CWError($"{name} too long ({length}/{maxLength} characters).");
 
-        public static CWError ChaoLimitReachedError(int limit) => new CWError($"Garden has reached the maximum number of chao ({limit}). Please delete unused chao first in order to create new ones.");
+        public static CWError ChaoLimitReachedError(int limit) => new CWError($"Garden has reached the maximum number of chao ({limit}). Please get rid of unused chao first in order to create new ones.");
 
         public static CWError InvalidColorError(string color) => new CWError($"\"{color}\" is not a valid color. Color must be in 6-digit RGB hex format (eg. #ff0000).");
-        public static CWError BirthdayParseError(string birthday) => new CWError($"\"{birthday}\" could not be parsed as a valid date. Try a format like \"2016-12-24\" or \"May 3 1996\".");
-        public static CWError ProxyMustHaveText => new CWSyntaxError("Example proxy message must contain the string 'text'.");
-        public static CWError ProxyMultipleText => new CWSyntaxError("Example proxy message must contain the string 'text' exactly once.");
 
-        public static CWError ChaoDeleteCancelled => new CWError($"Chao deletion cancelled. Stay safe! {Emojis.ThumbsUp}");
+        public static CWError ChaoDeleteCancelled => new CWError($"Your chao is happy to stay with you. {Emojis.ThumbsUp}");
         public static CWError AvatarServerError(HttpStatusCode statusCode) => new CWError($"Server responded with status code {(int)statusCode}, are you sure your link is working?");
         public static CWError AvatarFileSizeLimit(long size) => new CWError($"File size too large ({size.Bytes().ToString("#.#")} > {Limits.AvatarFileSizeLimit.Bytes().ToString("#.#")}), try shrinking or compressing the image.");
         public static CWError AvatarNotAnImage(string mimeType) => new CWError($"The given link does not point to an image{(mimeType != null ? $" ({mimeType})" : "")}. Make sure you're using a direct link (ending in .jpg, .png, .gif).");
@@ -60,9 +55,9 @@ namespace ChaoWorld.Bot
         public static CWError InvalidUrl(string url) => new CWError($"The given URL is invalid.");
         public static CWError UrlTooLong(string url) => new CWError($"The given URL is too long ({url.Length}/{Limits.MaxUriLength} characters).");
 
-        public static CWError AccountAlreadyLinked => new CWError("That account is already linked to your system.");
-        public static CWError AccountNotLinked => new CWError("That account isn't linked to your system.");
-        public static CWError AccountInOtherSystem(Core.Garden system) => new CWError($"The mentioned account is already linked to another system (see `!system {system.Hid}`).");
+        public static CWError AccountAlreadyLinked => new CWError("That account is already linked to your garden.");
+        public static CWError AccountNotLinked => new CWError("That account isn't linked to your garden.");
+        public static CWError AccountInOtherSystem(Core.Garden system) => new CWError($"The mentioned account is already linked to another garden (see `!garden {system.Id}`).");
         public static CWError UnlinkingLastAccount => new CWError("Since this is the only account linked to this system, you cannot unlink it (as that would leave your system account-less). If you would like to delete your system, use `!system delete`.");
         public static CWError ChaoLinkCancelled => new CWError("Chao link cancelled.");
         public static CWError ChaoUnlinkCancelled => new CWError("Chao unlink cancelled.");

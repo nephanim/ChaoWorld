@@ -62,17 +62,12 @@ namespace ChaoWorld.Bot
             chaoCount++;
 
             // Send confirmation and space hint
-            await ctx.Reply($"{Emojis.Success} Chao \"{chaoName}\" (`{chao.Id}`) registered! Check out the getting started page for how to get a chao up and running: https://pluralkit.me/start#create-a-chao");
-            // todo: move this to ModelRepository
-            if (await _db.Execute(conn => conn.QuerySingleAsync<bool>("select has_private_chao(@Garden)",
-                new { System = ctx.Garden.Id }))) //if has private chao
-                await ctx.Reply($"{Emojis.Warn} This chao is currently **public**. To change this, use `!chao {chao.Id} private`.");
-            if (chaoName.Contains(" "))
-                await ctx.Reply($"{Emojis.Note} Note that this chao's name contains spaces. You will need to surround it with \"double quotes\" when using commands referring to it, or just use the chao's 5-character ID (which is `{chao.Id}`).");
+            await ctx.Reply($"{Emojis.Success} Chao \"{chaoName}\" (`{chao.Id}`) registered!");
+
             if (chaoCount >= chaoLimit)
-                await ctx.Reply($"{Emojis.Warn} You have reached the per-system chao limit ({chaoLimit}). You will be unable to create additional chao until existing chao are deleted.");
+                await ctx.Reply($"{Emojis.Warn} You have reached the per-garden chao limit ({chaoLimit}). You will be unable to obtain additional chao until existing chao are deleted.");
             else if (chaoCount >= Limits.WarnThreshold(chaoLimit))
-                await ctx.Reply($"{Emojis.Warn} You are approaching the per-system chao limit ({chaoCount} / {chaoLimit} chao). Please review your chao list for unused or duplicate chao.");
+                await ctx.Reply($"{Emojis.Warn} You are approaching the per-garden chao limit ({chaoCount} / {chaoLimit} chao). Please review your chao list for unused or duplicate chao.");
         }
 
         public async Task ViewChao(Context ctx, Core.Chao target)

@@ -17,11 +17,11 @@ namespace ChaoWorld.Bot
             _repo = repo;
         }
 
-        public async Task Query(Context ctx, Core.Garden system)
+        public async Task Query(Context ctx, Core.Garden garden)
         {
-            if (system == null) throw Errors.NoGardenError;
+            if (garden == null) throw Errors.NoGardenError;
 
-            await ctx.Reply(embed: await _embeds.CreateSystemEmbed(ctx, system));
+            await ctx.Reply(embed: await _embeds.CreateGardenEmbed(ctx, garden));
         }
 
         public async Task New(Context ctx)

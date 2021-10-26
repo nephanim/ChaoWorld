@@ -65,9 +65,14 @@ namespace ChaoWorld.Bot
             // - A textual name of a chao *in your own system*
             // - a textual display name of a chao *in your own system*
 
-            // First, if we have a system, try finding by chao name in system
+            // First, if we have a garden, try finding by chao name in garden
             if (ctx.Chao != null && await ctx.Repository.GetChaoByName(ctx.Garden.Id, input) is Core.Chao chaoByName)
                 return chaoByName;
+
+            // Try looking it up by its ID
+            long.TryParse(input.Replace("#", string.Empty), out long id);
+            if (ctx.Chao != null && await ctx.Repository.GetChao(id) is Core.Chao chaoById)
+                return chaoById;
 
             // We didn't find anything, so we return null.
             return null;

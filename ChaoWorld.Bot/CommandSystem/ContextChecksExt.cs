@@ -25,14 +25,14 @@ namespace ChaoWorld.Bot
 
         public static Context CheckGarden(this Context ctx)
         {
-            if (ctx.Chao == null)
+            if (ctx.Garden == null)
                 throw Errors.NoGardenError;
             return ctx;
         }
 
         public static Context CheckNoGarden(this Context ctx)
         {
-            if (ctx.Chao != null)
+            if (ctx.Garden != null)
                 throw Errors.ExistingGardenError;
             return ctx;
         }
