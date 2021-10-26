@@ -160,7 +160,7 @@ namespace ChaoWorld.Bot
 
         private static int ExtractNodeIndex(string nodeName)
         {
-            // Node name eg. "pluralkit-3", want to extract the 3. blame k8s :p
+            // Node name eg. "chaoworld-3", want to extract the 3. blame k8s :p
             return int.Parse(nodeName.Split("-").Last());
         }
     }

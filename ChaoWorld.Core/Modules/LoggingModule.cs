@@ -65,7 +65,7 @@ namespace ChaoWorld.Core
                     // Output simultaneously. May remove the JSON formatter later, keeping it just in cast.
                     // Flush interval is 50ms (down from 10s) to make "tail -f" easier. May be too low?
                     a.File(
-                        (config.LogDir ?? "logs") + $"/pluralkit.{_component}.log",
+                        (config.LogDir ?? "logs") + $"/chaoworld.{_component}.log",
                         outputTemplate: outputTemplate,
                         retainedFileCountLimit: 10,
                         rollingInterval: RollingInterval.Day,
@@ -77,7 +77,7 @@ namespace ChaoWorld.Core
 
                     a.File(
                         new RenderedCompactJsonFormatter(new ScalarFormatting.JsonValue()),
-                        (config.LogDir ?? "logs") + $"/pluralkit.{_component}.json",
+                        (config.LogDir ?? "logs") + $"/chaoworld.{_component}.json",
                         rollingInterval: RollingInterval.Day,
                         flushToDiskInterval: TimeSpan.FromMilliseconds(50),
                         restrictedToMinimumLevel: config.FileLogLevel,
@@ -96,7 +96,7 @@ namespace ChaoWorld.Core
                     AutoRegisterTemplate = true,
                     AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
                     MinimumLogEventLevel = config.ElasticLogLevel,
-                    IndexFormat = "pluralkit-logs-{0:yyyy.MM.dd}",
+                    IndexFormat = "chaoworld-logs-{0:yyyy.MM.dd}",
                     CustomFormatter = new ScalarFormatting.Elasticsearch(),
                 };
 
