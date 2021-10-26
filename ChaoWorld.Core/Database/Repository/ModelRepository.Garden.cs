@@ -42,13 +42,27 @@ namespace ChaoWorld.Core
 
         public async Task<Garden> CreateGarden(IPKConnection? conn = null)
         {
+            var now = NodaTime.SystemClock.Instance.GetCurrentInstant();
             var query = new Query("gardens").AsInsert(new
             {
-                ringbalance = 0
+                ringbalance = 0,
+                createdon = now,
+                nextcollecton = now
             });
             var garden = await _db.QueryFirst<Garden>(conn, query, extraSql: "returning *");
             _logger.Information("Created {GardenId}", garden.Id);
             return garden;
+        }
+
+        public async Task<Garden> UpdateGarden(Garden garden)
+        {
+            var query = new Query("gardens").Where("id", garden.Id.Value).AsUpdate(new
+            {
+                ringbalance = garden.RingBalance,
+                nextcollecton = garden.NextCollectOn
+            });
+            var updatedGarden = await _db.QueryFirst<Garden>(query, extraSql: "returning *");
+            return updatedGarden;
         }
 
         public Task<Garden> UpdateGarden(GardenId id, GardenPatch patch, IPKConnection? conn = null)

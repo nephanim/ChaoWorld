@@ -67,7 +67,39 @@ namespace ChaoWorld.Bot
                 PermissionSet.SendMessages;
 
             var invite = $"https://discord.com/oauth2/authorize?client_id={clientId}&scope=bot%20applications.commands&permissions={(ulong)permissions}";
-            await ctx.Reply($"{Emojis.Success} Use this link to add ChaoWorld to your server:\n<{invite}>");
+            await ctx.Reply($"{Emojis.Success} Use this link to add Chao World to your server:\n<{invite}>");
+        }
+
+        public async Task Collect(Context ctx)
+        {
+            ctx.CheckGarden();
+
+            var now = NodaTime.SystemClock.Instance.GetCurrentInstant();
+            if (ctx.Garden.NextCollectOn < now)
+            {
+                var ringsFound = new System.Random().Next(100, 1000);
+                ctx.Garden.RingBalance += ringsFound;
+                var duration = Duration.FromDays(1);
+                ctx.Garden.NextCollectOn = now.Plus(duration);
+                await _repo.UpdateGarden(ctx.Garden);
+                await ctx.Reply($"{Emojis.Success} You found {ringsFound} rings! Your current balance is {ctx.Garden.RingBalance}.");
+            } else {
+                var duration = ctx.Garden.NextCollectOn - now;
+                var timeRemaining = "24 hours";
+                if (duration.Hours >= 2)
+                    timeRemaining = $"{duration.Hours} hours";
+                else if (duration.Hours >= 1)
+                    timeRemaining = $"hour";
+                else if (duration.Minutes >= 2)
+                    timeRemaining = $"{duration.Minutes} minutes";
+                else if (duration.Minutes >= 1)
+                    timeRemaining = $"minute";
+                else
+                    timeRemaining = $"{duration.Seconds} seconds";
+
+                await ctx.Reply($"{Emojis.Error} You couldn't find anything. Please wait another {timeRemaining} to collect rings.");
+            }
+                
         }
 
         public async Task Stats(Context ctx)

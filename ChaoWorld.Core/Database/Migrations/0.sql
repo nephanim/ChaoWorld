@@ -2,7 +2,8 @@ create table if not exists gardens
 (
 	id serial primary key,
     ringbalance bigint not null default 0,
-    createdon timestamp without time zone not null default (current_timestamp)
+    createdon timestamp without time zone not null default (current_timestamp),
+    nextcollecton timestamp without time zone not null default (current_timestamp)
 );
 
 create table if not exists accounts

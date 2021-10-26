@@ -17,6 +17,7 @@ namespace ChaoWorld.Bot
         public static Command ChaoNew = new Command("chao new", "chao new", "Creates a new chao"); //TODO: Remove this when the market is done
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
+        public static Command Collect = new Command("collect", "collect", "Can be used every 24 hours to collect rings for use in the market");
         public static Command Help = new Command("help", "help", "Shows help information about Chao World");
         public static Command Admin = new Command("admin", "admin", "What? Nothing to see here...");
 
@@ -42,6 +43,7 @@ namespace ChaoWorld.Bot
                 if (ctx.Match("commands"))
                     return ctx.Reply("For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
                 else return ctx.Execute<Help>(Help, m => m.HelpRoot(ctx));
+            if (ctx.Match("collect")) return ctx.Execute<Misc>(null, m => m.Collect(ctx));
             if (ctx.Match("stats")) return ctx.Execute<Misc>(null, m => m.Stats(ctx));
 
             // remove compiler warning
@@ -123,7 +125,7 @@ namespace ChaoWorld.Bot
         {
             if (!ctx.HasNext())
             {
-                await ctx.Reply($"Available command help targets: `garden`, `chao`, `race`, `tournament`, `market`, `item`"
+                await ctx.Reply($"Available command help targets: `garden`, `chao`, `collect`, `race`, `tournament`, `market`, `item`"
                     + "\n- **!commands {target}** - *View commands related to a help target.*"
                     + "\n\nFor a full list of commands, see: https://bytebarcafe.com/chao/commands.php"
                     + "\nIf you have any questions, just ask!");

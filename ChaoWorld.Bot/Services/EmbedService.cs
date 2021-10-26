@@ -68,7 +68,7 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
-        public async Task<Embed> CreateChaoEmbed(Core.Garden system, Core.Chao chao, Guild guild)
+        public async Task<Embed> CreateChaoEmbed(Core.Garden garden, Core.Chao chao, Guild guild)
         {
             var name = chao.Name;
 
@@ -76,7 +76,7 @@ namespace ChaoWorld.Bot
                 .Author(new(name))
                 .Description(chao.Appearance)
                 .Footer(new(
-                    $"Garden ID: {system.Hid} | Chao ID: {chao.Id} {$"| Created on {chao.CreatedOn.FormatZoned(DateTimeZone.Utc)}"}"));
+                    $"Garden ID: {garden.Id} | Chao ID: {chao.Id} {$"| Created on {chao.CreatedOn.FormatZoned(DateTimeZone.Utc)}"}"));
 
             eb.Field(new("Age", chao.Age.ToString()));
             eb.Field(new("Reincarnations", chao.Reincarnations.ToString()));

@@ -35,17 +35,10 @@ namespace ChaoWorld.Bot
             if (ctx.Member == null) throw Errors.NoGardenError;
             await using var conn = await _db.Obtain();
 
-            // Enforce per-system chao limit
-            var chaoCount = await _repo.GetGardenChaoCount(ctx.Garden.Id);
-            var chaoLimit = ctx.Garden.ChaoLimitOverride ?? Limits.MaxChaoCount;
-            if (chaoCount >= chaoLimit)
-                throw Errors.ChaoLimitReachedError(chaoLimit);
-
             // Create the chao
             var chaoTemplate = new Core.Chao();
             chaoTemplate.Initialize(isStarterChao: false);
             var chao = await _repo.CreateChao(ctx.Garden.Id, chaoTemplate);
-            chaoCount++;
 
             // Send confirmation
             await ctx.Reply($"{Emojis.Success} Chao {chao.Id} registered!");

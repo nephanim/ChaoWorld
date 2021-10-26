@@ -19,7 +19,7 @@ namespace ChaoWorld.Bot
             if (target == null) throw Errors.NoGardenError;
 
             var opts = ctx.ParseChaoListOptions();
-            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(ctx, target, opts), target.Color, opts);
+            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(ctx, target, opts), null, opts);
         }
 
         private string GetEmbedTitle(Context ctx, Core.Garden target, ChaoListOptions opts)
