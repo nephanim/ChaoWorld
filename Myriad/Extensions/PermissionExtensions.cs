@@ -13,10 +13,10 @@ namespace Myriad.Extensions
         public static PermissionSet PermissionsFor(this IDiscordCache cache, MessageCreateEvent message) =>
             PermissionsFor(cache, message.ChannelId, message.Author.Id, message.Member, isWebhook: message.WebhookId != null);
 
-        public static PermissionSet PermissionsFor(this IDiscordCache cache, ulong channelId, GuildMember chao) =>
-            PermissionsFor(cache, channelId, chao.User.Id, chao);
+        public static PermissionSet PermissionsFor(this IDiscordCache cache, ulong channelId, GuildMember member) =>
+            PermissionsFor(cache, channelId, member.User.Id, member);
 
-        public static PermissionSet PermissionsFor(this IDiscordCache cache, ulong channelId, ulong userId, GuildMemberPartial? chao, bool isWebhook = false)
+        public static PermissionSet PermissionsFor(this IDiscordCache cache, ulong channelId, ulong userId, GuildMemberPartial? member, bool isWebhook = false)
         {
             if (!cache.TryGetChannel(channelId, out var channel))
                 // todo: handle channel not found better
@@ -32,7 +32,7 @@ namespace Myriad.Extensions
             if (isWebhook)
                 return EveryonePermissions(guild);
 
-            return PermissionsFor(guild, rootChannel, userId, chao);
+            return PermissionsFor(guild, rootChannel, userId, member);
         }
 
         public static PermissionSet EveryonePermissions(this Guild guild) =>
@@ -58,17 +58,17 @@ namespace Myriad.Extensions
         public static PermissionSet PermissionsFor(Guild guild, Channel channel, MessageCreateEvent msg) =>
             PermissionsFor(guild, channel, msg.Author.Id, msg.Member);
 
-        public static PermissionSet PermissionsFor(Guild guild, Channel channel, ulong userId, GuildMemberPartial? chao)
+        public static PermissionSet PermissionsFor(Guild guild, Channel channel, ulong userId, GuildMemberPartial? member)
         {
             if (channel.Type == Channel.ChannelType.Dm)
                 return PermissionSet.Dm;
 
-            if (chao == null)
+            if (member == null)
                 // this happens with system (Discord platform-owned) users - they're not actually in the guild, so there is no chao object.
                 return EveryonePermissions(guild);
 
-            var perms = GuildPermissions(guild, userId, chao.Roles);
-            perms = ApplyChannelOverwrites(perms, channel, userId, chao.Roles);
+            var perms = GuildPermissions(guild, userId, member.Roles);
+            perms = ApplyChannelOverwrites(perms, channel, userId, member.Roles);
 
             if ((perms & PermissionSet.Administrator) == PermissionSet.Administrator)
                 return PermissionSet.All;
