@@ -13,10 +13,10 @@ namespace ChaoWorld.Bot
         public static Command GardenNew = new Command("garden new", "garden new", "Creates a new garden");
         public static Command GardenList = new Command("garden list", "garden [garden] list [full]", "Lists all chao in a garden");
         public static Command GardenFind = new Command("garden find", "garden [garden] find [full] {search term}", "Searches a garden for chao given a search term");
-        public static Command ChaoInfo = new Command("chao", "chao {chao}", "Looks up information about a chao using either the name or ID");
-        public static Command ChaoNew = new Command("chao new", "chao new {name}", "Creates a new chao");
+        public static Command ChaoInfo = new Command("chao", "chao {id/name}", "Looks up information about a chao using either the name or ID");
+        public static Command ChaoNew = new Command("chao new", "chao new", "Creates a new chao"); //TODO: Remove this when the market is done
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
-        public static Command ChaoGoodbye = new Command("chao goodbye", "chao goodbye {chao}", "Sends a chao to the forest forever");
+        public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
         public static Command Help = new Command("help", "help", "Shows help information about Chao World");
         public static Command Admin = new Command("admin", "admin", "What? Nothing to see here...");
 

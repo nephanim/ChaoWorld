@@ -29,7 +29,6 @@ namespace ChaoWorld.Core
             {
                 gardenid = garden,
                 name = chao.Name,
-                isactive = chao.IsActive,
                 swimgrade = chao.SwimGrade,
                 flygrade = chao.FlyGrade,
                 rungrade = chao.RunGrade,

@@ -40,10 +40,7 @@ namespace ChaoWorld.Core
         public long DatabaseId { get { return Id.Value; } }
         public GardenId GardenId { get; private set; }
         public string Name { get; private set; }
-        public bool IsActive { get; private set; }
-        public bool IsDeleted { get; private set; }
         public Instant CreatedOn { get; private set; }
-        public Instant? DeletedOn { get; private set; }
         public Colors PrimaryColor { get; private set; }
         public Colors? SecondaryColor { get; private set; }
         public bool IsShiny { get; private set; }
@@ -140,7 +137,6 @@ namespace ChaoWorld.Core
 
         public void Initialize(bool isStarterChao)
         {
-            IsActive = isStarterChao;
             Name = "Unnamed";
             SwimGrade = MiscUtils.GenerateStatGrade();
             FlyGrade = MiscUtils.GenerateStatGrade();
