@@ -58,7 +58,6 @@ namespace ChaoWorld.Bot
                 .Footer(new($"Garden ID: {garden.Id} | Created on {garden.CreatedOn}"));
 
             eb.Field(new("Rings", garden.RingBalance.ToString(), true));
-            eb.Field(new("Linked Accounts", string.Join("\n", users).Truncate(1000), true));
 
             if (chaoCount > 0)
                 eb.Field(new($"Chao ({chaoCount})", $"(see `!garden {garden.Id} list` or `!garden {garden.Id} list full`)", true));
