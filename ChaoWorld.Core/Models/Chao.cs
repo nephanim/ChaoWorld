@@ -87,6 +87,27 @@ namespace ChaoWorld.Core
         public int LuckProgress { get; private set; }
         public int LuckValue { get; private set; }
 
+        public string Appearance
+        {
+            get
+            {
+                var typeDescription = "";
+                if (IsShiny)
+                    typeDescription += $"Shiny ";
+                if (IsTwoTone && SecondaryColor.HasValue)
+                    typeDescription += $"Two-Tone {PrimaryColor}/{SecondaryColor} ";
+                typeDescription += $"{PrimaryColor}";
+                if (EvolutionState == Core.Chao.EvolutionStates.Egg)
+                    typeDescription += $" Egg";
+                else if (EvolutionState == Core.Chao.EvolutionStates.Child)
+                    typeDescription += $" Child";
+                else if (EvolutionState == Core.Chao.EvolutionStates.First)
+                    typeDescription += $" {Alignment} {FirstEvolutionType}";
+                else if (EvolutionState == Core.Chao.EvolutionStates.Second && SecondEvolutionType.HasValue)
+                    typeDescription += $" {Alignment} {FirstEvolutionType}/{SecondEvolutionType}";
+                return typeDescription;
+            }
+        }
         public enum Colors
         {
             Normal, Black, Blue, Brown, Green, Grey, LimeGreen, Orange, Pink, Purple, Red, SkyBlue, White, Yellow,

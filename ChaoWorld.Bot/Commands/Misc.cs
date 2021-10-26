@@ -96,7 +96,6 @@ namespace ChaoWorld.Bot
 
             var embed = new EmbedBuilder();
             if (messagesReceived != null) embed.Field(new("Messages processed", $"{messagesReceived.OneMinuteRate * 60:F1}/m ({messagesReceived.FifteenMinuteRate * 60:F1}/m over 15m)", true));
-            if (messagesProxied != null) embed.Field(new("Messages proxied", $"{messagesProxied.OneMinuteRate * 60:F1}/m ({messagesProxied.FifteenMinuteRate * 60:F1}/m over 15m)", true));
             if (commandsRun != null) embed.Field(new("Commands executed", $"{commandsRun.OneMinuteRate * 60:F1}/m ({commandsRun.FifteenMinuteRate * 60:F1}/m over 15m)", true));
 
             embed
@@ -105,13 +104,10 @@ namespace ChaoWorld.Bot
                 .Field(new("CPU usage", $"{_cpu.LastCpuMeasure:P1}", true))
                 .Field(new("Memory usage", $"{memoryUsage / 1024 / 1024} MiB", true))
                 .Field(new("Latency", $"API: {apiLatency.TotalMilliseconds:F0} ms, shard: {shardInfo.ShardLatency.Milliseconds} ms", true))
-                .Field(new("Total numbers", $"{counts.SystemCount:N0} systems,"
-                    + $" {counts.ChaoCount:N0} chao,"
-                    + $" {counts.GroupCount:N0} groups,"
-                    + $" {counts.SwitchCount:N0} switches,"
-                    + $" {counts.MessageCount:N0} messages"))
+                .Field(new("Total numbers", $"{counts.SystemCount:N0} gardens"
+                    + $"\n{counts.ChaoCount:N0} chao"))
                 .Timestamp(Process.GetCurrentProcess().StartTime.ToString("O"))
-                .Footer(new($"ChaoWorld {BuildInfoService.Version} • https://github.com/xSke/ChaoWorld • Last restarted: ")); ;
+                .Footer(new($"Chao World {BuildInfoService.Version} • Last restarted: ")); ;
             await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
                 new MessageEditRequest { Content = "", Embed = embed.Build() });
         }

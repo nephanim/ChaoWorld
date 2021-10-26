@@ -150,7 +150,6 @@ namespace ChaoWorld.Bot
                 else return ctx.Execute<Help>(Help, m => m.HelpRoot(ctx));
             if (ctx.Match("explain"))
                 return ctx.Execute<Help>(Explain, m => m.Explain(ctx));
-            if (ctx.Match("invite")) return ctx.Execute<Misc>(Invite, m => m.Invite(ctx));
             if (ctx.Match("stats")) return ctx.Execute<Misc>(null, m => m.Stats(ctx));
 
             // remove compiler warning
@@ -167,22 +166,12 @@ namespace ChaoWorld.Bot
             // First, we match own-system-only commands (ie. no target system parameter)
             else if (ctx.Match("new", "create", "make", "add", "register", "init", "n"))
                 await ctx.Execute<Garden>(SystemNew, m => m.New(ctx));
-            else if (ctx.Match("name", "rename", "changename"))
-                await ctx.Execute<SystemEdit>(SystemRename, m => m.Name(ctx));
-            else if (ctx.Match("description", "desc", "bio"))
-                await ctx.Execute<SystemEdit>(SystemDesc, m => m.Description(ctx));
-            else if (ctx.Match("color", "colour"))
-                await ctx.Execute<SystemEdit>(SystemColor, m => m.Color(ctx));
-            else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet"))
-                await ctx.Execute<SystemEdit>(SystemDelete, m => m.Delete(ctx));
-            else if (ctx.Match("proxy"))
-                await ctx.Execute<SystemEdit>(SystemProxy, m => m.SystemProxy(ctx));
             else if (ctx.Match("list", "l", "chao"))
                 await ctx.Execute<SystemList>(SystemList, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
                 await ctx.Execute<SystemList>(SystemFind, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("commands", "help"))
-                await PrintCommandList(ctx, "systems", SystemCommands);
+                await PrintCommandList(ctx, "gardens", SystemCommands);
             else
                 await HandleSystemCommandTargeted(ctx);
         }

@@ -27,10 +27,6 @@ namespace ChaoWorld.Bot
             if (ctx.HasNext())
                 p.Search = ctx.RemainderOrNull();
 
-            // Include description in search?
-            if (ctx.MatchFlag("search-description", "filter-description", "in-description", "sd", "description", "desc"))
-                p.SearchDescription = true;
-
             // Sort property (default is by name, but adding a flag anyway, 'cause why not)
             if (ctx.MatchFlag("by-name", "bn")) p.SortProperty = SortProperty.Name;
             if (ctx.MatchFlag("by-created", "bc", "bcd")) p.SortProperty = SortProperty.CreationDate;
@@ -41,18 +37,8 @@ namespace ChaoWorld.Bot
                 p.Reverse = true;
 
             // Additional fields to include in the search results
-            if (ctx.MatchFlag("with-last-switch", "with-last-fronted", "with-last-front", "wls", "wlf"))
-                p.IncludeLastSwitch = true;
-            if (ctx.MatchFlag("with-last-message", "with-last-proxy", "wlm", "wlp"))
-                p.IncludeLastMessage = true;
-            if (ctx.MatchFlag("with-message-count", "wmc"))
-                p.IncludeMessageCount = true;
             if (ctx.MatchFlag("with-created", "wc"))
                 p.IncludeCreated = true;
-            if (ctx.MatchFlag("with-avatar", "with-image", "wa", "wi", "ia", "ii", "img"))
-                p.IncludeAvatar = true;
-            if (ctx.MatchFlag("with-pronouns", "wp"))
-                p.IncludePronouns = true;
 
             // Always show the sort property, too
             if (p.SortProperty == SortProperty.CreationDate) p.IncludeCreated = true;
@@ -119,9 +105,12 @@ namespace ChaoWorld.Bot
                 foreach (var m in page)
                 {
                     var profile = new StringBuilder($"**ID**: {m.Id}");
-
+                    profile.Append($"\n**Age**: {m.Age}");
+                    profile.Append($"\n**Reincarnations**: {m.Reincarnations}");
+                    profile.Append($"\n**Type**: {m.Appearance}");
+                    profile.Append($"\n**Stat Grades**: {m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade}");
                     if (opts.IncludeCreated || opts.SortProperty == SortProperty.CreationDate)
-                        profile.Append($"\n**Created on:** {m.CreatedOn.FormatZoned(zone)}");
+                        profile.Append($"\n**Created on**: {m.CreatedOn.FormatZoned(zone)}");
 
                     eb.Field(new(m.Name, profile.ToString().Truncate(1024)));
                 }
