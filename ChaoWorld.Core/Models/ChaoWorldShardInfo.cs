@@ -2,7 +2,7 @@ using NodaTime;
 
 namespace ChaoWorld.Core
 {
-    public class PKShardInfo
+    public class ChaoWorldShardInfo
     {
         public int Id { get; }
         public ShardStatus Status { get; }

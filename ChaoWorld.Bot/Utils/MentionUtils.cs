@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace ChaoWorld.Bot.Utils
 {
-    // PK note: class is wholesale copied from Discord.NET (MIT-licensed)
+    // note: class is wholesale copied from Discord.NET (MIT-licensed)
     // https://github.com/discord-net/Discord.Net/blob/ff0fea98a65d907fbce07856f1a9ef4aebb9108b/src/Discord.Net.Core/Utils/MentionUtils.cs
 
     /// <summary>

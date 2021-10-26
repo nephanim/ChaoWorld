@@ -104,7 +104,7 @@ namespace ChaoWorld.Bot
 
             _ = ExecuteWithDatabase(async c =>
             {
-                await _repo.SetShardStatus(c, shard.ShardId, PKShardInfo.ShardStatus.Up);
+                await _repo.SetShardStatus(c, shard.ShardId, ChaoWorldShardInfo.ShardStatus.Up);
                 await _repo.RegisterShardConnection(c, shard.ShardId);
             });
         }
@@ -117,7 +117,7 @@ namespace ChaoWorld.Bot
             ReportShardStatus();
 
             _ = ExecuteWithDatabase(c =>
-                _repo.SetShardStatus(c, shard.ShardId, PKShardInfo.ShardStatus.Down));
+                _repo.SetShardStatus(c, shard.ShardId, ChaoWorldShardInfo.ShardStatus.Down));
         }
 
         private void Heartbeated(Shard shard, TimeSpan latency)

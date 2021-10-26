@@ -9,10 +9,10 @@ namespace ChaoWorld.Core
 {
     public partial class ModelRepository
     {
-        public Task<IEnumerable<PKShardInfo>> GetShards(IChaoWorldConnection conn) =>
-            conn.QueryAsync<PKShardInfo>("select * from shards order by id");
+        public Task<IEnumerable<ChaoWorldShardInfo>> GetShards(IChaoWorldConnection conn) =>
+            conn.QueryAsync<ChaoWorldShardInfo>("select * from shards order by id");
 
-        public Task SetShardStatus(IChaoWorldConnection conn, int shard, PKShardInfo.ShardStatus status) =>
+        public Task SetShardStatus(IChaoWorldConnection conn, int shard, ChaoWorldShardInfo.ShardStatus status) =>
             conn.ExecuteAsync(
                 "insert into shards (id, status) values (@Id, @Status) on conflict (id) do update set status = @Status",
                 new { Id = shard, Status = status });
