@@ -9,7 +9,7 @@ namespace ChaoWorld.Core
 {
     public static class DatabaseViewsExt
     {
-        public static Task<IEnumerable<ListedChao>> QueryChaoList(this IPKConnection conn, GardenId garden, ChaoListQueryOptions opts)
+        public static Task<IEnumerable<ListedChao>> QueryChaoList(this IChaoWorldConnection conn, GardenId garden, ChaoListQueryOptions opts)
         {
             StringBuilder query;
             query = new StringBuilder("select * from chao where gardenid = @garden");

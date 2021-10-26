@@ -8,11 +8,11 @@ using Npgsql;
 
 namespace ChaoWorld.Core
 {
-    internal class PKTransaction: DbTransaction, IPKTransaction
+    internal class ChaoWorldTransaction: DbTransaction, IChaoWorldTransaction
     {
         public NpgsqlTransaction Inner { get; }
 
-        public PKTransaction(NpgsqlTransaction inner)
+        public ChaoWorldTransaction(NpgsqlTransaction inner)
         {
             Inner = inner;
         }

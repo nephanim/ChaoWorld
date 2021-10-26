@@ -81,14 +81,14 @@ namespace ChaoWorld.Core
             NpgsqlConnection.GlobalTypeMapper.MapComposite<ProxyTag>("proxy_tag");
         }
 
-        public async Task<IPKConnection> Obtain()
+        public async Task<IChaoWorldConnection> Obtain()
         {
             // Mark the request (for a handle, I guess) in the metrics
             _metrics.Measure.Meter.Mark(CoreMetrics.DatabaseRequests);
 
             // Create a connection and open it
-            // We wrap it in PKConnection for tracing purposes
-            var conn = new PKConnection(new NpgsqlConnection(_connectionString), _countHolder, _logger, _metrics);
+            // We wrap it in ChaoWorldConnection for tracing purposes
+            var conn = new ChaoWorldConnection(new NpgsqlConnection(_connectionString), _countHolder, _logger, _metrics);
             await conn.OpenAsync();
             return conn;
         }
@@ -153,19 +153,19 @@ namespace ChaoWorld.Core
             public override T[] Parse(object value) => Array.ConvertAll((TInner[])value, v => _factory(v));
         }
 
-        public async Task Execute(Func<IPKConnection, Task> func)
+        public async Task Execute(Func<IChaoWorldConnection, Task> func)
         {
             await using var conn = await Obtain();
             await func(conn);
         }
 
-        public async Task<T> Execute<T>(Func<IPKConnection, Task<T>> func)
+        public async Task<T> Execute<T>(Func<IChaoWorldConnection, Task<T>> func)
         {
             await using var conn = await Obtain();
             return await func(conn);
         }
 
-        public async IAsyncEnumerable<T> Execute<T>(Func<IPKConnection, IAsyncEnumerable<T>> func)
+        public async IAsyncEnumerable<T> Execute<T>(Func<IChaoWorldConnection, IAsyncEnumerable<T>> func)
         {
             await using var conn = await Obtain();
 
@@ -181,7 +181,7 @@ namespace ChaoWorld.Core
                 return await conn.ExecuteAsync(query.Sql + $" {extraSql}", query.NamedBindings);
         }
 
-        public async Task<int> ExecuteQuery(IPKConnection? conn, Query q, string extraSql = "", [CallerMemberName] string queryName = "")
+        public async Task<int> ExecuteQuery(IChaoWorldConnection? conn, Query q, string extraSql = "", [CallerMemberName] string queryName = "")
         {
             if (conn == null)
                 return await ExecuteQuery(q, extraSql, queryName);
@@ -199,7 +199,7 @@ namespace ChaoWorld.Core
                 return await conn.QueryFirstOrDefaultAsync<T>(query.Sql + $" {extraSql}", query.NamedBindings);
         }
 
-        public async Task<T> QueryFirst<T>(IPKConnection? conn, Query q, string extraSql = "", [CallerMemberName] string queryName = "")
+        public async Task<T> QueryFirst<T>(IChaoWorldConnection? conn, Query q, string extraSql = "", [CallerMemberName] string queryName = "")
         {
             if (conn == null)
                 return await QueryFirst<T>(q, extraSql, queryName);

@@ -7,7 +7,7 @@ using Npgsql;
 
 namespace ChaoWorld.Core
 {
-    public interface IPKConnection: IDbConnection, IAsyncDisposable
+    public interface IChaoWorldConnection: IDbConnection, IAsyncDisposable
     {
         public Guid ConnectionId { get; }
 
@@ -16,8 +16,8 @@ namespace ChaoWorld.Core
 
         public Task ChangeDatabaseAsync(string databaseName, CancellationToken ct = default);
 
-        public ValueTask<IPKTransaction> BeginTransactionAsync(CancellationToken ct = default) => BeginTransactionAsync(IsolationLevel.Unspecified, ct);
-        public ValueTask<IPKTransaction> BeginTransactionAsync(IsolationLevel level, CancellationToken ct = default);
+        public ValueTask<IChaoWorldTransaction> BeginTransactionAsync(CancellationToken ct = default) => BeginTransactionAsync(IsolationLevel.Unspecified, ct);
+        public ValueTask<IChaoWorldTransaction> BeginTransactionAsync(IsolationLevel level, CancellationToken ct = default);
 
         public NpgsqlBinaryImporter BeginBinaryImport(string copyFromCommand);
         public NpgsqlBinaryExporter BeginBinaryExport(string copyToCommand);

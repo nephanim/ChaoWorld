@@ -28,7 +28,7 @@ namespace ChaoWorld.Core
         }
 
         // todo: add a Mapper to QuerySingle and move this to SqlKata
-        public async Task<FullMessage?> GetMessage(IPKConnection conn, ulong id)
+        public async Task<FullMessage?> GetMessage(IChaoWorldConnection conn, ulong id)
         {
             FullMessage Mapper(PKMessage msg, Chao chao, Garden system) =>
                 new FullMessage { Message = msg, System = system, Chao = chao };

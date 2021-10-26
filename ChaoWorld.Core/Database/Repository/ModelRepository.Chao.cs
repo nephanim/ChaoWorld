@@ -23,7 +23,7 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Chao?>(query);
         }
 
-        public async Task<Chao> CreateChao(GardenId garden, Chao chao, IPKConnection? conn = null)
+        public async Task<Chao> CreateChao(GardenId garden, Chao chao, IChaoWorldConnection? conn = null)
         {
             var query = new Query("chao").AsInsert(new
             {
@@ -43,7 +43,7 @@ namespace ChaoWorld.Core
             return chao;
         }
 
-        public Task<Chao> UpdateChao(ChaoId id, GardenPatch patch, IPKConnection? conn = null)
+        public Task<Chao> UpdateChao(ChaoId id, GardenPatch patch, IChaoWorldConnection? conn = null)
         {
             _logger.Information("Updated {ChaoId}: {@GardenPatch}", id, patch);
             var query = patch.Apply(new Query("chao").Where("id", id));

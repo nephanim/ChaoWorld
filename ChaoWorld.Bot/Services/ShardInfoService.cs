@@ -131,7 +131,7 @@ namespace ChaoWorld.Bot
                 _repo.RegisterShardHeartbeat(c, shard.ShardId, latency.ToDuration()));
         }
 
-        private async Task ExecuteWithDatabase(Func<IPKConnection, Task> fn)
+        private async Task ExecuteWithDatabase(Func<IChaoWorldConnection, Task> fn)
         {
             // wrapper function to log errors because we "async void" it at call site :(
             try

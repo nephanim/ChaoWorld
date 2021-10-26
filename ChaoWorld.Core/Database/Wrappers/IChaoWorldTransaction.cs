@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ChaoWorld.Core
 {
-    public interface IPKTransaction: IDbTransaction, IAsyncDisposable
+    public interface IChaoWorldTransaction: IDbTransaction, IAsyncDisposable
     {
         public Task CommitAsync(CancellationToken ct = default);
         public Task RollbackAsync(CancellationToken ct = default);

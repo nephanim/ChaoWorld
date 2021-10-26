@@ -20,7 +20,7 @@ namespace ChaoWorld.Core
             _logger = logger;
         }
 
-        public async Task ApplyMigrations(IPKConnection conn)
+        public async Task ApplyMigrations(IChaoWorldConnection conn)
         {
             // Run everything in a transaction
             await using var tx = await conn.BeginTransactionAsync();
@@ -39,7 +39,7 @@ namespace ChaoWorld.Core
             await tx.CommitAsync();
         }
 
-        private async Task ApplyMigrations(IPKConnection conn, IDbTransaction tx)
+        private async Task ApplyMigrations(IChaoWorldConnection conn, IDbTransaction tx)
         {
             var currentVersion = await GetCurrentDatabaseVersion(conn);
             _logger.Information("Current schema version: {CurrentVersion}", currentVersion);
@@ -50,7 +50,7 @@ namespace ChaoWorld.Core
             }
         }
 
-        private async Task ExecuteSqlFile(string resourceName, IPKConnection conn, IDbTransaction tx = null)
+        private async Task ExecuteSqlFile(string resourceName, IChaoWorldConnection conn, IDbTransaction tx = null)
         {
             await using var stream = typeof(Database).Assembly.GetManifestResourceStream(resourceName);
             if (stream == null) throw new ArgumentException($"Invalid resource name  '{resourceName}'");
@@ -62,10 +62,10 @@ namespace ChaoWorld.Core
 
             // If the above creates new enum/composite types, we must tell Npgsql to reload the internal type caches
             // This will propagate to every other connection as well, since it marks the global type mapper collection dirty.
-            ((PKConnection)conn).ReloadTypes();
+            ((ChaoWorldConnection)conn).ReloadTypes();
         }
 
-        private async Task<int> GetCurrentDatabaseVersion(IPKConnection conn)
+        private async Task<int> GetCurrentDatabaseVersion(IChaoWorldConnection conn)
         {
             // First, check if the "info" table exists (it may not, if this is a *really* old database)
             var hasInfoTable =

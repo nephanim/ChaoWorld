@@ -49,7 +49,7 @@ namespace ChaoWorld.Bot
 
         public static async Task RenderChaoList(this Context ctx, IDatabase db, GardenId garden, string embedTitle, string color, ChaoListOptions opts)
         {
-            // We take an IDatabase instead of a IPKConnection so we don't keep the handle open for the entire runtime
+            // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
             // We wanna release it as soon as the chao list is actually *fetched*, instead of potentially minutes later (paginate timeout)
             var chao = (await db.Execute(conn => conn.QueryChaoList(garden, opts.ToQueryOptions())))
                 .SortByChaoListOptions(opts)

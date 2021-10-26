@@ -4,10 +4,10 @@
     <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Update="Database\Wrappers\PKCommand.cs">
+    <Compile Update="Database\Wrappers\ChaoWorldCommand.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="Database\Wrappers\PKConnection.cs">
+    <Compile Update="Database\Wrappers\ChaoWorldConnection.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

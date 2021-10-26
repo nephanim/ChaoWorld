@@ -16,7 +16,7 @@ using Serilog;
 
 namespace ChaoWorld.Core
 {
-    internal class PKConnection: DbConnection, IPKConnection
+    internal class ChaoWorldConnection: DbConnection, IChaoWorldConnection
     {
         public NpgsqlConnection Inner { get; }
         public Guid ConnectionId { get; }
@@ -29,12 +29,12 @@ namespace ChaoWorld.Core
         private bool _hasClosed;
         private Instant _openTime;
 
-        public PKConnection(NpgsqlConnection inner, DbConnectionCountHolder countHolder, ILogger logger, IMetrics metrics)
+        public ChaoWorldConnection(NpgsqlConnection inner, DbConnectionCountHolder countHolder, ILogger logger, IMetrics metrics)
         {
             Inner = inner;
             ConnectionId = Guid.NewGuid();
             _countHolder = countHolder;
-            _logger = logger.ForContext<PKConnection>();
+            _logger = logger.ForContext<ChaoWorldConnection>();
             _metrics = metrics;
         }
 
@@ -50,11 +50,11 @@ namespace ChaoWorld.Core
 
         public override Task CloseAsync() => Inner.CloseAsync();
 
-        protected override DbCommand CreateDbCommand() => new PKCommand(Inner.CreateCommand(), this, _logger, _metrics);
+        protected override DbCommand CreateDbCommand() => new ChaoWorldCommand(Inner.CreateCommand(), this, _logger, _metrics);
 
         public void ReloadTypes() => Inner.ReloadTypes();
 
-        public new async ValueTask<IPKTransaction> BeginTransactionAsync(IsolationLevel level, CancellationToken ct = default) => new PKTransaction(await Inner.BeginTransactionAsync(level, ct));
+        public new async ValueTask<IChaoWorldTransaction> BeginTransactionAsync(IsolationLevel level, CancellationToken ct = default) => new ChaoWorldTransaction(await Inner.BeginTransactionAsync(level, ct));
 
         public NpgsqlBinaryImporter BeginBinaryImport(string copyFromCommand) => Inner.BeginBinaryImport(copyFromCommand);
         public NpgsqlBinaryExporter BeginBinaryExport(string copyToCommand) => Inner.BeginBinaryExport(copyToCommand);
@@ -62,7 +62,7 @@ namespace ChaoWorld.Core
         public override void ChangeDatabase(string databaseName) => Inner.ChangeDatabase(databaseName);
         public override Task ChangeDatabaseAsync(string databaseName, CancellationToken ct = default) => Inner.ChangeDatabaseAsync(databaseName, ct);
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel) => throw SyncError(nameof(BeginDbTransaction));
-        protected override async ValueTask<DbTransaction> BeginDbTransactionAsync(IsolationLevel level, CancellationToken ct) => new PKTransaction(await Inner.BeginTransactionAsync(level, ct));
+        protected override async ValueTask<DbTransaction> BeginDbTransactionAsync(IsolationLevel level, CancellationToken ct) => new ChaoWorldTransaction(await Inner.BeginTransactionAsync(level, ct));
 
         public override void Open() => throw SyncError(nameof(Open));
         public override void Close()
@@ -71,8 +71,8 @@ namespace ChaoWorld.Core
             Inner.Close();
         }
 
-        IDbTransaction IPKConnection.BeginTransaction() => throw SyncError(nameof(BeginTransaction));
-        IDbTransaction IPKConnection.BeginTransaction(IsolationLevel level) => throw SyncError(nameof(BeginTransaction));
+        IDbTransaction IChaoWorldConnection.BeginTransaction() => throw SyncError(nameof(BeginTransaction));
+        IDbTransaction IChaoWorldConnection.BeginTransaction(IsolationLevel level) => throw SyncError(nameof(BeginTransaction));
 
         [AllowNull]
         public override string ConnectionString

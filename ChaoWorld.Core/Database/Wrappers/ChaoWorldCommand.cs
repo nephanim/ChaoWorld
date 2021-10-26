@@ -16,19 +16,19 @@ using Serilog;
 
 namespace ChaoWorld.Core
 {
-    internal class PKCommand: DbCommand, IPKCommand
+    internal class ChaoWorldCommand: DbCommand, IPKCommand
     {
         private NpgsqlCommand Inner { get; }
 
-        private readonly PKConnection _ourConnection;
+        private readonly ChaoWorldConnection _ourConnection;
         private readonly ILogger _logger;
         private readonly IMetrics _metrics;
 
-        public PKCommand(NpgsqlCommand inner, PKConnection ourConnection, ILogger logger, IMetrics metrics)
+        public ChaoWorldCommand(NpgsqlCommand inner, ChaoWorldConnection ourConnection, ILogger logger, IMetrics metrics)
         {
             Inner = inner;
             _ourConnection = ourConnection;
-            _logger = logger.ForContext<PKCommand>();
+            _logger = logger.ForContext<ChaoWorldCommand>();
             _metrics = metrics;
         }
 
@@ -72,7 +72,7 @@ namespace ChaoWorld.Core
             set => Inner.Transaction = value switch
             {
                 NpgsqlTransaction npg => npg,
-                PKTransaction pk => pk.Inner,
+                ChaoWorldTransaction conn => conn.Inner,
                 _ => throw new ArgumentException($"Can't convert input type {value?.GetType()} to NpgsqlTransaction")
             };
         }
@@ -90,7 +90,7 @@ namespace ChaoWorld.Core
                 Inner.Connection = value switch
                 {
                     NpgsqlConnection npg => npg,
-                    PKConnection pk => pk.Inner,
+                    ChaoWorldConnection conn => conn.Inner,
                     _ => throw new ArgumentException($"Can't convert input type {value?.GetType()} to NpgsqlConnection")
                 };
         }

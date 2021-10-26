@@ -40,7 +40,7 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<int>(query);
         }
 
-        public async Task<Garden> CreateGarden(IPKConnection? conn = null)
+        public async Task<Garden> CreateGarden(IChaoWorldConnection? conn = null)
         {
             var now = NodaTime.SystemClock.Instance.GetCurrentInstant();
             var query = new Query("gardens").AsInsert(new
@@ -65,14 +65,14 @@ namespace ChaoWorld.Core
             return updatedGarden;
         }
 
-        public Task<Garden> UpdateGarden(GardenId id, GardenPatch patch, IPKConnection? conn = null)
+        public Task<Garden> UpdateGarden(GardenId id, GardenPatch patch, IChaoWorldConnection? conn = null)
         {
             _logger.Information("Updated {GardenId}: {@GardenPatch}", id, patch);
             var query = patch.Apply(new Query("gardens").Where("id", id));
             return _db.QueryFirst<Garden>(conn, query, extraSql: "returning *");
         }
 
-        public Task AddAccount(GardenId garden, ulong accountId, IPKConnection? conn = null)
+        public Task AddAccount(GardenId garden, ulong accountId, IChaoWorldConnection? conn = null)
         {
             // We have "on conflict do nothing" since linking an account when it's already linked to the same garden is idempotent
             // This is used in import/export, although the !link command checks for this case beforehand
