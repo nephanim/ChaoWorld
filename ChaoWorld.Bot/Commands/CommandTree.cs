@@ -37,7 +37,7 @@ namespace ChaoWorld.Bot
             if (ctx.Match("commands", "cmd"))
                 return CommandHelpRoot(ctx);
             if (ctx.Match("list", "find", "chao", "search", "query", "l", "f", "fd"))
-                return ctx.Execute<SystemList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
+                return ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             if (ctx.Match("help"))
                 if (ctx.Match("commands"))
                     return ctx.Reply("For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
@@ -59,9 +59,9 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("new", "create", "make", "add", "register", "init", "n"))
                 await ctx.Execute<Garden>(GardenNew, m => m.New(ctx));
             else if (ctx.Match("list", "l", "chao"))
-                await ctx.Execute<SystemList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
+                await ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
-                await ctx.Execute<SystemList>(GardenFind, m => m.ChaoList(ctx, ctx.Garden));
+                await ctx.Execute<GardenList>(GardenFind, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "gardens", GardenCommands);
             else
@@ -79,9 +79,9 @@ namespace ChaoWorld.Bot
                     $"{Emojis.Error} {await CreateSystemNotFoundError(ctx)}\n\nPerhaps you meant to use one of the following commands?\n{list}");
             }
             else if (ctx.Match("list", "l", "chao"))
-                await ctx.Execute<SystemList>(GardenList, m => m.ChaoList(ctx, target));
+                await ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, target));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
-                await ctx.Execute<SystemList>(GardenFind, m => m.ChaoList(ctx, target));
+                await ctx.Execute<GardenList>(GardenFind, m => m.ChaoList(ctx, target));
             else if (ctx.Match("info", "view", "show"))
                 await ctx.Execute<Garden>(GardenInfo, m => m.Query(ctx, target));
             else if (!ctx.HasNext())
@@ -95,7 +95,7 @@ namespace ChaoWorld.Bot
             if (ctx.Match("new", "n", "add", "create", "register"))
                 await ctx.Execute<Chao>(ChaoNew, m => m.NewChao(ctx));
             else if (ctx.Match("list"))
-                await ctx.Execute<SystemList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
+                await ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "chao", ChaoCommands);
             else if (await ctx.MatchChao() is Core.Chao target)

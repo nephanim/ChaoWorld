@@ -5,11 +5,11 @@ using ChaoWorld.Core;
 
 namespace ChaoWorld.Bot
 {
-    public class SystemList
+    public class GardenList
     {
         private readonly IDatabase _db;
 
-        public SystemList(IDatabase db)
+        public GardenList(IDatabase db)
         {
             _db = db;
         }
