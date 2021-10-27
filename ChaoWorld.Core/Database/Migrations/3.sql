@@ -15,6 +15,7 @@ create table if not exists racesegments
 (
     id serial primary key,
     raceid serial not null references races (id) on delete cascade,
+    raceindex int not null,
     description text not null,
     terraintype integer not null default 0,
     startelevation integer not null default 0,
@@ -36,7 +37,7 @@ create table if not exists raceinstances
     state integer not null default 0,
     createdon timestamp without time zone not null default (current_timestamp),
     readyon timestamp without time zone,
-    completeon timestamp without time zone,
+    completedon timestamp without time zone,
     winnerchaoid bigint,
     timeelapsedseconds integer,
     prizerings integer not null default 0

@@ -39,7 +39,7 @@ namespace ChaoWorld.Bot
             _logger = logger.ForContext<PeriodicStatCollector>();
         }
 
-        public async Task CollectStats()
+        public async Task<int> CollectStats()
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -65,13 +65,11 @@ namespace ChaoWorld.Bot
             // Aggregate DB stats
             // just fetching from database here - actual updating of the data is done in ChaoWorld.ScheduledTasks
             // if you're not running ScheduledTasks and want up-to-date counts, uncomment the following line:
-            // await _repo.UpdateStats();
+            //await _repo.UpdateStats(); //TODO: Reevaluate whether we need this
             var counts = await _repo.GetStats();
-            _metrics.Measure.Gauge.SetValue(CoreMetrics.SystemCount, counts.SystemCount);
+            _metrics.Measure.Gauge.SetValue(CoreMetrics.GardenCount, counts.GardenCount);
             _metrics.Measure.Gauge.SetValue(CoreMetrics.ChaoCount, counts.ChaoCount);
-            _metrics.Measure.Gauge.SetValue(CoreMetrics.GroupCount, counts.GroupCount);
-            _metrics.Measure.Gauge.SetValue(CoreMetrics.SwitchCount, counts.SwitchCount);
-            _metrics.Measure.Gauge.SetValue(CoreMetrics.MessageCount, counts.MessageCount);
+            _cache.SetTotalChao(counts.ChaoCount);
 
             // Process info
             var process = Process.GetCurrentProcess();
@@ -90,6 +88,8 @@ namespace ChaoWorld.Bot
 
             stopwatch.Stop();
             _logger.Debug("Updated metrics in {Time}", stopwatch.ElapsedDuration());
+
+            return counts.ChaoCount;
         }
     }
 }

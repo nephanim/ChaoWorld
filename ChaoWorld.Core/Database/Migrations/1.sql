@@ -1,9 +1,9 @@
 create table info
 (
     id int primary key not null default 1, -- enforced only equal to 1
-    
     schema_version int,    
-    
+    garden_count int not null default 0,
+    chao_count bigint not null default 0,
     constraint singleton check (id = 1) -- enforce singleton table/row
 );
 

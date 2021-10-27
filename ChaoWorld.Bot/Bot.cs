@@ -24,6 +24,7 @@ using Sentry;
 
 using Serilog;
 using Serilog.Context;
+using Dapper;
 
 namespace ChaoWorld.Bot
 {
@@ -39,12 +40,13 @@ namespace ChaoWorld.Bot
         private readonly IMetrics _metrics;
         private readonly ErrorMessageService _errorMessageService;
         private readonly IDiscordCache _cache;
+        private readonly IDatabase _db;
 
         private bool _hasReceivedReady = false;
         private Timer _periodicTask; // Never read, just kept here for GC reasons
 
         public Bot(ILifetimeScope services, ILogger logger, PeriodicStatCollector collector, IMetrics metrics,
-            ErrorMessageService errorMessageService, Cluster cluster, DiscordApiClient rest, IDiscordCache cache)
+            ErrorMessageService errorMessageService, Cluster cluster, DiscordApiClient rest, IDiscordCache cache, IDatabase db)
         {
             _logger = logger.ForContext<Bot>();
             _services = services;
@@ -54,6 +56,7 @@ namespace ChaoWorld.Bot
             _cluster = cluster;
             _rest = rest;
             _cache = cache;
+            _db = db;
         }
 
         public void Init()
@@ -62,6 +65,7 @@ namespace ChaoWorld.Bot
 
             // Init the shard stuff
             _services.Resolve<ShardInfoService>().Init();
+            //BuildInstances();
 
             // Not awaited, just needs to run in the background
             // Trying our best to run it at whole minute boundaries (xx:00), with ~250ms buffer
@@ -268,14 +272,13 @@ namespace ChaoWorld.Bot
         {
             _logger.Debug("Running once-per-minute scheduled tasks");
 
-            await UpdateBotStatus();
-
             // Collect some stats, submit them to the metrics backend
             await _collector.CollectStats();
             await Task.WhenAll(((IMetricsRoot)_metrics).ReportRunner.RunAllAsync());
             _logger.Debug("Submitted metrics to backend");
-        }
 
+            await UpdateBotStatus();
+        }
         private async Task UpdateBotStatus(Shard specificShard = null)
         {
             // If we're not on any shards, don't bother (this happens if the periodic timer fires before the first Ready)
@@ -285,7 +288,6 @@ namespace ChaoWorld.Bot
 
             try // DiscordClient may throw an exception if the socket is closed (e.g just after OP 7 received)
             {
-                
                 Task UpdateStatus(Shard shard) =>
                     shard.UpdateStatus(new GatewayStatusUpdate
                     {
@@ -293,7 +295,7 @@ namespace ChaoWorld.Bot
                         {
                             new ActivityPartial
                             {
-                                Name = "with Chao",
+                                Name = _cache.GetTotalChao() > 0 ? $"with {_cache.GetTotalChao()} chao" : "with chao",
                                 //Name = $"!help | in {totalGuilds:N0} servers | shard #{shard.ShardId}",
                                 Type = ActivityType.Game,
                                 Url = "https://chaoworld.online"
@@ -311,5 +313,19 @@ namespace ChaoWorld.Bot
                 // TODO: this still thrown?
             }
         }
+
+        /*private async void BuildInstances()
+        {
+            await InstantiateRaces();
+        }
+        private async Task InstantiateRaces()
+        {
+            using (var conn = await _db.Obtain())
+            {
+                var test = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<int>("select garden_count from info"));
+                _logger.Information($"Test value is: {test}");
+            }
+                
+        }*/
     }
 }

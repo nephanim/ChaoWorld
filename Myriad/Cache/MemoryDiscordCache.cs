@@ -15,6 +15,7 @@ namespace Myriad.Cache
         private readonly ConcurrentDictionary<ulong, CachedGuild> _guilds = new();
         private readonly ConcurrentDictionary<ulong, Role> _roles = new();
         private readonly ConcurrentDictionary<ulong, User> _users = new();
+        private int _totalChao;
 
         public ValueTask SaveGuild(Guild guild)
         {
@@ -174,6 +175,16 @@ namespace Myriad.Cache
         private record CachedGuild(Guild Guild)
         {
             public readonly ConcurrentDictionary<ulong, bool> Channels = new();
+        }
+
+        public void SetTotalChao(int total)
+        {
+            _totalChao = total;
+        }
+
+        public int GetTotalChao()
+        {
+            return _totalChao;
         }
     }
 }

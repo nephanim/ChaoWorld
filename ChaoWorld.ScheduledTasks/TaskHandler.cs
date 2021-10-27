@@ -47,6 +47,9 @@ namespace ChaoWorld.ScheduledTasks
             _logger.Information("Updating database stats...");
             await _repo.UpdateStats();
 
+            _logger.Information("Updating race information...");
+            await _repo.UpdateRaceProgress();
+
             stopwatch.Stop();
             _logger.Information("Ran scheduled tasks in {Time}", stopwatch.ElapsedDuration());
         }

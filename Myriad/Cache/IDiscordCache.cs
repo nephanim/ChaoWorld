@@ -26,5 +26,8 @@ namespace Myriad.Cache
 
         public IAsyncEnumerable<Guild> GetAllGuilds();
         public IEnumerable<Channel> GetGuildChannels(ulong guildId);
+
+        public void SetTotalChao(int total);
+        public int GetTotalChao();
     }
 }

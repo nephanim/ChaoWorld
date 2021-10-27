@@ -136,7 +136,7 @@ namespace ChaoWorld.Bot
                 .Field(new("CPU usage", $"{_cpu.LastCpuMeasure:P1}", true))
                 .Field(new("Memory usage", $"{memoryUsage / 1024 / 1024} MiB", true))
                 .Field(new("Latency", $"API: {apiLatency.TotalMilliseconds:F0} ms, shard: {shardInfo.ShardLatency.Milliseconds} ms", true))
-                .Field(new("Total numbers", $"{counts.SystemCount:N0} gardens"
+                .Field(new("Total numbers", $"{counts.GardenCount:N0} gardens"
                     + $"\n{counts.ChaoCount:N0} chao"))
                 .Timestamp(Process.GetCurrentProcess().StartTime.ToString("O"))
                 .Footer(new($"Chao World {BuildInfoService.Version} • Last restarted: ")); ;
