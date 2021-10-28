@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 using Newtonsoft.Json;
@@ -21,6 +22,8 @@ namespace ChaoWorld.Core
         public bool IsEnabled { get; set; }
         public int MinimumChao { get; set; }
         public int MaximumChao { get; set; }
+        
+        public int PrizeRings { get; set; }
     }
 
     public class RaceSegment
@@ -63,11 +66,13 @@ namespace ChaoWorld.Core
                 return Duration.FromSeconds(TimeElapsedSeconds.GetValueOrDefault(0));
             }
         }
-        public int PrizeRings { get; set; }
-        
         public enum RaceStates
         {
-            New, Preparing, InProgress, Completed, Canceled
+            [Description("New")] New,
+            [Description("Preparing")] Preparing,
+            [Description("In Progress")] InProgress,
+            [Description("Completed")] Completed,
+            [Description("Canceled")] Canceled
         }
     }
 
@@ -84,7 +89,7 @@ namespace ChaoWorld.Core
                 return Duration.FromSeconds(TotalTimeSeconds.GetValueOrDefault(0));
             }
         }
-        public int FinishPosition { get; set; }
+        public int? FinishPosition { get; set; }
     }
 
     public class RaceInstanceChaoSegment
@@ -92,7 +97,7 @@ namespace ChaoWorld.Core
         public long RaceInstanceId { get; set; }
         public int RaceSegmentId { get; set; }
         public long ChaoId { get; set; }
-        public RaceInstance.RaceStates State { get; set; }
+        public SegmentStates State { get; set; }
         public int? SegmentTimeSeconds { get; set; }
         public Duration SegmentTime
         {
@@ -109,7 +114,16 @@ namespace ChaoWorld.Core
                 return Duration.FromSeconds(TotalTimeSeconds.GetValueOrDefault(0));
             }
         }
-        public int RemainingStamina { get; set; }
-        public int EndElevation { get; set; }
+        public int? StartStamina { get; set; }
+        public int? EndStamina { get; set; }
+        public int? StartElevation { get; set; }
+        public int? EndElevation { get; set; }
+
+        public enum SegmentStates 
+        {
+            [Description("Not Started")] NotStarted,
+            [Description("Completed")] Completed,
+            [Description("Retired")] Retired
+        }
     }
 }

@@ -106,6 +106,22 @@ namespace ChaoWorld.Core
                 return typeDescription;
             }
         }
+
+        /*
+         * TODO: I wanted to put this here, but couldn't work out a good way not to do it in sql, sorry
+        public int StartingStamina
+        {
+            get
+            {
+                // This is based on the clear times for beginner races at 0 stats on the low end, and a one minute race with triple stamina drain on the high end
+                // I also considered using 90 + (value / 30), but that high base value was mostly to balance crab pool
+                // The problem is that reduces the importance of stamina significantly
+                // We should honestly just rebalance the segments for crab pool if needed so stamina doesn't become useless
+                return 45 + (StaminaValue / 20);
+            }
+        }
+        */
+
         public enum Colors
         {
             Normal, Black, Blue, Brown, Green, Grey, LimeGreen, Orange, Pink, Purple, Red, SkyBlue, White, Yellow,

@@ -8,7 +8,8 @@ create table if not exists races
     readydelayminutes integer not null default 5,
     isenabled boolean not null default false,
     minimumchao integer not null default 1,
-    maximumchao integer not null default 8
+    maximumchao integer not null default 8,
+    prizerings integer not null default 0
 );
 
 create table if not exists racesegments
@@ -39,8 +40,7 @@ create table if not exists raceinstances
     readyon timestamp without time zone,
     completedon timestamp without time zone,
     winnerchaoid bigint,
-    timeelapsedseconds integer,
-    prizerings integer not null default 0
+    timeelapsedseconds integer
 );
 
 create table if not exists raceinstancechao
@@ -60,7 +60,9 @@ create table if not exists raceinstancechaosegments
     state integer not null default 0,
     segmenttimeseconds integer,
     totaltimeseconds integer,
-    remainingstamina integer,
+    startstamina integer,
+    endstamina integer,
+    startelevation integer,
     endelevation integer
 );
 
