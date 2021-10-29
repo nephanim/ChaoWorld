@@ -32,7 +32,7 @@ namespace ChaoWorld.Bot
 
         public async Task NewChao(Context ctx)
         {
-            if (ctx.Member == null) throw Errors.NoGardenError;
+            if (ctx.Garden == null) throw Errors.NoGardenError;
             await using var conn = await _db.Obtain();
 
             // Create the chao

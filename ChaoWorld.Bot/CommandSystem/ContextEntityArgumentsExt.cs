@@ -94,6 +94,38 @@ namespace ChaoWorld.Bot
             return chao;
         }
 
+        public static async Task<RaceInstance> PeekRaceInstance(this Context ctx)
+        {
+            var input = ctx.PeekArgument();
+
+            // Race instances might be referenced by their ID or by the name of the associated race
+            // e.g. "!race 123" or "!race 'Mushroom Forest'"
+
+            // Try finding the race instance by its ID first (most likely usage)
+            long.TryParse(input.Replace("#", string.Empty), out long id);
+            if (await ctx.Repository.GetRaceInstanceById(id) is RaceInstance raceInstanceById)
+                return raceInstanceById;
+
+            // Try looking it up by the race name
+            if (await ctx.Repository.GetRaceInstanceByName(input) is RaceInstance raceInstanceByName)
+                return raceInstanceByName;
+
+            // We didn't find anything, so we return null.
+            return null;
+        }
+
+        public static async Task<RaceInstance> MatchRaceInstance(this Context ctx)
+        {
+            // First, peek a race instance
+            var raceInstance = await ctx.PeekRaceInstance();
+
+            // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
+            if (raceInstance != null) ctx.PopArgument();
+
+            // Finally, we return the chao value.
+            return raceInstance;
+        }
+
         public static string CreateChaoNotFoundError(this Context ctx, string input)
         {
             // TODO: does this belong here?

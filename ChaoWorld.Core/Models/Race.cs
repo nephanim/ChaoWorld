@@ -56,8 +56,8 @@ namespace ChaoWorld.Core
         public int RaceId { get; set; }
         public RaceStates State { get; set; }
         public Instant CreatedOn { get; set; }
-        public Instant ReadyOn { get; set; }
-        public Instant CompletedOn { get; set; }
+        public Instant? ReadyOn { get; set; }
+        public Instant? CompletedOn { get; set; }
         public long? WinnerChaoId { get; set; }
         public int? TimeElapsedSeconds { get; set; }
         public Duration TimeElapsed {

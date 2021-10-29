@@ -1,3 +1,14 @@
+/*
+insert into races
+    (name, description, frequencyminutes, readydelayminutes, isenabled, minimumchao, maximumchao, prizerings)
+values
+    ('Crab Pool', 'Beginner race across one large pool with an emphasis on swimming', 15, 1, true, 1, 8, 100),
+    ('Stump Valley', 'Beginner race across a valley with an emphasis on flying', 15, 1, true, 1, 8, 100),
+    ('Mushroom Forest', 'Beginner race up a hill with an emphasis on running', 15, 1, true, 1, 8, 100),
+    ('Block Canyon', 'Beginner race up a cliff with an emphasis on climbing', 15, 1, true, 1, 8, 100),
+    ('Kalaupapa Volcano', 'Beginner race through a volcanic cave with an emphasis on stamina', 15, 1, true, 1, 8, 100)
+    */
+
 create table if not exists gardens
 (
 	id serial primary key,

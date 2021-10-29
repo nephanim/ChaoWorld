@@ -15,15 +15,8 @@ namespace ChaoWorld.Bot
         public SortProperty SortProperty { get; set; } = SortProperty.Name;
         public bool Reverse { get; set; }
         public string? Search { get; set; }
-        public bool SearchDescription { get; set; }
-
         public ListType Type { get; set; }
-        public bool IncludeMessageCount { get; set; }
-        public bool IncludeLastSwitch { get; set; }
-        public bool IncludeLastMessage { get; set; }
         public bool IncludeCreated { get; set; }
-        public bool IncludeAvatar { get; set; }
-        public bool IncludePronouns { get; set; }
 
         public string CreateFilterString()
         {

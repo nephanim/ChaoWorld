@@ -42,7 +42,7 @@ namespace ChaoWorld.Bot
             await ctx.Reply($"{Emojis.Megaphone} {race.Name} is now available. Use `!race {raceInstance.Id} chao {{id/name}}` to participate.");
         }
 
-        public async Task EnterChaoInRace(Context ctx, Core.Chao chao, Core.RaceInstance raceInstance)
+        public async Task EnterChaoInRace(Context ctx, Core.Chao chao, RaceInstance raceInstance)
         {
             ctx.CheckOwnChao(chao); //You can only enter your own chao in a race...
 
@@ -56,6 +56,8 @@ namespace ChaoWorld.Bot
             else
             {
                 // Race is in a joinable state
+                // TODO: Check whether any of this garden's chao are already in the race...
+                
                 // Check whether we've reached the minimum number of chao for the race
                 var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
                 var currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
@@ -77,21 +79,18 @@ namespace ChaoWorld.Bot
                         // We've reached the minimum threshold, and haven't begun preparing the race
                         // Check how long we're supposed to wait before we start
                         raceInstance.ReadyOn = NodaTime.SystemClock.Instance.GetCurrentInstant();
+                        raceInstance.State = RaceInstance.RaceStates.Preparing;
                         await _repo.UpdateRaceInstance(raceInstance);
 
-                        var readyDelay = TimeSpan.FromMinutes(race.ReadyDelayMinutes);
-                        var startTimer = new Timer(_ =>
-                        {
-                            var __ = StartRace(ctx, race, raceInstance);
-                        }, null, readyDelay, TimeSpan.FromMinutes(1));
-
                         await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race will start in {race.ReadyDelayMinutes} minutes. Use `!race {raceInstance.Id} chao {{id/name}}` to participate.");
+
+                        var readyDelay = TimeSpan.FromMinutes(race.ReadyDelayMinutes);
+                        //Thread.Sleep(race.ReadyDelayMinutes * 60000);
+                        await Task.Delay(readyDelay);
+                        await StartRace(ctx, race, raceInstance);
                     }
                 }
             }
-
-            
-            
         }
 
         public async Task StartRace(Context ctx, Core.Race race, Core.RaceInstance raceInstance)
@@ -108,16 +107,29 @@ namespace ChaoWorld.Bot
                 await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has started! Good luck to all participants!");
 
                 // Queue updates for the first set of race segments
-                await UpdateRaceSegments(ctx, race, raceInstance, 0);
+                var complete = false;
+                var index = 0;
+                while (!complete)
+                {
+                    var result = await UpdateRaceSegments(ctx, race, raceInstance, index);
+                    complete = result.Complete;
+                    index++;
+                }
             }
             else
             {
+                await _repo.LogMessage("For some reason we ended up here");
                 // Something weird happened and the race is already running / finished... do nothing
             }
         }
 
-        public async Task UpdateRaceSegments(Context ctx, Core.Race race, Core.RaceInstance raceInstance, int index)
+        public async Task<RaceSegmentResult> UpdateRaceSegments(Context ctx, Core.Race race, Core.RaceInstance raceInstance, int index)
         {
+            var result = new RaceSegmentResult
+            {
+                Complete = false,
+                SegmentTimeSeconds = 0
+            };
             var template = await _repo.GetRaceSegment(raceInstance.RaceId, index);
             var segments = await _repo.GetRaceInstanceSegments(raceInstance, index);
             if (segments.Count() == 0)
@@ -128,7 +140,8 @@ namespace ChaoWorld.Bot
                 //  * Update the race state, winner, and total time
                 //  * Award the prize to the winner
                 //  * Announce the results
-                
+                await ctx.Reply($"{Emojis.Megaphone} The race would finish here, if it was implemented.");
+                result.Complete = true;
             }
             else
             {
@@ -144,15 +157,14 @@ namespace ChaoWorld.Bot
 
                 var fastestSegment = segments.OrderBy(x => x.SegmentTimeSeconds.GetValueOrDefault(0)).FirstOrDefault();
                 var fastestChao = allChao.FirstOrDefault(x => x.Id.Value == fastestSegment.ChaoId);
+                await Task.Delay(fastestSegment.SegmentTimeSeconds.GetValueOrDefault(0) * 1000);
 
                 // TODO: Report current status of the race with an embed instead (e.g. positions, elapsed time)
-                await ctx.Reply($"{fastestChao.Name} is in the lead in the {race.Name} race!");
-
-                var startTimer = new Timer(_ =>
-                {
-                    var __ = UpdateRaceSegments(ctx, race, raceInstance, index+1);
-                }, null, TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(1));
+                await ctx.Reply($"{Emojis.Megaphone} {fastestChao.Name} is in the lead in the {race.Name} race!");
+                result.Complete = false;
+                result.SegmentTimeSeconds = fastestSegment.SegmentTimeSeconds.GetValueOrDefault(0);
             }
+            return result;
         }
 
         private async Task<RaceInstanceChaoSegment> ProcessSegmentForChao(RaceSegment template, RaceInstanceChaoSegment segment, Core.Chao chao)
@@ -315,5 +327,11 @@ namespace ChaoWorld.Bot
             await ctx.Reply(embed: await _embeds.CreateChaoEmbed(system, target, ctx.Guild));
         }
         */
+    }
+
+    public class RaceSegmentResult
+    {
+        public bool Complete;
+        public int SegmentTimeSeconds;
     }
 }

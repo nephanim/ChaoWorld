@@ -11,6 +11,6 @@ namespace ChaoWorld.Core
         public static readonly string Bell = "\U0001F514";
         public static readonly string Image = "\U0001F5BC";
         public static readonly string Paperclip = "\U0001F4CE";
-        public static readonly string Megaphone = "\u01F4E3";
+        public static readonly string Megaphone = ":mega:";
     }
 }

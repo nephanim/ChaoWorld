@@ -50,7 +50,7 @@ namespace ChaoWorld.Bot
         public static async Task RenderChaoList(this Context ctx, IDatabase db, GardenId garden, string embedTitle, string color, ChaoListOptions opts)
         {
             // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
-            // We wanna release it as soon as the chao list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
             var chao = (await db.Execute(conn => conn.QueryChaoList(garden, opts.ToQueryOptions())))
                 .SortByChaoListOptions(opts)
                 .ToList();
@@ -114,6 +114,43 @@ namespace ChaoWorld.Bot
 
                     eb.Field(new(m.Name, profile.ToString().Truncate(1024)));
                 }
+            }
+        }
+
+        public static async Task RenderRaceList(this Context ctx, IDatabase db, bool includeCompletedRaces, bool includeIncompleteRaces, string title, string search)
+        {
+            // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
+            // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            var races = (await db.Execute(conn => conn.QueryRaceList(includeCompletedRaces, includeIncompleteRaces, search)))
+                .ToList();
+
+            var itemsPerPage = 25; //Maybe do a long list in the future too
+            await ctx.Paginate(races.ToAsyncEnumerable(), races.Count, itemsPerPage, title, null, Renderer);
+
+            // Base renderer, dispatches based on type
+            Task Renderer(EmbedBuilder eb, IEnumerable<ListedRace> page)
+            {
+                // Add a global footer with the filter/sort string + result count
+                eb.Footer(new($"{"result".ToQuantity(races.Count)}"));
+
+                // Then call the specific renderers
+                ShortRenderer(eb, page);
+                return Task.CompletedTask;
+            }
+
+            void ShortRenderer(EmbedBuilder eb, IEnumerable<ListedRace> page)
+            {
+                // We may end up over the description character limit
+                // so run it through a helper that "makes it work" :)
+                eb.WithSimpleLineContent(page.Select(m =>
+                {
+                    var ret = $"[`{m.Id}`] **{m.Name}** ({m.State.GetDescription()})";
+                    if (m.WinnerChaoId.HasValue)
+                        ret += $" - Winner: {m.WinnerName}";
+                    if (m.CompletedOn.HasValue)
+                        ret += $" (Completed <t:{m.CompletedOn.Value.ToUnixTimeSeconds()}>)";
+                    return ret;
+                }));
             }
         }
     }

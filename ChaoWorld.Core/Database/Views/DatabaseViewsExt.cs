@@ -28,5 +28,39 @@ namespace ChaoWorld.Core
         {
             public string? Search;
         }
+
+        public static Task<IEnumerable<ListedRace>> QueryRaceList(this IChaoWorldConnection conn, bool includeCompletedRaces, bool includeIncompleteRaces, string search)
+        {
+            var includeStates = new List<int>();
+            if (includeCompletedRaces)
+            {
+                includeStates.Add((int)RaceInstance.RaceStates.Completed);
+                includeStates.Add((int)RaceInstance.RaceStates.Canceled);
+            }
+            if (includeIncompleteRaces)
+            {
+                includeStates.Add((int)RaceInstance.RaceStates.New);
+                includeStates.Add((int)RaceInstance.RaceStates.Preparing);
+                includeStates.Add((int)RaceInstance.RaceStates.InProgress);
+            }
+
+            StringBuilder query;
+            query = new StringBuilder(@$"
+                select r.name, c.name as winnername, i.*
+                from raceinstances i
+                join races r
+                on i.raceid = r.id
+                left join chao c
+                on i.winnerchaoid = c.id
+                where i.state in ({string.Join(",", includeStates)})");
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                static string Filter(string column) => $"(position(lower(@filter) in lower(coalesce({column}, ''))) > 0)";
+                query.Append($" and ({Filter("r.name")})");
+            }
+
+            return conn.QueryAsync<ListedRace>(query.ToString(), new { filter = search });
+        }
     }
 }

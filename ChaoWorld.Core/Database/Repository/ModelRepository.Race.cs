@@ -18,9 +18,10 @@ namespace ChaoWorld.Core
 
         public async Task<Race?> GetRaceByInstanceId(long id)
         {
-            var query = new Query("raceinstances").Join("races", "raceid", "id", "=")
-                .Where("raceinstances.id", "=", id);
-            return await _db.QueryFirst<Race?>(query, "returning races.*");
+            var query = new Query("races").Join("raceinstances", "races.id", "raceinstances.raceid", "=")
+                .Where("raceinstances.id", "=", id).Select("races.*");
+
+            return await _db.QueryFirst<Race?>(query);
         }
 
         public async Task<RaceInstance?> GetRaceInstanceById(long id)
@@ -46,7 +47,7 @@ namespace ChaoWorld.Core
 
         public async Task<int> GetRaceInstanceChaoCount(long raceInstanceId)
         {
-            var query = new Query("raceinstancechao").Where("raceinstanceid", raceInstanceId).Select("count(raceinstanceid)");
+            var query = new Query("raceinstancechao").Where("raceinstanceid", raceInstanceId).SelectRaw("count(chaoid)");
             return await _db.QueryFirst<int>(query);
         }
 
@@ -124,10 +125,10 @@ namespace ChaoWorld.Core
             // This does the following:
             //  * determines the segments for the race
             //  * initializes that segment for each chao in the race
-            var query = new Query(@$"
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
                 insert into raceinstancechaosegments
 	                (raceinstanceid, racesegmentid, chaoid)
-                select i.id, s.id, c.chaoid
+                select i.id, s.id, ic.chaoid
                 from raceinstances i
                 join racesegments s
                 on i.raceid = s.raceid
@@ -136,8 +137,7 @@ namespace ChaoWorld.Core
                 join chao c
                 on ic.chaoid = c.id
                 where i.id = {raceInstance.Id}
-            ");
-            await _db.ExecuteQuery(query);
+            "));
             _logger.Information($"Added segments to instance {raceInstance.Id} of race {raceInstance.RaceId}");
         }
 
@@ -149,7 +149,9 @@ namespace ChaoWorld.Core
         
         public Task<IEnumerable<RaceInstanceChaoSegment>> GetRaceInstanceSegments(RaceInstance raceInstance, int index, IChaoWorldConnection? conn = null)
         {
-            var query = new Query("raceinstancechaosegments").Where("raceinstanceid", raceInstance.Id)
+            var query = new Query("raceinstancechaosegments")
+                .Join("racesegments", "racesegmentid", "id", "=")
+                .Where("raceinstanceid", raceInstance.Id)
                 .Where("raceindex", index);
             return _db.Query<RaceInstanceChaoSegment>(query);
         }
@@ -192,6 +194,11 @@ namespace ChaoWorld.Core
                 .Where("raceinstancechao.raceinstanceid", instance.Id)
                 .Select("chao.*");
             return _db.Query<Chao>(query);
+        }
+
+        public async Task LogMessage(string msg)
+        {
+            _logger.Information(msg);
         }
 
         public async Task UpdateRaceProgress(IChaoWorldConnection? conn = null)
