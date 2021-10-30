@@ -22,8 +22,14 @@ namespace ChaoWorld.Core
         public bool IsEnabled { get; set; }
         public int MinimumChao { get; set; }
         public int MaximumChao { get; set; }
-        
         public int PrizeRings { get; set; }
+        public int Difficulty { get; set; }
+        public double SwimPercentage { get; set; }
+        public double FlyPercentage { get; set; }
+        public double RunPercentage { get; set; }
+        public double PowerPercentage { get; set; }
+        public double IntelligencePercentage { get; set; }
+        public double LuckPercentage { get; set; }
     }
 
     public class RaceSegment
@@ -37,10 +43,7 @@ namespace ChaoWorld.Core
         public int EndElevation { get; set; }
         public int TerrainDistance { get; set; }
         public double StaminaLossMultiplier { get; set; }
-        public int SwimRating { get; set; }
-        public int FlyRating { get; set; }
-        public int RunRating { get; set; }
-        public int PowerRating { get; set; }
+        public int TerrainDifficulty { get; set; }
         public int IntelligenceRating { get; set; }
         public int LuckRating { get; set; }
 

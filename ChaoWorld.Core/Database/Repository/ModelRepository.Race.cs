@@ -201,31 +201,29 @@ namespace ChaoWorld.Core
             _logger.Information(msg);
         }
 
-        public async Task UpdateRaceProgress(IChaoWorldConnection? conn = null)
+        public async Task InstantiateRaces()
         {
-            await UpdateInstanceSegments();
-            await InstantiateRaces();
-        }
-
-        private async Task UpdateInstanceSegments()
-        {
+            try
+            {
+                var instances = await _db.Execute(async conn => await conn.QueryAsync<RaceInstance>($@"
+                    insert into raceinstances (raceid, state)
+                    select r.id, {(int)RaceInstance.RaceStates.New}
+                    from races r
+                    left join raceinstances i
+                    on r.id = i.raceid
+                    and i.state not in ({(int)RaceInstance.RaceStates.Completed}, {(int)RaceInstance.RaceStates.Canceled})
+                    where i.id is null
+                    and r.availableon < current_timestamp
+                    returning *
+                "));
+                var instanceCount = instances.AsList().Count;
+                _logger.Information($"Created {instanceCount} new race instances");
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Failed to instantiate races: {e.Message}");
+            }
             
-        }
-
-        private async Task InstantiateRaces()
-        {
-            var racesInstantiated = await _db.Execute(conn => conn.QuerySingleAsync<int>($@"
-                insert into raceinstances (raceid, state)
-                select r.id, {RaceInstance.RaceStates.New}
-                from races r
-                left join raceinstances i
-                on r.id = i.raceid
-                and i.state not in ({RaceInstance.RaceStates.Completed}, {RaceInstance.RaceStates.Canceled})
-                where i.id is null
-                and r.availableon < current_timestamp
-                returning count(*)
-            "));
-            _logger.Information($"Created {racesInstantiated} new instances for races");
         }
     }
 }
