@@ -147,5 +147,127 @@ namespace ChaoWorld.Core
             IntelligenceGrade = MiscUtils.GenerateStatGrade();
             LuckGrade = MiscUtils.GenerateStatGrade();
         }
+
+        public void RaiseSwim(int amount)
+        {
+            if (SwimLevel < 99)
+            {
+                SwimProgress += amount;
+                if (SwimProgress >= 1000)
+                {
+                    SwimProgress = SwimProgress % 1000;
+                    SwimLevel += 1;
+                    if (SwimLevel >= 99)
+                        SwimProgress = 0;
+                    SwimValue = GetLevelUpIncrease(SwimGrade);
+                }
+            }
+        }
+
+        public void RaiseFly(int amount)
+        {
+            if (FlyLevel < 99)
+            {
+                FlyProgress += amount;
+                if (FlyProgress >= 1000)
+                {
+                    FlyProgress = FlyProgress % 1000;
+                    FlyLevel += 1;
+                    if (FlyLevel >= 99)
+                        FlyProgress = 0;
+                    FlyValue = GetLevelUpIncrease(FlyGrade);
+                }
+            }
+        }
+
+        public void RaiseRun(int amount)
+        {
+            if (RunLevel < 99)
+            {
+                RunProgress += amount;
+                if (RunProgress >= 1000)
+                {
+                    RunProgress = RunProgress % 1000;
+                    RunLevel += 1;
+                    if (RunLevel >= 99)
+                        RunProgress = 0;
+                    RunValue = GetLevelUpIncrease(RunGrade);
+                }
+            }
+        }
+
+        public void RaisePower(int amount)
+        {
+            if (PowerLevel < 99)
+            {
+                PowerProgress += amount;
+                if (PowerProgress >= 1000)
+                {
+                    PowerProgress = PowerProgress % 1000;
+                    PowerLevel += 1;
+                    if (PowerLevel >= 99)
+                        PowerProgress = 0;
+                    PowerValue = GetLevelUpIncrease(PowerGrade);
+                }
+            }
+        }
+
+        public void RaiseStamina(int amount)
+        {
+            if (StaminaLevel < 99)
+            {
+                StaminaProgress += amount;
+                if (StaminaProgress >= 1000)
+                {
+                    StaminaProgress = StaminaProgress % 1000;
+                    StaminaLevel += 1;
+                    if (StaminaLevel >= 99)
+                        StaminaProgress = 0;
+                    StaminaValue = GetLevelUpIncrease(StaminaGrade);
+                }
+            }
+        }
+
+        public void RaiseIntelligence(int amount)
+        {
+            if (IntelligenceLevel < 99)
+            {
+                IntelligenceProgress += amount;
+                if (IntelligenceProgress >= 1000)
+                {
+                    IntelligenceProgress = IntelligenceProgress % 1000;
+                    IntelligenceLevel += 1;
+                    if (IntelligenceLevel >= 99)
+                        IntelligenceProgress = 0;
+                    IntelligenceValue = GetLevelUpIncrease(IntelligenceGrade);
+                }
+            }
+        }
+
+        public void RaiseLuck(int amount)
+        {
+            if (LuckLevel < 99)
+            {
+                LuckProgress += amount;
+                if (LuckProgress >= 1000)
+                {
+                    LuckProgress = LuckProgress % 1000;
+                    LuckLevel += 1;
+                    if (LuckLevel >= 99)
+                        LuckProgress = 0;
+                    LuckValue = GetLevelUpIncrease(LuckGrade);
+                }
+            }
+        }
+
+        public int GetLevelUpIncrease(StatGrades grade)
+        {
+            var baseModifier = ((int)grade) + 1;
+            var r = new Random().Next(
+                11 + baseModifier*3,
+                15 + baseModifier*3
+            );
+            return r;
+        }
     }
 }
