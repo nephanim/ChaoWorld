@@ -37,7 +37,7 @@ namespace ChaoWorld.Bot
 
             // Create the chao
             var chaoTemplate = new Core.Chao();
-            chaoTemplate.Initialize(isStarterChao: false);
+            chaoTemplate.Initialize();
             var chao = await _repo.CreateChao(ctx.Garden.Id, chaoTemplate);
 
             // Send confirmation

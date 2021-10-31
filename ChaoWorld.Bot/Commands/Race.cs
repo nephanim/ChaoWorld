@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 
 using ChaoWorld.Core;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace ChaoWorld.Bot
 {
@@ -42,6 +43,12 @@ namespace ChaoWorld.Bot
             await ctx.Reply($"{Emojis.Megaphone} {race.Name} is now available. Use `!race {raceInstance.Id} chao {{id/name}}` to participate.");
         }
 
+        public async Task ViewRaceInstance(Context ctx, Core.RaceInstance target)
+        {
+            var race = await _repo.GetRaceById(target.RaceId);
+            await ctx.Reply(embed: await _embeds.CreateRaceEmbed(race, target));
+        }
+
         public async Task EnterChaoInRace(Context ctx, Core.Chao chao, RaceInstance raceInstance)
         {
             ctx.CheckOwnChao(chao); //You can only enter your own chao in a race...
@@ -56,7 +63,7 @@ namespace ChaoWorld.Bot
             else
             {
                 // Race is in a joinable state
-                // TODO: Check whether any of this garden's chao are already in the race...
+                // TODO: Check whether any of this garden's chao are already in the race... (but let garden id 0 bypass it, that's where our NPC chao will go)
                 
                 // Check whether we've reached the minimum number of chao for the race
                 var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
@@ -118,7 +125,7 @@ namespace ChaoWorld.Bot
             }
             else
             {
-                await _repo.LogMessage("For some reason we ended up here");
+                await _repo.LogMessage($"Tried to start race instance {raceInstance.Id} of race {raceInstance.RaceId}, but its state was {raceInstance.State}");
                 // Something weird happened and the race is already running / finished... do nothing
             }
         }
@@ -140,7 +147,12 @@ namespace ChaoWorld.Bot
                 //  * Update the race state, winner, and total time
                 //  * Award the prize to the winner
                 //  * Announce the results
-                await ctx.Reply($"{Emojis.Megaphone} The race would finish here, if it was implemented.");
+                await _repo.FinalizeRaceInstanceChao(raceInstance); // Set final results for each chao
+                await _repo.CompleteRaceInstance(raceInstance); // Set final results for the race
+                var prizeRings = GetPrizeAmount(race); 
+                await _repo.GiveRaceRewards(raceInstance, prizeRings); // Award the prize to the winner
+
+                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has finished. Thanks for playing!");
                 result.Complete = true;
             }
             else
@@ -155,13 +167,40 @@ namespace ChaoWorld.Bot
                     await _repo.UpdateRaceInstanceSegment(updatedSegment);
                 }
 
-                var fastestSegment = segments.OrderBy(x => x.SegmentTimeSeconds.GetValueOrDefault(0)).FirstOrDefault();
+                // Figure out positions based on total time in the race
+                // Note that the total time for retired chao is somewhat misleading; we want to make sure those are at the bottom
+                var orderedSegments = segments.OrderBy(x =>
+                    x.State == RaceInstanceChaoSegment.SegmentStates.Completed
+                        ? x.TotalTimeSeconds.GetValueOrDefault(0)
+                        : Int32.MaxValue
+                );
+                var orderedChao = new List<RaceProgressListItem>();
+                var i = 1;
+                foreach (var s in orderedSegments)
+                {
+                    orderedChao.Add(new RaceProgressListItem
+                    {
+                        ChaoId = s.ChaoId,
+                        ChaoName = allChao.FirstOrDefault(x => x.Id.Value == s.ChaoId).Name,
+                        Status = s.State,
+                        Position = i
+                    });
+                    i++;
+                }
+
+                // Determine how long we need to wait to simulate "running" this segment of the race
+                var fastestSegment = orderedSegments.FirstOrDefault();
                 var fastestChao = allChao.FirstOrDefault(x => x.Id.Value == fastestSegment.ChaoId);
+                var timeElapsed = TimeSpan.FromSeconds(fastestSegment.TotalTimeSeconds.GetValueOrDefault(0));
+
+                // Now we wait...
                 await Task.Delay(fastestSegment.SegmentTimeSeconds.GetValueOrDefault(0) * 1000);
 
-                // TODO: Report current status of the race with an embed instead (e.g. positions, elapsed time)
-                await ctx.Reply($"{Emojis.Megaphone} {fastestChao.Name} is in the lead in the {race.Name} race!");
-                result.Complete = false;
+                // Report race status - current time / positions of all chao
+                await ctx.Reply(embed: await _embeds.CreateRaceProgressEmbed(race, raceInstance, template, timeElapsed, orderedChao));
+
+                //await ctx.Reply($"{Emojis.Megaphone} {fastestChao.Name} is in the lead in the {race.Name} race!");
+                result.Complete = false; // There may be more segments after this one
                 result.SegmentTimeSeconds = fastestSegment.SegmentTimeSeconds.GetValueOrDefault(0);
             }
             return result;
@@ -181,10 +220,13 @@ namespace ChaoWorld.Bot
             // Calculate starting stamina from chao's stats for the first leg of the race
             if (template.RaceIndex == 0)
                 segment.StartStamina = CalculateStaminaForChao(chao);
+            else
+                segment.StartStamina = await _repo.GetRemainingStaminaForChao(segment.RaceInstanceId, segment.ChaoId);
 
             // It's possible to enter a segment after flying through the previous one, resulting in carryover elevation
             var flyDistance = await ProcessFlightForSegment(template, segment, chao);
             await ProcessTerrainForSegment(template, segment, chao, flyDistance);
+            segment.TotalTimeSeconds = segment.SegmentTimeSeconds.GetValueOrDefault(0) + await _repo.GetTotalTimeForSegments(segment.RaceInstanceId, segment.ChaoId);
 
             return segment;
         }
@@ -257,12 +299,18 @@ namespace ChaoWorld.Bot
             return flyDistance;
         }
 
+        private int GetPrizeAmount(Core.Race race)
+        {
+            // This will reward anywhere from 50% to 150% of the listed prize amount for a race
+            return (int)(race.PrizeRings * (0.5 + new Random().NextDouble()));
+        }
+
         private int CalculateStaminaForChao(Core.Chao chao)
         {
             // NOTE: This might need adjustment for balance.
             // The base value is based on the duration of the beginner races.
             // The multiplier for the stat is based on the high end races including a 1 minute race with triple stamina drain.
-            return 45 + chao.StaminaValue / 20;
+            return 50 + chao.StaminaValue / 20;
         }
 
         private int CalculateFlightFallSpeed(Core.Chao chao)

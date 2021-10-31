@@ -89,5 +89,106 @@ namespace ChaoWorld.Bot
 
             return eb.Build();
         }
+
+        public async Task<Embed> CreateRaceEmbed(Core.Race race, RaceInstance raceInstance)
+        {
+            var name = race.Name;
+            var difficulty = GetDifficultyString(race.Difficulty);
+
+            var desc = $"**Status**: {raceInstance.State}\r**Difficulty**: {difficulty}";
+            if (!string.IsNullOrEmpty(race.Description))
+                desc += $"\r\r{race.Description}\r";
+            if (race.SwimPercentage > 0)
+                desc += $"\r**Swimming**: {race.SwimPercentage * 100}%";
+            if (race.FlyPercentage > 0)
+                desc += $"\r**Flying**: {race.FlyPercentage * 100}%";
+            if(race.RunPercentage > 0)
+                desc += $"\r**Running**: {race.RunPercentage * 100}%";
+            if (race.PowerPercentage > 0)
+                desc += $"\r**Climbing**: {race.PowerPercentage * 100}%";
+            if (race.IntelligencePercentage > 0)
+                desc += $"\r**Puzzles**: {race.IntelligencePercentage * 100}%";
+            if (race.LuckPercentage > 0)
+                desc += $"\r**Traps**: {race.LuckPercentage * 100}%";
+
+            var participants = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
+            desc += $"\r\r**Participants**: {participants} / {race.MaximumChao}";
+
+            if (raceInstance.WinnerChaoId.HasValue && raceInstance.TimeElapsedSeconds.HasValue)
+            {
+                var timeElapsed = TimeSpan.FromSeconds(raceInstance.TimeElapsedSeconds.GetValueOrDefault(0)).ToString("c");
+                var winner = await _repo.GetChao(raceInstance.WinnerChaoId.GetValueOrDefault(0));
+                if (winner != null)
+                    desc += $"\r\r**Winner**: {winner.Name}\r**Time**: {timeElapsed}";
+            }
+
+            var eb = new EmbedBuilder()
+                .Title(new(name))
+                .Description(desc)
+                .Footer(new(
+                    $"Instance ID: {raceInstance.Id} | Created on {raceInstance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+            return eb.Build();
+        }
+
+        public async Task<Embed> CreateRaceProgressEmbed(Core.Race race, RaceInstance raceInstance, RaceSegment segment, TimeSpan timeElapsed, IEnumerable<RaceProgressListItem> chao)
+        {
+            var name = $"{race.Name} Progress";
+            var orderedChao = chao.OrderBy(x => x.Position);
+
+            var desc = $"{segment.Description}\r\r";
+            desc += $"Time Elapsed: {timeElapsed.ToString("c")}\r\r";
+            foreach (var c in chao)
+            {
+                var status = c.Status == RaceInstanceChaoSegment.SegmentStates.Completed
+                    ? string.Empty
+                    : " (Retired)";
+                desc += $"{c.Position}. {c.ChaoName}{status}\r";
+            }
+
+            var eb = new EmbedBuilder()
+                .Title(new(name))
+                .Description(desc)
+                .Footer(new(
+                    $"Instance ID: {raceInstance.Id} | Segment: {segment.RaceIndex} | Created on {raceInstance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+            return eb.Build();
+        }
+
+        private string GetDifficultyString(int difficulty)
+        {
+            switch (difficulty)
+            {
+                default:
+                case 1:
+                    return "★";
+                case 2:
+                    return "★★";
+                case 3:
+                    return "★★★";
+                case 4:
+                    return "★★★★";
+                case 5:
+                    return "★★★★★";
+                case 6:
+                    return "☠";
+                case 7:
+                    return "☠☠";
+                case 8:
+                    return "☠☠☠";
+                case 9:
+                    return "☠☠☠☠";
+                case 10:
+                    return "☠☠☠☠☠";
+                case 11:
+                    return "🔥";
+                case 12:
+                    return "🔥🔥";
+                case 13:
+                    return "🔥🔥🔥";
+                case 14:
+                    return "🔥🔥🔥🔥";
+                case 15:
+                    return "🔥🔥🔥🔥🔥";
+            }
+        }
     }
 }

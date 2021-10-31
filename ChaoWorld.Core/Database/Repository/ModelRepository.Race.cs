@@ -18,9 +18,8 @@ namespace ChaoWorld.Core
 
         public async Task<Race?> GetRaceByInstanceId(long id)
         {
-            var query = new Query("races").Join("raceinstances", "races.id", "raceinstances.raceid", "=")
+            var query = new Query("races").Join("raceinstances", "races.id", "raceinstances.raceid")
                 .Where("raceinstances.id", "=", id).Select("races.*");
-
             return await _db.QueryFirst<Race?>(query);
         }
 
@@ -77,35 +76,45 @@ namespace ChaoWorld.Core
             return updatedRaceInstance;
         }
 
-        public async Task<RaceInstance> CompleteRaceInstance(RaceInstance raceInstance, IChaoWorldConnection? conn = null)
+        public async Task CompleteRaceInstance(RaceInstance raceInstance, IChaoWorldConnection? conn = null)
         {
-            // TODO: This is really inefficient, combine those subqueries when you can wrap your brain around it please
-            //  Other problems - we should be updating the raceinstance chao too, so probably do that first and query it
-            //      Also, this won't handle the case where all the chao retire early, one would just win by default
-            var query = new Query(@$"
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
+                with winner as (
+                    select chaoid, totaltimeseconds
+                    from raceinstancechao
+                    where raceinstanceid = {raceInstance.Id}
+                    and state != {(int)RaceInstanceChaoSegment.SegmentStates.Retired}
+                    order by finishposition asc
+                    limit 1
+                )
                 update raceinstances
                 set completedon = current_timestamp,
-                    state = {RaceInstance.RaceStates.Completed},
-                    winnerchaoid = (
-                        select ics.chaoid
-                        from raceinstancechaosegments ics
-	                    join racesegments rs
-	                    on ics.racesegmentid = rs.id
-	                    where ics.raceinstanceid = {raceInstance.Id}
-	                    order by rs.raceindex desc, ics.totaltimeseconds asc
-	                    limit 1
-                    ),
-                    totaltimeseconds = (
-                        select min(totaltimeseconds)
-                        from raceinstancechaosegments
-                        where raceinstanceid = {raceInstance.Id}
-                        and state != {RaceInstanceChaoSegment.SegmentStates.Retired}
-                    )
-                where id = {raceInstance.Id}
-            ");
-            var updatedInstance = await _db.QueryFirst<RaceInstance>(query, extraSql: "returning *");
+                    state = (
+                        case when chaoid is null then {(int)RaceInstance.RaceStates.Canceled}
+                            else {(int)RaceInstance.RaceStates.Completed}
+                        end),
+                    winnerchaoid = chaoid,
+                    timeelapsedseconds = totaltimeseconds    
+                from (select 1) as _placeholder
+                left join winner
+                on true
+                where id = {raceInstance.Id};
+            "));
             _logger.Information($"Completed instance {raceInstance.Id} of race {raceInstance.RaceId}");
-            return updatedInstance;
+        }
+        
+        public async Task GiveRaceRewards(RaceInstance raceInstance, int prizeRings)
+        {
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
+                update gardens g
+                set ringbalance = ringbalance + {prizeRings}
+                from raceinstances i
+                join chao c
+                on i.winnerchaoid = c.id
+                where i.id = {raceInstance.Id}
+                and g.id = c.gardenid
+            "));
+            _logger.Information($"Delivered prize of {prizeRings} rings for instance {raceInstance.Id} of race {raceInstance.RaceId}");
         }
 
         public async Task JoinChaoToRaceInstance(RaceInstance raceInstance, Chao chao, IChaoWorldConnection? conn = null)
@@ -156,6 +165,16 @@ namespace ChaoWorld.Core
             return _db.Query<RaceInstanceChaoSegment>(query);
         }
 
+        public async Task<int> GetTotalTimeForSegments(long raceInstanceId, long chaoId)
+        {
+            return await _db.Execute(conn => conn.QuerySingleAsync<int>($@"
+                select coalesce(sum(totaltimeseconds), 0)
+                from raceinstancechaosegments
+                where raceinstanceid = {raceInstanceId}
+                and chaoid = {chaoId}
+            "));
+        }
+
         public async Task<RaceInstanceChaoSegment> UpdateRaceInstanceSegment(RaceInstanceChaoSegment segment)
         {
             var query = new Query("raceinstancechaosegments").Where("raceinstanceid", segment.RaceInstanceId)
@@ -172,6 +191,16 @@ namespace ChaoWorld.Core
                     });
             var updatedSegment = await _db.QueryFirst<RaceInstanceChaoSegment>(query, extraSql: "returning *");
             return updatedSegment;
+        }
+
+        public async Task<int> GetRemainingStaminaForChao(long raceInstanceId, long chaoId)
+        {
+            return await _db.Execute(conn => conn.QuerySingleAsync<int>($@"
+                select min(endstamina)
+                from raceinstancechaosegments
+                where raceinstanceid = {raceInstanceId}
+                and chaoid = {chaoId}
+            "));
         }
 
         public async Task RetireInstanceChao(long chaoId, long raceInstanceId)
@@ -194,6 +223,33 @@ namespace ChaoWorld.Core
                 .Where("raceinstancechao.raceinstanceid", instance.Id)
                 .Select("chao.*");
             return _db.Query<Chao>(query);
+        }
+
+        public async Task FinalizeRaceInstanceChao(RaceInstance instance)
+        {
+            // TODO: I don't love that this makes assumptions about the order of the SegmentStates enum to handle retired chao, but for now it will do
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
+                with ranks as (
+	                select
+                        	chaoid,
+	                        max(totaltimeseconds) finishtime,
+	                        max(state) finishstate,
+	                        rank() over (order by
+		                        (case when max(state) = {(int)RaceInstanceChaoSegment.SegmentStates.Retired} then null else max(totaltimeseconds) end)
+	                        asc nulls last) finishposition
+	                from raceinstancechaosegments
+	                where raceinstanceid = {instance.Id}
+	                group by chaoid
+                )
+                update raceinstancechao c
+                set
+	                totaltimeseconds = r.finishtime,
+	                finishposition = r.finishposition,
+                    state = r.finishstate
+                from ranks r
+                where c.chaoid = r.chaoid
+            "));
+            _logger.Information($"Finalized chao statistics for race instance {instance.Id} of race {instance.RaceId}");
         }
 
         public async Task LogMessage(string msg)

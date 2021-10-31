@@ -32,7 +32,7 @@ namespace ChaoWorld.Bot
             await _repo.AddAccount(garden.Id, ctx.Author.Id);
 
             var chao = new Core.Chao();
-            chao.Initialize(isStarterChao: true);
+            chao.Initialize();
             await _repo.CreateChao(garden.Id, chao);
 
             // TODO: better message, perhaps embed like in groups?

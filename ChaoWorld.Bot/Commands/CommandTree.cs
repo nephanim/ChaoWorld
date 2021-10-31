@@ -136,7 +136,11 @@ namespace ChaoWorld.Bot
             //  await PrintCommandList(ctx, "races", RaceCommands);
             else if (await ctx.MatchRaceInstance() is { } raceInstanceTarget)
             {
-                if (ctx.Match("join")) {
+                if (ctx.Match("info"))
+                {
+                    await ctx.Execute<Race>(RaceInfo, m => m.ViewRaceInstance(ctx, raceInstanceTarget));
+                }
+                else  if (ctx.Match("join")) {
                     //ctx.PopArgument();
                     if (await ctx.MatchChao() is { } chaoTarget)
                         await ctx.Execute<Race>(RaceJoin, m => m.EnterChaoInRace(ctx, chaoTarget, raceInstanceTarget));
@@ -145,7 +149,7 @@ namespace ChaoWorld.Bot
                 }
                 else
                 {
-                    await ctx.Reply($"{raceInstanceTarget.Id} was recognized");
+                    await ctx.Execute<Race>(RaceInfo, m => m.ViewRaceInstance(ctx, raceInstanceTarget));
                 }
             }
             //else if (!ctx.HasNext())

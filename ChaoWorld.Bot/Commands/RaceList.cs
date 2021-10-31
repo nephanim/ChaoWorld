@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -57,5 +58,13 @@ namespace ChaoWorld.Bot
 
             await ctx.RenderRaceList(_db, includeCompletedRaces, includeIncompleteRaces, title, search);
         }
+    }
+
+    public class RaceProgressListItem
+    {
+        public long ChaoId { get; set; }
+        public string ChaoName { get; set; }
+        public RaceInstanceChaoSegment.SegmentStates Status { get; set; }
+        public int Position { get; set; }
     }
 }
