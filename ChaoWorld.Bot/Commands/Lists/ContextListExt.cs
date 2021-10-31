@@ -79,7 +79,7 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Id}`] **{m.Name}** ({m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade})";
+                    var ret = $"[`{m.Id}`] **{m.Name}** - {m.Appearance} ({m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade})";
 
                     switch (opts.SortProperty)
                     {

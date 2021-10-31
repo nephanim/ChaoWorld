@@ -39,8 +39,9 @@ namespace ChaoWorld.Core
         {
             var query = new Query("raceinstances").Join("races", "races.id", "raceinstances.raceid", "=").WhereRaw(
                 "lower(races.name) = lower(?)",
-                name.ToLower()
-            ).OrderByDesc("createdon").Limit(1);
+                name.ToLower().Replace("\"", string.Empty))
+            .Select("raceinstances.*")
+            .OrderByDesc("createdon").Limit(1);
             return await _db.QueryFirst<RaceInstance?>(query);
         }
 

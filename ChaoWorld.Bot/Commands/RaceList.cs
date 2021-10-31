@@ -21,13 +21,16 @@ namespace ChaoWorld.Bot
             var includeCompletedRaces = false;
             var includeIncompleteRaces = true;
             var search = "";
-            var title = "All Races";
+            var title = "Incomplete Races";
             if (ctx.HasNext())
             {
-                var includeTypes = ctx.RemainderOrNull();
+                var includeTypes = ctx.PopArgument();
+                search = ctx.RemainderOrNull();
+                
                 switch (includeTypes)
                 {
                     case "all":
+                    default:
                         includeCompletedRaces = true;
                         includeIncompleteRaces = true;
                         title = "All Races";
@@ -47,12 +50,12 @@ namespace ChaoWorld.Bot
                         includeIncompleteRaces = true;
                         title = "Incomplete Races";
                         break;
-                    default:
-                        includeCompletedRaces = true;
-                        includeIncompleteRaces = true;
-                        search = includeTypes.Replace("\"", "");
-                        title = "Races (Filtered)";
-                        break;
+                }
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    search = search.Replace("\"", "");
+                    title = $"Filtered Races: {search}";
                 }
             }
 

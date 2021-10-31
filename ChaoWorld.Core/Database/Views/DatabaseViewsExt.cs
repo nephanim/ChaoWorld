@@ -56,9 +56,10 @@ namespace ChaoWorld.Core
 
             if (!string.IsNullOrEmpty(search))
             {
-                static string Filter(string column) => $"(position(lower(@filter) in lower(coalesce({column}, ''))) > 0)";
+                static string Filter(string column) => $"lower({column}) like concat('%', lower(@filter), '%')";
                 query.Append($" and ({Filter("r.name")})");
             }
+            query.Append(" order by i.state asc, i.createdon desc");
 
             return conn.QueryAsync<ListedRace>(query.ToString(), new { filter = search });
         }

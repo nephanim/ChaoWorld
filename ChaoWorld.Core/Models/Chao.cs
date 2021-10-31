@@ -153,9 +153,9 @@ namespace ChaoWorld.Core
             if (SwimLevel < 99)
             {
                 SwimProgress += amount;
-                if (SwimProgress >= 1000)
+                if (SwimProgress >= 100)
                 {
-                    SwimProgress = SwimProgress % 1000;
+                    SwimProgress = SwimProgress % 100;
                     SwimLevel += 1;
                     if (SwimLevel >= 99)
                         SwimProgress = 0;
@@ -169,9 +169,9 @@ namespace ChaoWorld.Core
             if (FlyLevel < 99)
             {
                 FlyProgress += amount;
-                if (FlyProgress >= 1000)
+                if (FlyProgress >= 100)
                 {
-                    FlyProgress = FlyProgress % 1000;
+                    FlyProgress = FlyProgress % 100;
                     FlyLevel += 1;
                     if (FlyLevel >= 99)
                         FlyProgress = 0;
@@ -185,9 +185,9 @@ namespace ChaoWorld.Core
             if (RunLevel < 99)
             {
                 RunProgress += amount;
-                if (RunProgress >= 1000)
+                if (RunProgress >= 100)
                 {
-                    RunProgress = RunProgress % 1000;
+                    RunProgress = RunProgress % 100;
                     RunLevel += 1;
                     if (RunLevel >= 99)
                         RunProgress = 0;
@@ -201,9 +201,9 @@ namespace ChaoWorld.Core
             if (PowerLevel < 99)
             {
                 PowerProgress += amount;
-                if (PowerProgress >= 1000)
+                if (PowerProgress >= 100)
                 {
-                    PowerProgress = PowerProgress % 1000;
+                    PowerProgress = PowerProgress % 100;
                     PowerLevel += 1;
                     if (PowerLevel >= 99)
                         PowerProgress = 0;
@@ -217,9 +217,9 @@ namespace ChaoWorld.Core
             if (StaminaLevel < 99)
             {
                 StaminaProgress += amount;
-                if (StaminaProgress >= 1000)
+                if (StaminaProgress >= 100)
                 {
-                    StaminaProgress = StaminaProgress % 1000;
+                    StaminaProgress = StaminaProgress % 100;
                     StaminaLevel += 1;
                     if (StaminaLevel >= 99)
                         StaminaProgress = 0;
@@ -233,9 +233,9 @@ namespace ChaoWorld.Core
             if (IntelligenceLevel < 99)
             {
                 IntelligenceProgress += amount;
-                if (IntelligenceProgress >= 1000)
+                if (IntelligenceProgress >= 100)
                 {
-                    IntelligenceProgress = IntelligenceProgress % 1000;
+                    IntelligenceProgress = IntelligenceProgress % 100;
                     IntelligenceLevel += 1;
                     if (IntelligenceLevel >= 99)
                         IntelligenceProgress = 0;
@@ -249,9 +249,9 @@ namespace ChaoWorld.Core
             if (LuckLevel < 99)
             {
                 LuckProgress += amount;
-                if (LuckProgress >= 1000)
+                if (LuckProgress >= 100)
                 {
-                    LuckProgress = LuckProgress % 1000;
+                    LuckProgress = LuckProgress % 100;
                     LuckLevel += 1;
                     if (LuckLevel >= 99)
                         LuckProgress = 0;
@@ -268,6 +268,28 @@ namespace ChaoWorld.Core
                 15 + baseModifier*3
             );
             return r;
+        }
+
+        public string GetEmojiGrade(StatGrades grade)
+        {
+            switch (grade)
+            {
+                case StatGrades.X:
+                    return ":regional_indicator_x:";
+                case StatGrades.S:
+                    return ":regional_indicator_s:";
+                case StatGrades.A:
+                    return ":regional_indicator_a:";
+                case StatGrades.B:
+                    return ":regional_indicator_b:";
+                case StatGrades.C:
+                    return ":regional_indicator_c:";
+                case StatGrades.D:
+                    return ":regional_indicator_d:";
+                case StatGrades.E:
+                default:
+                    return ":regional_indicator_e:";
+            }
         }
     }
 }

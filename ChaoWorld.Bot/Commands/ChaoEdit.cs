@@ -43,7 +43,7 @@ namespace ChaoWorld.Bot
             }
 
             // Rename the chao
-            var patch = new GardenPatch { Name = Partial<string>.Present(newName) };
+            var patch = new ChaoPatch { Name = Partial<string>.Present(newName) };
             await _repo.UpdateChao(target.Id, patch);
 
             await ctx.Reply($"{Emojis.Success} Chao renamed.");

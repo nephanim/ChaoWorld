@@ -11,15 +11,15 @@ namespace ChaoWorld.Bot
     {
         public static Command GardenInfo = new Command("garden", "garden {id}", "Looks up information about a garden; you can check your own without any parameters (e.g. `!garden`)");
         public static Command GardenNew = new Command("garden new", "garden new", "Creates a new garden");
-        public static Command GardenList = new Command("garden list", "garden [garden] list [full]", "Lists all chao in a garden");
-        public static Command GardenFind = new Command("garden find", "garden [garden] find [full] {search term}", "Searches a garden for chao given a search term");
+        public static Command GardenList = new Command("garden list", "garden {id} list [full]", "Lists all chao in a garden");
+        public static Command GardenFind = new Command("garden find", "garden {id} find [full] [search term]", "Searches a garden for chao given a search term");
         public static Command ChaoInfo = new Command("chao", "chao {id/name}", "Looks up information about a chao using either the name or ID");
         public static Command ChaoNew = new Command("chao new", "chao new", "Creates a new chao"); //TODO: Remove this when the market is done
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
         public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order");
-        public static Command RaceInfo = new Command("race info", "race info {id/name}", "Looks up information about a race using either the name or ID");
-        public static Command RaceJoin = new Command("race join", "race join {id/name} chao {id/name}", "Joins a race with the specified chao");
+        public static Command RaceInfo = new Command("race {id/name}", "race {id/name}", "Looks up information about a race using either the name or ID");
+        public static Command RaceJoin = new Command("race join", "race {race id/name} join {chao id/name}", "Joins a race with the specified chao");
         public static Command Collect = new Command("collect", "collect", "Can be used every 24 hours to collect rings for use in the market");
         public static Command Help = new Command("help", "help", "Shows help information about Chao World");
         public static Command Admin = new Command("admin", "admin", "What? Nothing to see here...");
@@ -140,7 +140,7 @@ namespace ChaoWorld.Bot
                 {
                     await ctx.Execute<Race>(RaceInfo, m => m.ViewRaceInstance(ctx, raceInstanceTarget));
                 }
-                else  if (ctx.Match("join")) {
+                else if (ctx.Match("join")) {
                     //ctx.PopArgument();
                     if (await ctx.MatchChao() is { } chaoTarget)
                         await ctx.Execute<Race>(RaceJoin, m => m.EnterChaoInRace(ctx, chaoTarget, raceInstanceTarget));
@@ -155,7 +155,7 @@ namespace ChaoWorld.Bot
             //else if (!ctx.HasNext())
                 //await PrintCommandExpectedError(ctx, RaceCommands);
             else
-                await PrintCommandNotFoundError(ctx, RaceInstanceList);
+                await PrintCommandNotFoundError(ctx, RaceInstanceList, RaceInfo, RaceJoin);
         }
 
         private async Task CommandHelpRoot(Context ctx)

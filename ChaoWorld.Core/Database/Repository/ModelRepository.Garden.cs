@@ -65,9 +65,9 @@ namespace ChaoWorld.Core
             return updatedGarden;
         }
 
-        public Task<Garden> UpdateGarden(GardenId id, GardenPatch patch, IChaoWorldConnection? conn = null)
+        public Task<Garden> UpdateGarden(GardenId id, ChaoPatch patch, IChaoWorldConnection? conn = null)
         {
-            _logger.Information("Updated {GardenId}: {@GardenPatch}", id, patch);
+            _logger.Information("Updated {GardenId}: {@ChaoPatch}", id, patch);
             var query = patch.Apply(new Query("gardens").Where("id", id));
             return _db.QueryFirst<Garden>(conn, query, extraSql: "returning *");
         }

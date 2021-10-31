@@ -68,7 +68,11 @@ namespace ChaoWorld.Bot
                 // Check whether we've reached the minimum number of chao for the race
                 var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
                 var currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
-                if (currentChaoCount >= race.MaximumChao)
+                if (race == null)
+                {
+                    await ctx.Reply($"{Emojis.Error} Unable to read the requested race. (Race Instance ID: {raceInstance.Id})");
+                }
+                else if (currentChaoCount >= race.MaximumChao)
                 {
                     // The race is full - don't join it
                     await ctx.Reply($"{Emojis.Error} This race has reached the participant limit ({currentChaoCount}/{race.MaximumChao}). Please wait for the next race.");
@@ -142,17 +146,20 @@ namespace ChaoWorld.Bot
             if (segments.Count() == 0)
             {
                 // Race is done - finish it!
-                // TODO: ...
-                //  * Update the raceinstancechao with their final results
-                //  * Update the race state, winner, and total time
-                //  * Award the prize to the winner
-                //  * Announce the results
                 await _repo.FinalizeRaceInstanceChao(raceInstance); // Set final results for each chao
                 await _repo.CompleteRaceInstance(raceInstance); // Set final results for the race
                 var prizeRings = GetPrizeAmount(race); 
                 await _repo.GiveRaceRewards(raceInstance, prizeRings); // Award the prize to the winner
 
                 await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has finished. Thanks for playing!");
+                result.Complete = true;
+            }
+            else if (segments.All(x => x.State == RaceInstanceChaoSegment.SegmentStates.Retired))
+            {
+                // Race isn't done, but all chao already retired...
+                await _repo.FinalizeRaceInstanceChao(raceInstance); // Set final results for each chao
+                await _repo.CompleteRaceInstance(raceInstance); // Set final results for the race
+                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has been canceled because the chao can no longer continue.");
                 result.Complete = true;
             }
             else
@@ -164,7 +171,8 @@ namespace ChaoWorld.Bot
                 {
                     var chao = allChao.FirstOrDefault(x => x.Id.Value == segment.ChaoId);
                     var updatedSegment = await ProcessSegmentForChao(template, segment, chao);
-                    await _repo.UpdateRaceInstanceSegment(updatedSegment);
+                    await _repo.UpdateRaceInstanceSegment(updatedSegment); // Persist the results of running this ChaoSegment
+                    await _repo.UpdateChao(chao); // Persist any changes to the chao (stat progress)
                 }
 
                 // Figure out positions based on total time in the race
@@ -248,7 +256,7 @@ namespace ChaoWorld.Bot
 
                 // Terrain travel uses stamina - make sure we can actually complete the segment
                 var staminaCost = (int)(terrainTime * template.StaminaLossMultiplier);
-                if (staminaCost <= segment.StartStamina)
+                if (staminaCost <= segment.StartStamina.GetValueOrDefault(0))
                 {
                     // Carry over the stamina we have left into the next segment
                     segment.EndStamina = segment.StartStamina.GetValueOrDefault(0) - staminaCost;
@@ -257,12 +265,37 @@ namespace ChaoWorld.Bot
                 else
                 {
                     // The chao couldn't make it... collapsed, fell, drowned, etc...
+                    // Only count segment time/distance up until they retire
                     segment.EndStamina = 0;
+                    segment.SegmentTimeSeconds = segment.SegmentTimeSeconds * segment.StartStamina / staminaCost;
+                    remainingDistance = remainingDistance * segment.StartStamina.GetValueOrDefault(0) / staminaCost;
                     segment.State = RaceInstanceChaoSegment.SegmentStates.Retired;
 
                     // Make sure the remaining segments are marked as retired too
                     await _repo.RetireInstanceChao(chao.Id.Value, segment.RaceInstanceId);
                 }
+                var usedStamina = segment.StartStamina.GetValueOrDefault(0) - segment.EndStamina.GetValueOrDefault(0);
+
+                // Raise terrain-based stat progress
+                RaiseChaoStatProgress(template.TerrainType, chao, remainingDistance, usedStamina);
+            }
+        }
+
+        private static void RaiseChaoStatProgress(RaceSegment.RaceTerrains terrain, Core.Chao chao, int remainingDistance, int usedStamina)
+        {
+            chao.RaiseStamina(usedStamina);
+            switch (terrain)
+            {
+                case RaceSegment.RaceTerrains.Swim:
+                    chao.RaiseSwim(remainingDistance);
+                    break;
+                case RaceSegment.RaceTerrains.Power:
+                    chao.RaisePower(remainingDistance);
+                    break;
+                case RaceSegment.RaceTerrains.Run:
+                default:
+                    chao.RaiseRun(remainingDistance);
+                    break;
             }
         }
 
@@ -293,6 +326,9 @@ namespace ChaoWorld.Bot
                     // Confirm how long we're airborne and add that to our race time
                     var flyTime = CalculateFlightTime(chao, flyDistance);
                     segment.SegmentTimeSeconds += flyTime;
+
+                    // Now raise the chao's flying progress based on the distance
+                    chao.RaiseFly(flyDistance);
                 }
             }
 
@@ -310,7 +346,19 @@ namespace ChaoWorld.Bot
             // NOTE: This might need adjustment for balance.
             // The base value is based on the duration of the beginner races.
             // The multiplier for the stat is based on the high end races including a 1 minute race with triple stamina drain.
-            return 50 + chao.StaminaValue / 20;
+            return 60 + chao.StaminaValue / 20;
+        }
+
+        private double CalculatePathEfficiency(Core.Chao chao)
+        {
+            // Chao won't always take the same path through the segment (basically never the "ideal" path)
+            // Intelligence and luck have an impact here, but unpredictable obstacles (e.g. other chao) will always affect it too
+            // This never affects their speed, only distance traveled
+            var randomComponent = new Random().NextDouble() * 10.0; // This is the portion that models random obstacles
+            var intelligenceComponent = (chao.IntelligenceValue / 400.0); // Cleverness results in better pathing by cutting corners
+            var luckComponent = (chao.LuckValue / 600.0); // Luck has a very small impact, but lucky chao will have things go their way!
+            var baseComponent = 80.0; // This is basically the minimum efficiency, no matter how dumb / unlucky you are
+            return (baseComponent + randomComponent + intelligenceComponent + luckComponent) / 100.0;
         }
 
         private int CalculateFlightFallSpeed(Core.Chao chao)
@@ -321,7 +369,7 @@ namespace ChaoWorld.Bot
 
         private int CalculateFlightDistance(Core.Chao chao, int totalFlyTime)
         {
-            return (int)(totalFlyTime / Math.Exp(-0.000114 * chao.FlyValue));
+            return (int)(totalFlyTime / Math.Exp(-0.000114 * chao.FlyValue) * CalculatePathEfficiency(chao));
         }
         
         private int CalculateFlightTime(Core.Chao chao, int distance)
@@ -355,26 +403,18 @@ namespace ChaoWorld.Bot
         // NOTE: The magic numbers in these functions come from tests run on the Steam version of SA2B. Might need adjustment.
         private int CalculateClimbingTime(Core.Chao chao, int distance)
         {
-            return (int)(distance * Math.Exp(-0.000436 * chao.PowerValue));
+            return (int)(distance * Math.Exp(-0.000436 * chao.PowerValue) / CalculatePathEfficiency(chao));
         }
 
         private int CalculateSwimmingTime(Core.Chao chao, int distance)
         {
-            return (int)(distance * Math.Exp(-0.000155 * chao.SwimValue));
+            return (int)(distance * Math.Exp(-0.000155 * chao.SwimValue) / CalculatePathEfficiency(chao));
         }
 
         private int CalculateRunningTime(Core.Chao chao, int distance)
         {
-            return (int)(distance * Math.Exp(-0.000114 * chao.RunValue));
+            return (int)(distance * Math.Exp(-0.000114 * chao.RunValue) / CalculatePathEfficiency(chao));
         }
-
-        /*
-        public async Task ViewChao(Context ctx, Core.Chao target)
-        {
-            var system = await _repo.GetGarden(target.GardenId);
-            await ctx.Reply(embed: await _embeds.CreateChaoEmbed(system, target, ctx.Guild));
-        }
-        */
     }
 
     public class RaceSegmentResult

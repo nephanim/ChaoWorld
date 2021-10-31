@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 
 using SqlKata;
+using Dapper;
 
 namespace ChaoWorld.Core
 {
@@ -43,9 +44,48 @@ namespace ChaoWorld.Core
             return chao;
         }
 
-        public Task<Chao> UpdateChao(ChaoId id, GardenPatch patch, IChaoWorldConnection? conn = null)
+        // TODO: Add other properties in here - just don't want to troubleshoot issues with types / evolution until I get there
+        public async Task UpdateChao(Chao chao, IChaoWorldConnection? conn = null)
         {
-            _logger.Information("Updated {ChaoId}: {@GardenPatch}", id, patch);
+             await _db.Execute(conn => conn.QueryAsync<int>($@"
+                update chao
+                set
+                    swimgrade = {(int)chao.SwimGrade},
+                    swimlevel = {chao.SwimLevel},
+                    swimvalue = {chao.SwimValue},
+                    swimprogress = {chao.SwimProgress},
+                    flygrade = {(int)chao.FlyGrade},
+                    flylevel = {chao.FlyLevel},
+                    flyvalue = {chao.FlyValue},
+                    flyprogress = {chao.FlyProgress},
+                    rungrade = {(int)chao.RunGrade},
+                    runlevel = {chao.RunLevel},
+                    runvalue = {chao.RunValue},
+                    runprogress = {chao.RunProgress},
+                    powergrade = {(int)chao.PowerGrade},
+                    powerlevel = {chao.PowerLevel},
+                    powervalue = {chao.PowerValue},
+                    powerprogress = {chao.PowerProgress},
+                    staminagrade = {(int)chao.StaminaGrade},
+                    staminalevel = {chao.StaminaLevel},
+                    staminavalue = {chao.StaminaValue},
+                    staminaprogress = {chao.StaminaProgress},
+                    intelligencegrade = {(int)chao.IntelligenceGrade},
+                    intelligencelevel = {chao.IntelligenceLevel},
+                    intelligencevalue = {chao.IntelligenceValue},
+                    intelligenceprogress = {chao.IntelligenceProgress},
+                    luckgrade = {(int)chao.LuckGrade},
+                    lucklevel = {chao.LuckLevel},
+                    luckvalue = {chao.LuckValue},
+                    luckprogress = {chao.LuckProgress}
+                where id = {chao.Id.Value};
+            "));
+            _logger.Information($"Updated chao {chao.Id.Value} ({chao.Name}) for garden {chao.GardenId}");
+        }
+
+        public Task<Chao> UpdateChao(ChaoId id, ChaoPatch patch, IChaoWorldConnection? conn = null)
+        {
+            _logger.Information("Updated {ChaoId}: {@ChaoPatch}", id, patch);
             var query = patch.Apply(new Query("chao").Where("id", id));
             return _db.QueryFirst<Chao>(conn, query, extraSql: "returning *");
         }

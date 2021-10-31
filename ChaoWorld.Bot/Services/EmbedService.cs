@@ -67,25 +67,26 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
-        public async Task<Embed> CreateChaoEmbed(Core.Garden garden, Core.Chao chao, Guild guild)
+        public async Task<Embed> CreateChaoEmbed(Core.Garden garden, Core.Chao chao)
         {
             var name = chao.Name;
 
             var eb = new EmbedBuilder()
-                .Author(new(name))
+                .Title(new(name))
+                .Thumbnail(new("https://chao-island.com/assets/images/gallery/twotone/child/childtwotoneregular.jpg"))
                 .Description(chao.Appearance)
                 .Footer(new(
                     $"Garden ID: {garden.Id} | Chao ID: {chao.Id} {$"| Created on {chao.CreatedOn.FormatZoned(DateTimeZone.Utc)}"}"));
 
             eb.Field(new("Age", chao.Age.ToString()));
             eb.Field(new("Reincarnations", chao.Reincarnations.ToString()));
-            eb.Field(new($"Swim (Lv.{chao.SwimLevel:D2})", $"Grade {chao.SwimGrade} - {chao.SwimProgress:D4}/1000 ({chao.SwimValue:D4})"));
-            eb.Field(new($"Fly (Lv.{chao.FlyLevel:D2})", $"Grade {chao.FlyGrade} - {chao.FlyProgress:D4}/1000 ({chao.FlyValue:D4})"));
-            eb.Field(new($"Run (Lv.{chao.RunLevel:D2})", $"Grade {chao.RunGrade} - {chao.RunProgress:D4}/1000 ({chao.RunValue:D4})"));
-            eb.Field(new($"Power (Lv.{chao.PowerLevel:D2})", $"Grade {chao.PowerGrade} - {chao.PowerProgress:D4}/1000 ({chao.PowerValue:D4})"));
-            eb.Field(new($"Stamina (Lv.{chao.StaminaLevel:D2})", $"Grade {chao.StaminaGrade} - {chao.StaminaProgress:D4}/1000 ({chao.StaminaValue:D4})"));
-            eb.Field(new($"Intelligence (Lv.{chao.IntelligenceLevel:D2})", $"Grade {chao.IntelligenceGrade} - {chao.IntelligenceProgress:D4}/1000 ({chao.IntelligenceValue:D4})"));
-            eb.Field(new($"Luck (Lv.{chao.LuckLevel:D2})", $"Grade {chao.LuckGrade} - {chao.LuckProgress:D4}/1000 ({chao.LuckValue:D4})"));
+            eb.Field(new($"Swim (Lv.{chao.SwimLevel:D2})", $"{chao.GetEmojiGrade(chao.SwimGrade)} : {chao.SwimProgress:D2}/100 ({chao.SwimValue:D4})"));
+            eb.Field(new($"Fly (Lv.{chao.FlyLevel:D2})", $"{chao.GetEmojiGrade(chao.FlyGrade)} : {chao.FlyProgress:D2}/100 ({chao.FlyValue:D4})"));
+            eb.Field(new($"Run (Lv.{chao.RunLevel:D2})", $"{chao.GetEmojiGrade(chao.RunGrade)} : {chao.RunProgress:D2}/100 ({chao.RunValue:D4})"));
+            eb.Field(new($"Power (Lv.{chao.PowerLevel:D2})", $"{chao.GetEmojiGrade(chao.PowerGrade)} : {chao.PowerProgress:D2}/100 ({chao.PowerValue:D4})"));
+            eb.Field(new($"Stamina (Lv.{chao.StaminaLevel:D2})", $"{chao.GetEmojiGrade(chao.StaminaGrade)} : {chao.StaminaProgress:D2}/100 ({chao.StaminaValue:D4})"));
+            eb.Field(new($"Intelligence (Lv.{chao.IntelligenceLevel:D2})", $"{chao.GetEmojiGrade(chao.IntelligenceGrade)} : {chao.IntelligenceProgress:D2}/100 ({chao.IntelligenceValue:D4})"));
+            eb.Field(new($"Luck (Lv.{chao.LuckLevel:D2})", $"{chao.GetEmojiGrade(chao.LuckGrade)} : {chao.LuckProgress:D2}/100 ({chao.LuckValue:D4})"));
 
             return eb.Build();
         }
@@ -132,16 +133,17 @@ namespace ChaoWorld.Bot
 
         public async Task<Embed> CreateRaceProgressEmbed(Core.Race race, RaceInstance raceInstance, RaceSegment segment, TimeSpan timeElapsed, IEnumerable<RaceProgressListItem> chao)
         {
-            var name = $"{race.Name} Progress";
+            var name = $"Race Progress: {race.Name}";
             var orderedChao = chao.OrderBy(x => x.Position);
 
             var desc = $"{segment.Description}\r\r";
             desc += $"Time Elapsed: {timeElapsed.ToString("c")}\r\r";
             foreach (var c in chao)
             {
-                var status = c.Status == RaceInstanceChaoSegment.SegmentStates.Completed
-                    ? string.Empty
-                    : " (Retired)";
+                var status = string.Empty;
+                if (c.Status == RaceInstanceChaoSegment.SegmentStates.Retired)
+                    status = " :x: (Retired)";
+
                 desc += $"{c.Position}. {c.ChaoName}{status}\r";
             }
 
