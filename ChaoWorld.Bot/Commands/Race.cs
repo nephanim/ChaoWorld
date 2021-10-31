@@ -233,6 +233,7 @@ namespace ChaoWorld.Bot
 
             // It's possible to enter a segment after flying through the previous one, resulting in carryover elevation
             var flyDistance = await ProcessFlightForSegment(template, segment, chao);
+            await ProcessPuzzlesForSegment(template, segment, chao);
             await ProcessTerrainForSegment(template, segment, chao, flyDistance);
             segment.TotalTimeSeconds = segment.SegmentTimeSeconds.GetValueOrDefault(0) + await _repo.GetTotalTimeForSegments(segment.RaceInstanceId, segment.ChaoId);
 
@@ -333,6 +334,35 @@ namespace ChaoWorld.Bot
             }
 
             return flyDistance;
+        }
+
+        private async Task ProcessPuzzlesForSegment(RaceSegment template, RaceInstanceChaoSegment segment, Core.Chao chao)
+        {
+            // INTELLIGENCE
+            var puzzleTime = 0;
+            if (template.IntelligenceRating > 0)
+            {
+                puzzleTime = Math.Max(1, // No matter how smart you are, you need a second to think about it
+                    (int)((template.IntelligenceRating / 6) // How hard is the puzzle? e.g. rating of 30 -> 5s base time
+                    - (Math.Log10(chao.IntelligenceValue + 1)) // Reduce this by 0-4s depending on the chao's intelligence
+                ));
+                chao.RaiseIntelligence(template.IntelligenceRating);
+            }
+            segment.SegmentTimeSeconds += puzzleTime;
+            
+            // LUCK
+            var misfortuneTime = 0;
+            if (template.LuckRating > 0)
+            {
+                var rand = new Random().Next(0, chao.LuckValue / 25); // This is the chao's dice roll to evade the trap
+                if (rand <= template.LuckRating)
+                {
+                    // Failed to evade the trap
+                    misfortuneTime = 5; // TODO: Should there be any variability in this? Maybe just keep it constant regardless of the type of trap
+                }
+                chao.RaiseLuck(template.LuckRating);
+            }
+            segment.SegmentTimeSeconds += misfortuneTime;
         }
 
         private int GetPrizeAmount(Core.Race race)

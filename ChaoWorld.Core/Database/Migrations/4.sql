@@ -81,6 +81,6 @@ values
     (50, 11, 'The path spirals down, merging with another tunnel. The grassy ledge overlooking the crab pool lies at the bottom.', 9, 0, 30, 30, 40, 1.0, 0, 0, 0),
     (51, 11, 'The chao reach the crab pool, spring off the ledge, and begin to swim across.', 10, 1, 30, 20, 30, 1.0, 0, 0, 0),
     (52, 11, 'Reaching the far side of the pool, the chao take the short path around the upcoming bend in the race route.', 11, 0, 20, 20, 10, 1.0, 0, 0, 0),
-    (53, 11, 'Though the straightaway is a long one, it''s all that remains. Pitfalls surprise some chao on their way, causing them to fall in or stumble.', 12, 0, 20, 20, 40, 1.0, 0, 0, 0);
+    (53, 11, 'Though the straightaway is a long one, it''s all that remains. Pitfalls surprise some chao on their way, causing them to fall in or stumble.', 12, 0, 20, 20, 40, 1.0, 0, 0, 30);
 
 update info set schema_version = 4;
