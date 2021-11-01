@@ -45,13 +45,22 @@ namespace ChaoWorld.Bot
             var input = ctx.PeekArgument();
 
             // Garden references can take three forms:
-            // - The direct user ID of an account connected to the system
-            // - A @mention of an account connected to the system (<@uid>)
-            // - A system hid
+            // - The direct user ID of an account connected to the garden
+            // - A @mention of an account connected to the garden (<@uid>)
+            // - A garden id
 
             // Direct IDs and mentions are both handled by the below method:
-            if (input.TryParseMention(out var id))
-                return await ctx.Repository.GetGardenByAccount(id);
+            if (input.TryParseMention(out var uid))
+            {
+                var gardenByAccount = await ctx.Repository.GetGardenByAccount(uid);
+                if (gardenByAccount != null)
+                    return gardenByAccount;
+
+                // Try looking it up by garden id if that doesn't work
+                if (long.TryParse(input, out long gardenId))
+                    return await ctx.Repository.GetGarden(gardenId);
+            }
+
             return null; //TODO: Is this safe?
         }
 

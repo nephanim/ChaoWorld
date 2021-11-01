@@ -33,7 +33,7 @@ namespace ChaoWorld.Bot
             _rest = rest;
         }
 
-        private Task<(ulong Id, User? User)[]> GetUsers(IEnumerable<ulong> ids)
+        public async Task<(ulong Id, User? User)[]> GetUsers(IEnumerable<ulong> ids)
         {
             async Task<(ulong Id, User? User)> Inner(ulong id)
             {
@@ -41,7 +41,7 @@ namespace ChaoWorld.Bot
                 return (id, user);
             }
 
-            return Task.WhenAll(ids.Select(Inner));
+            return await Task.WhenAll(ids.Select(Inner));
         }
 
         public async Task<Embed> CreateGardenEmbed(Context cctx, Core.Garden garden)

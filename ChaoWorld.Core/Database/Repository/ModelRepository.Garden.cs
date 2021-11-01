@@ -9,7 +9,7 @@ namespace ChaoWorld.Core
 {
     public partial class ModelRepository
     {
-        public Task<Garden?> GetGarden(GardenId id)
+        public Task<Garden?> GetGarden(long id)
         {
             var query = new Query("gardens").Where("id", id);
             return _db.QueryFirst<Garden?>(query);

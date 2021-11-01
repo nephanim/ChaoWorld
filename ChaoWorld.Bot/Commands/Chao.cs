@@ -46,7 +46,7 @@ namespace ChaoWorld.Bot
 
         public async Task ViewChao(Context ctx, Core.Chao target)
         {
-            var system = await _repo.GetGarden(target.GardenId);
+            var system = await _repo.GetGarden(target.GardenId.Value);
             await ctx.Reply(embed: await _embeds.CreateChaoEmbed(system, target));
         }
     }

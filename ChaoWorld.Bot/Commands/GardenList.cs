@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,23 +9,29 @@ namespace ChaoWorld.Bot
     public class GardenList
     {
         private readonly IDatabase _db;
+        private readonly EmbedService _embeds;
 
-        public GardenList(IDatabase db)
+        public GardenList(EmbedService embeds, IDatabase db)
         {
             _db = db;
+            _embeds = embeds;
         }
 
         public async Task ChaoList(Context ctx, Core.Garden target)
         {
             if (target == null) throw Errors.NoGardenError;
 
+            var accounts = await ctx.Repository.GetGardenAccounts(target.Id);
+            var users = (await _embeds.GetUsers(accounts)).Select(x => x.User?.Username ?? $"({x.Id})");
+            var firstUser = target.Id.Value == 0 ? "Professor Chao" : users.FirstOrDefault();
+
             var opts = ctx.ParseChaoListOptions();
-            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(ctx, target, opts), null, opts);
+            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(firstUser, opts), null, opts);
         }
 
-        private string GetEmbedTitle(Context ctx, Core.Garden target, ChaoListOptions opts)
+        private string GetEmbedTitle(string user, ChaoListOptions opts)
         {
-            var title = new StringBuilder($"{ctx.Author.Username}'s Chao");
+            var title = new StringBuilder($"{user}'s Chao");
 
             if (opts.Search != null)
                 title.Append($" matching **{opts.Search}**");
