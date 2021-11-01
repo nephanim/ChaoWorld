@@ -62,6 +62,7 @@ namespace ChaoWorld.Bot
             builder.RegisterType<MessageCreated>().As<IEventHandler<MessageCreateEvent>>();
             builder.RegisterType<MessageDeleted>().As<IEventHandler<MessageDeleteEvent>>().As<IEventHandler<MessageDeleteBulkEvent>>();
             builder.RegisterType<MessageEdited>().As<IEventHandler<MessageUpdateEvent>>();
+            builder.RegisterType<ReactionAdded>().As<IEventHandler<MessageReactionAddEvent>>();
             builder.RegisterType<InteractionCreated>().As<IEventHandler<InteractionCreateEvent>>();
 
             // Event handler queue
