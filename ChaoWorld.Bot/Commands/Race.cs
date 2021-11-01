@@ -331,7 +331,7 @@ namespace ChaoWorld.Bot
         private async Task<int> ProcessFlightForSegment(RaceSegment template, RaceInstanceChaoSegment segment, Core.Chao chao)
         {
             var flyDistance = 0;
-            if (segment.StartElevation > template.StartElevation)
+            if (segment.StartElevation > template.EndElevation)
             {
                 // We're in the air! Fly until we can't anymore
                 var fallSpeed = CalculateFlightFallSpeed(chao);
@@ -340,7 +340,7 @@ namespace ChaoWorld.Bot
                 if (fallDistance > 0)
                 {
                     // We're falling with style... so where do we end up?
-                    var maxFlyTime = fallSpeed / fallDistance; // This is the time we have before gravity brings us down
+                    var maxFlyTime = fallDistance / fallSpeed; // This is the time we have before gravity brings us down
                     flyDistance = CalculateFlightDistance(chao, maxFlyTime); // This is how far we'd fly in that time
 
                     // But if we will fly into the next segment, stop there - we don't know the elevation of the next segment yet
@@ -356,8 +356,9 @@ namespace ChaoWorld.Bot
                     var flyTime = CalculateFlightTime(chao, flyDistance);
                     segment.SegmentTimeSeconds += flyTime;
 
-                    // Now raise the chao's flying progress based on the distance
-                    chao.RaiseFly(flyDistance);
+                    // Now raise the chao's flying progress based on the distance traveled and distance fallen
+                    // Distance traveled on its own is generally way too low, considering even flying-based races only have short flying segments
+                    chao.RaiseFly(flyDistance + fallDistance);
                 }
             }
 
@@ -422,7 +423,7 @@ namespace ChaoWorld.Bot
         private int CalculateFlightFallSpeed(Core.Chao chao)
         {
             // Chao always try to fly when they're falling, resulting in a constant fall velocity dependent solely on their flying skill
-            return (int)(6 * Math.Exp(-0.000285 * chao.FlyValue));
+            return (int)(3 * Math.Exp(-0.000285 * chao.FlyValue));
         }
 
         private int CalculateFlightDistance(Core.Chao chao, int totalFlyTime)

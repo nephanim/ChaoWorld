@@ -49,12 +49,13 @@ namespace ChaoWorld.Bot
 
             // Fetch/render info for all accounts simultaneously
             var accounts = await _repo.GetGardenAccounts(garden.Id);
-            var users = (await GetUsers(accounts)).Select(x => x.User?.NameAndMention() ?? $"(deleted account {x.Id})");
+            var users = (await GetUsers(accounts)).Select(x => x.User?.Username ?? $"({x.Id})");
+            var firstUser = garden.Id.Value == 0 ? "Professor Chao" : users.FirstOrDefault();
 
             var chaoCount = await _repo.GetGardenChaoCount(garden.Id);
 
             var eb = new EmbedBuilder()
-                .Title($"{cctx.Author.Username}'s Garden")
+                .Title($"{firstUser}'s Garden")
                 .Footer(new($"Garden ID: {garden.Id} | Created on {garden.CreatedOn}"));
 
             eb.Field(new("Rings", garden.RingBalance.ToString(), true));
