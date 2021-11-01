@@ -257,6 +257,8 @@ namespace ChaoWorld.Bot
 
                 // Terrain travel uses stamina - make sure we can actually complete the segment
                 var staminaCost = (int)(terrainTime * template.StaminaLossMultiplier);
+                if (template.TerrainType == RaceSegment.RaceTerrains.Swim)
+                    staminaCost = staminaCost / 2; // The official engine doesn't even take stamina for swimming, and this tends to be the thing that bloats min stamina requirements
                 if (staminaCost <= segment.StartStamina.GetValueOrDefault(0))
                 {
                     // Carry over the stamina we have left into the next segment
@@ -433,17 +435,17 @@ namespace ChaoWorld.Bot
         // NOTE: The magic numbers in these functions come from tests run on the Steam version of SA2B. Might need adjustment.
         private int CalculateClimbingTime(Core.Chao chao, int distance)
         {
-            return (int)(distance * Math.Exp(-0.000436 * chao.PowerValue) / CalculatePathEfficiency(chao));
+            return (int)((distance * Math.Exp(-0.000155 * chao.PowerValue) / CalculatePathEfficiency(chao))/3.0);
         }
 
         private int CalculateSwimmingTime(Core.Chao chao, int distance)
         {
-            return (int)(distance * Math.Exp(-0.000155 * chao.SwimValue) / CalculatePathEfficiency(chao));
+            return (int)(distance * Math.Exp(-0.000436 * chao.SwimValue) / CalculatePathEfficiency(chao))*2;
         }
 
         private int CalculateRunningTime(Core.Chao chao, int distance)
         {
-            return (int)(distance * Math.Exp(-0.000114 * chao.RunValue) / CalculatePathEfficiency(chao));
+            return (int)((distance * Math.Exp(-0.000114 * chao.RunValue) / CalculatePathEfficiency(chao))/2.0);
         }
     }
 

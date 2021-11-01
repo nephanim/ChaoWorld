@@ -159,7 +159,7 @@ namespace ChaoWorld.Core
                     SwimLevel += 1;
                     if (SwimLevel >= 99)
                         SwimProgress = 0;
-                    SwimValue = GetLevelUpIncrease(SwimGrade);
+                    SwimValue += GetLevelUpIncrease(SwimGrade);
                 }
             }
         }
@@ -175,7 +175,7 @@ namespace ChaoWorld.Core
                     FlyLevel += 1;
                     if (FlyLevel >= 99)
                         FlyProgress = 0;
-                    FlyValue = GetLevelUpIncrease(FlyGrade);
+                    FlyValue += GetLevelUpIncrease(FlyGrade);
                 }
             }
         }
@@ -191,7 +191,7 @@ namespace ChaoWorld.Core
                     RunLevel += 1;
                     if (RunLevel >= 99)
                         RunProgress = 0;
-                    RunValue = GetLevelUpIncrease(RunGrade);
+                    RunValue += GetLevelUpIncrease(RunGrade);
                 }
             }
         }
@@ -207,7 +207,7 @@ namespace ChaoWorld.Core
                     PowerLevel += 1;
                     if (PowerLevel >= 99)
                         PowerProgress = 0;
-                    PowerValue = GetLevelUpIncrease(PowerGrade);
+                    PowerValue += GetLevelUpIncrease(PowerGrade);
                 }
             }
         }
@@ -223,7 +223,7 @@ namespace ChaoWorld.Core
                     StaminaLevel += 1;
                     if (StaminaLevel >= 99)
                         StaminaProgress = 0;
-                    StaminaValue = GetLevelUpIncrease(StaminaGrade);
+                    StaminaValue += GetLevelUpIncrease(StaminaGrade);
                 }
             }
         }
@@ -239,7 +239,7 @@ namespace ChaoWorld.Core
                     IntelligenceLevel += 1;
                     if (IntelligenceLevel >= 99)
                         IntelligenceProgress = 0;
-                    IntelligenceValue = GetLevelUpIncrease(IntelligenceGrade);
+                    IntelligenceValue += GetLevelUpIncrease(IntelligenceGrade);
                 }
             }
         }
@@ -255,7 +255,7 @@ namespace ChaoWorld.Core
                     LuckLevel += 1;
                     if (LuckLevel >= 99)
                         LuckProgress = 0;
-                    LuckValue = GetLevelUpIncrease(LuckGrade);
+                    LuckValue += GetLevelUpIncrease(LuckGrade);
                 }
             }
         }
