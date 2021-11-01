@@ -3,7 +3,7 @@ insert into races
     difficulty, swimpercentage, flypercentage, runpercentage, powerpercentage, intelligencepercentage, luckpercentage)
 values
     (1, 'Crab Pool', 'Beginner race. Swimming is key to victory.', 30, 1, true, 1, 8, 100, 1, 0.75, 0.00, 0.25, 0.00, 0.00, 0.00),
-    (2, 'Stump Valley', 'Beginner race. Flying is key to victory.', 30, 1, true, 1, 8, 100, 1, 0.18, 0.18, 0.45, 0.18, 0.00, 0.00),
+    (2, 'Stump Valley', 'Beginner race. Flying is key to victory.', 30, 1, true, 1, 8, 100, 1, 0.13, 0.50, 0.25, 0.13, 0.00, 0.00),
     (3, 'Mushroom Forest', 'Beginner race. Running is key to victory.', 30, 1, true, 1, 8, 100, 1, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00),
     (4, 'Block Canyon', 'Beginner race. Power is key to victory.', 30, 1, true, 1, 8, 100, 1, 0.00, 0.00, 0.14, 0.86, 0.00, 0.00),
     (5, 'Kalaupapa Volcano', 'Beginner race. Stamina is key to victory.', 30, 1, true, 1, 8, 100, 1, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00),
@@ -22,8 +22,8 @@ values
     (1, 1, 'The race starts on a grassy ledge. There''s a short distance to the pool.', 0, 0, 10, 10, 10, 1.0, 0, 0, 0),
     (2, 1, 'The finish line awaits on the other side of a large pool. Crabs watch the chao as they swim.', 1, 1, 10, 0, 30, 1.0, 0, 0, 0),
     --Stump Valley
-    (3, 2, 'A short trail leads from the starting line to a sudden cliff.', 0, 0, 20, 20, 20, 1.0, 0, 0, 0),
-    (4, 2, 'The cliff overlooks a narrow river valley. If the chao can reach the far ledge, they can avoid falling into the water below.', 1, 1, 20, 0, 10, 1.0, 0, 0, 0),
+    (3, 2, 'A short trail leads from the starting line to a sudden cliff.', 0, 0, 40, 40, 10, 1.0, 0, 0, 0),
+    (4, 2, 'The cliff overlooks a narrow river valley. If the chao can reach the far ledge, they can avoid falling into the water below.', 1, 1, 40, 0, 10, 1.0, 0, 0, 0),
     (5, 2, 'The chao that couldn''t reach the far ledge climb out of the water, making their way up...', 2, 2, 0, 10, 0, 1.0, 0, 0, 0),
     (6, 2, 'All that remains is a curved dirt path to the finish!', 3, 0, 10, 10, 10, 1.0, 0, 0, 0),
     --Mushroom Forest
