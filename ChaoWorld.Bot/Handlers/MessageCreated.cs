@@ -55,11 +55,17 @@ namespace ChaoWorld.Bot
 
         public async Task Handle(Shard shard, MessageCreateEvent evt)
         {
+
             if (evt.Author.Id == shard.User?.Id) return;
             if (evt.Type != Message.MessageType.Default && evt.Type != Message.MessageType.Reply) return;
             if (IsDuplicateMessage(evt)) return;
 
             var guild = evt.GuildId != null ? _cache.GetGuild(evt.GuildId.Value) : null;
+
+            // TODO: Allow DMs again once we're comfortable
+            if (guild == null)
+                return;
+
             var channel = _cache.GetChannel(evt.ChannelId);
             var rootChannel = _cache.GetRootChannel(evt.ChannelId);
 

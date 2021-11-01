@@ -51,6 +51,18 @@ namespace ChaoWorld.Core
             return await _db.QueryFirst<int>(query);
         }
 
+        public async Task<RaceInstance?> GetActiveRaceByGarden(int gardenId)
+        {
+            var query = new Query("raceinstances")
+                .Join("raceinstancechao", "raceinstances.id", "raceinstancechao.raceinstanceid")
+                .Join("chao", "raceinstancechao.chaoid", "chao.id")
+                .Where("chao.gardenid", "=", gardenId)
+                .Where("raceinstances.state", "!=", (int)RaceInstance.RaceStates.Completed)
+                .Where("raceinstances.state", "!=", (int)RaceInstance.RaceStates.Canceled)
+                .Select("raceinstances.*");
+            return await _db.QueryFirst<RaceInstance?>(query);
+        }
+
         public async Task<RaceInstance> CreateRaceInstance(Race race, IChaoWorldConnection? conn = null)
         {
             var query = new Query("raceinstances").AsInsert(new

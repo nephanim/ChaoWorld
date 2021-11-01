@@ -24,6 +24,28 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Chao?>(query);
         }
 
+        public Task<Chao?> GetChaoByName(string name)
+        {
+            var query = new Query("chao").WhereRaw(
+                "lower(name) = lower(?)",
+                name.ToLower()
+            );
+            return _db.QueryFirst<Chao?>(query);
+        }
+
+        public async Task<Chao?> GetRandomChao(int gardenId)
+        {
+            var chao = await _db.Execute(conn => conn.QueryAsync<Chao?>($@"
+                    select *
+                    from chao
+                    where gardenid = {gardenId}
+            "));
+            var arr = chao.AsList().ToArray();
+            
+            var randomIndex = new Random().Next(0, arr.Length - 1);
+            return arr[randomIndex];
+        }
+
         public async Task<Chao> CreateChao(GardenId garden, Chao chao, IChaoWorldConnection? conn = null)
         {
             var query = new Query("chao").AsInsert(new

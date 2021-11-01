@@ -60,11 +60,14 @@ namespace ChaoWorld.Bot
                 // Race isn't joinable - sorry!
                 await ctx.Reply($"{Emojis.Error} This race is {Core.MiscUtils.GetDescription(raceInstance.State).ToLower()} and can no longer be joined.");
             }
+            else if (await _repo.GetActiveRaceByGarden(chao.GardenId.Value) != null)
+            {
+                // There's a chao in this garden that's already participating in a race.
+                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a race. Please support your chao in that race first!");
+            }
             else
             {
-                // Race is in a joinable state
-                // TODO: Check whether any of this garden's chao are already in the race... (but let garden id 0 bypass it, that's where our NPC chao will go)
-                
+                // Race is in a joinable stat
                 // Check whether we've reached the minimum number of chao for the race
                 var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
                 var currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
@@ -104,18 +107,39 @@ namespace ChaoWorld.Bot
             }
         }
 
-        public async Task StartRace(Context ctx, Core.Race race, Core.RaceInstance raceInstance)
+        public async Task StartRace(Context ctx, Core.Race race, RaceInstance raceInstance)
         {
             // The ready delay period is over -- time to race!
             if (raceInstance.State == RaceInstance.RaceStates.Preparing || raceInstance.State == RaceInstance.RaceStates.New)
             {
-                // Initialize all the race segments
-                await _repo.AddSegmentsToRaceInstance(raceInstance);
-
                 // Start the race!
                 raceInstance.State = RaceInstance.RaceStates.InProgress;
                 await _repo.UpdateRaceInstance(raceInstance);
-                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has started! Good luck to all participants!");
+                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race is starting! Good luck to all participants!");
+
+                try
+                {
+                    // Determine how many slots to fill with NPC chao and select random chao to fill those
+                    var currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
+                    var joiningNPCs = new List<Core.Chao>();
+                    while (currentChaoCount < race.MaximumChao)
+                    {
+                        var npc = await _repo.GetRandomChao(0); // Garden 0 is a special holding place reserved for NPCs
+                        if (joiningNPCs.All(x => x.Id != npc.Id))
+                        {
+                            joiningNPCs.Add(npc);
+                            await _repo.JoinChaoToRaceInstance(raceInstance, npc);
+                            currentChaoCount++;
+                        } // else we loop again without incrementing, so we get another one
+                    }
+                }
+                catch (Exception e)
+                {
+                    await _repo.LogMessage($"Failed to fill race instance {raceInstance.Id} of race {race.Id} with NPC chao: {e.Message}");
+                }
+
+                // Now we have a full roster - initialize all the race segments
+                await _repo.AddSegmentsToRaceInstance(raceInstance);
 
                 // Queue updates for the first set of race segments
                 var complete = false;
@@ -151,6 +175,8 @@ namespace ChaoWorld.Bot
                 var prizeRings = GetPrizeAmount(race); 
                 await _repo.GiveRaceRewards(raceInstance, prizeRings); // Award the prize to the winner
 
+                raceInstance = await _repo.GetRaceInstanceById(raceInstance.Id); // Refresh our instance information (because some of it is stale)
+                await ctx.Reply(embed: await _embeds.CreateRaceEmbed(race, raceInstance));
                 await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has finished. Thanks for playing!");
                 result.Complete = true;
             }
@@ -440,7 +466,7 @@ namespace ChaoWorld.Bot
 
         private int CalculateSwimmingTime(Core.Chao chao, int distance)
         {
-            return (int)(distance * Math.Exp(-0.000436 * chao.SwimValue) / CalculatePathEfficiency(chao))*2;
+            return (int)((distance * Math.Exp(-0.000436 * chao.SwimValue) / CalculatePathEfficiency(chao))*2.0);
         }
 
         private int CalculateRunningTime(Core.Chao chao, int distance)

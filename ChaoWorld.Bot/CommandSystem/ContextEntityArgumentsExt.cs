@@ -69,6 +69,10 @@ namespace ChaoWorld.Bot
             if (ctx.Member != null && ctx.Garden != null && await ctx.Repository.GetChaoByName(ctx.Garden.Id, input) is Core.Chao chaoByName)
                 return chaoByName;
 
+            // Then try by name across all gardens
+            if (await ctx.Repository.GetChaoByName(input) is Core.Chao globalChaoByName)
+                return globalChaoByName;
+
             // Try looking it up by its ID
             long.TryParse(input.Replace("#", string.Empty), out long id);
             if (ctx.Member != null && await ctx.Repository.GetChao(id) is Core.Chao chaoById)
@@ -128,32 +132,9 @@ namespace ChaoWorld.Bot
 
         public static string CreateChaoNotFoundError(this Context ctx, string input)
         {
-            // TODO: does this belong here?
-            if (input.Length == 5)
-            {
-                if (ctx.Member != null)
-                    return $"Chao with ID or name \"{input}\" not found.";
-                return $"Chao with ID \"{input}\" not found."; // Accounts without systems can't query by name
-            }
-
             if (ctx.Member != null)
-                return $"Chao with name \"{input}\" not found. Note that a chao ID is 5 characters long.";
-            return $"Chao not found. Note that a chao ID is 5 characters long.";
-        }
-
-        public static string CreateGroupNotFoundError(this Context ctx, string input)
-        {
-            // TODO: does this belong here?
-            if (input.Length == 5)
-            {
-                if (ctx.Member != null)
-                    return $"Group with ID or name \"{input}\" not found.";
-                return $"Group with ID \"{input}\" not found."; // Accounts without systems can't query by name
-            }
-
-            if (ctx.Member != null)
-                return $"Group with name \"{input}\" not found. Note that a group ID is 5 characters long.";
-            return $"Group not found. Note that a group ID is 5 characters long.";
+                return $"Chao with name \"{input}\" not found.";
+            return $"Chao not found.";
         }
 
         public static Task<Channel> MatchChannel(this Context ctx)

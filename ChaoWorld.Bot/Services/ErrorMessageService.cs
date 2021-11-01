@@ -42,7 +42,7 @@ namespace ChaoWorld.Bot
             var embed = new EmbedBuilder()
                 .Color(0xE74C3C)
                 .Title("Internal error occurred")
-                .Description("For support, please send the error code above in **#bug-reports-and-errors** on **[the support server *(click to join)*](https://discord.gg/PczBt78)** with a description of what you were doing at the time.")
+                .Description("Your error has been recorded for additional review.")
                 .Footer(new(errorId))
                 .Timestamp(now.ToDateTimeOffset().ToString("O"));
 

@@ -101,9 +101,9 @@ namespace ChaoWorld.Bot
 
         private async Task HandleChaoCommand(Context ctx)
         {
-            if (ctx.Match("new", "n", "add", "create", "register"))
-                await ctx.Execute<Chao>(ChaoNew, m => m.NewChao(ctx));
-            else if (ctx.Match("list"))
+            /*if (ctx.Match("new", "n", "add", "create", "register"))
+                await ctx.Execute<Chao>(ChaoNew, m => m.NewChao(ctx));*/
+            if (ctx.Match("list"))
                 await ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "chao", ChaoCommands);
