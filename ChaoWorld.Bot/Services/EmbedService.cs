@@ -123,17 +123,17 @@ namespace ChaoWorld.Bot
 
             var composition = string.Empty;
             if (race.SwimPercentage > 0)
-                composition += $"**Swimming**: {race.SwimPercentage * 100}%\r\n";
+                composition += $"Swimming: {race.SwimPercentage * 100}%\r\n";
             if (race.FlyPercentage > 0)
-                composition += $"**Flying**: {race.FlyPercentage * 100}%\r\n";
+                composition += $"Flying: {race.FlyPercentage * 100}%\r\n";
             if (race.RunPercentage > 0)
-                composition += $"**Running**: {race.RunPercentage * 100}%\r\n";
+                composition += $"Running: {race.RunPercentage * 100}%\r\n";
             if (race.PowerPercentage > 0)
-                composition += $"**Climbing**: {race.PowerPercentage * 100}%\r\n";
+                composition += $"Climbing: {race.PowerPercentage * 100}%\r\n";
             if (race.IntelligencePercentage > 0)
-                composition += $"**Puzzles**: {race.IntelligencePercentage * 100}%\r\n";
+                composition += $"Puzzles: {race.IntelligencePercentage * 100}%\r\n";
             if (race.LuckPercentage > 0)
-                composition += $"**Traps**: {race.LuckPercentage * 100}%\r\n";
+                composition += $"Traps: {race.LuckPercentage * 100}%\r\n";
             eb.Field(new("Race Composition", composition));
 
             return eb.Build();
