@@ -69,10 +69,10 @@ namespace ChaoWorld.Bot
             var input = ctx.PeekArgument();
 
             // Chao references can have one of three forms, depending on
-            // whether you're in a system or not:
-            // - A chao hid
+            // whether you're in a garden or not:
+            // - A chao id
             // - A textual name of a chao *in your own system*
-            // - a textual display name of a chao *in your own system*
+            // - a textual name of a chao *in another system*
 
             // First, if we have a garden, try finding by chao name in garden
             if (ctx.Member != null && ctx.Garden != null && await ctx.Repository.GetChaoByName(ctx.Garden.Id, input) is Core.Chao chaoByName)

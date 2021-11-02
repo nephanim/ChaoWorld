@@ -35,7 +35,7 @@ namespace ChaoWorld.Bot
         public Task ExecuteCommand(Context ctx)
         {
             if (ctx.Match("garden", "g"))
-                return HandleSystemCommand(ctx);
+                return HandleGardenCommand(ctx);
             if (ctx.Match("chao", "c"))
                 return HandleChaoCommand(ctx);
             if (ctx.Match("race", "r"))
@@ -58,7 +58,7 @@ namespace ChaoWorld.Bot
                 $"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
         }
 
-        private async Task HandleSystemCommand(Context ctx)
+        private async Task HandleGardenCommand(Context ctx)
         {
             // If we have no parameters, default to self-target
             if (!ctx.HasNext())
@@ -74,12 +74,12 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "gardens", GardenCommands);
             else
-                await HandleSystemCommandTargeted(ctx);
+                await HandleGardenCommandTargeted(ctx);
         }
 
-        private async Task HandleSystemCommandTargeted(Context ctx)
+        private async Task HandleGardenCommandTargeted(Context ctx)
         {
-            // Commands that have a system target (eg. !system <system> fronthistory)
+            // Commands that have a garden target (eg. !garden <id>)
             var target = await ctx.MatchSystem();
             if (target == null)
             {

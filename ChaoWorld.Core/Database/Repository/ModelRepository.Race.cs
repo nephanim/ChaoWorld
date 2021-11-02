@@ -181,7 +181,7 @@ namespace ChaoWorld.Core
         public async Task<int> GetTotalTimeForSegments(long raceInstanceId, long chaoId)
         {
             return await _db.Execute(conn => conn.QuerySingleAsync<int>($@"
-                select coalesce(sum(totaltimeseconds), 0)
+                select coalesce(sum(segmenttimeseconds), 0)
                 from raceinstancechaosegments
                 where raceinstanceid = {raceInstanceId}
                 and chaoid = {chaoId}

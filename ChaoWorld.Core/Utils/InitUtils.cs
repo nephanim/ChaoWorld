@@ -18,7 +18,7 @@ namespace ChaoWorld.Core
 
         public static IConfigurationBuilder BuildConfiguration(string[] args) => new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("pluralkit.conf", true)
+            .AddJsonFile("chaoworld.conf", true)
             .AddEnvironmentVariables()
             .AddCommandLine(args);
 

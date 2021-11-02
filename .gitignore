@@ -22,3 +22,4 @@ pluralkit.*.conf
 # Generated
 logs/
 .version
+chaoworld.conf
