@@ -13,6 +13,7 @@ namespace ChaoWorld.Bot
         public static Command GardenNew = new Command("garden new", "garden new", "Creates a new garden");
         public static Command GardenList = new Command("garden list", "garden {id} list [full]", "Lists all chao in a garden");
         public static Command GardenFind = new Command("garden find", "garden {id} find [full] [search term]", "Searches a garden for chao given a search term");
+        public static Command GardenRaise = new Command("garden raise", "garden raise {chao id/name}", "Selects a chao to use by default with certain commands");
         public static Command ChaoInfo = new Command("chao", "chao {id/name}", "Looks up information about a chao using either the name or ID");
         public static Command ChaoNew = new Command("chao new", "chao new", "Creates a new chao"); //TODO: Remove this when the market is done
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
@@ -25,7 +26,7 @@ namespace ChaoWorld.Bot
         public static Command Admin = new Command("admin", "admin", "What? Nothing to see here...");
 
         public static Command[] GardenCommands = {
-            GardenInfo, GardenNew, GardenList
+            GardenInfo, GardenNew, GardenList, GardenRaise
         };
 
         public static Command[] ChaoCommands = {
@@ -71,6 +72,8 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
                 await ctx.Execute<GardenList>(GardenFind, m => m.ChaoList(ctx, ctx.Garden));
+            else if (ctx.Match("select", "active", "raise", "pick", "use", "default", "main"))
+                await ctx.Execute<Garden>(GardenRaise, m => m.ChangeActiveChao(ctx, ctx.Garden));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "gardens", GardenCommands);
             else
@@ -91,12 +94,14 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, target));
             else if (ctx.Match("find", "search", "query", "fd", "s"))
                 await ctx.Execute<GardenList>(GardenFind, m => m.ChaoList(ctx, target));
+            else if (ctx.Match("select", "active", "raise", "pick", "use", "default", "main"))
+                await ctx.Execute<Garden>(GardenRaise, m => m.ChangeActiveChao(ctx, ctx.Garden));
             else if (ctx.Match("info", "view", "show"))
                 await ctx.Execute<Garden>(GardenInfo, m => m.Query(ctx, target));
             else if (!ctx.HasNext())
                 await ctx.Execute<Garden>(GardenInfo, m => m.Query(ctx, target));
             else
-                await PrintCommandNotFoundError(ctx, GardenList, GardenInfo);
+                await PrintCommandNotFoundError(ctx, GardenList, GardenInfo, GardenRaise);
         }
 
         private async Task HandleChaoCommand(Context ctx)
@@ -142,10 +147,24 @@ namespace ChaoWorld.Bot
                 }
                 else if (ctx.Match("join")) {
                     //ctx.PopArgument();
-                    if (await ctx.MatchChao() is { } chaoTarget)
-                        await ctx.Execute<Race>(RaceJoin, m => m.EnterChaoInRace(ctx, chaoTarget, raceInstanceTarget));
+                    if (ctx.HasNext())
+                    {
+                        if (await ctx.MatchChao() is { } chaoTarget)
+                            await ctx.Execute<Race>(RaceJoin, m => m.EnterChaoInRace(ctx, chaoTarget, raceInstanceTarget));
+                        else
+                            await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
+                    }
+                    else if(ctx.Garden.ActiveChao.HasValue)
+                    {
+                        if (await ctx.Repository.GetActiveChaoForGarden(ctx.Garden.Id.Value) is { } chaoTarget)
+                            await ctx.Execute<Race>(RaceJoin, m => m.EnterChaoInRace(ctx, chaoTarget, raceInstanceTarget));
+                        else
+                            await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!race {{race id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
+                    }
                     else
-                        await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
+                    {
+                        await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!race {{race id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
+                    }
                 }
                 else
                 {

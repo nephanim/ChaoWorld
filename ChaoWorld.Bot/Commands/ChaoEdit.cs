@@ -56,6 +56,13 @@ namespace ChaoWorld.Bot
             await ctx.Reply($"{Emojis.Warn} Are you sure you want to send \"{target.Name}\" away? If so, reply to this message with the chao's ID (`{target.Id}`). __***This cannot be undone!***__");
             if (!await ctx.ConfirmWithReply(target.Id.ToString())) throw Errors.ChaoDeleteCancelled;
 
+            // If this chao is currently selected, we need to clear it as the active chao first
+            var garden = ctx.Garden;
+            if (garden.ActiveChao == target.Id.Value)
+            {
+                garden.ActiveChao = null;
+                await _repo.UpdateGarden(garden);
+            }
             await _repo.DeleteChao(target.Id);
 
             await ctx.Reply($"{Emojis.Success} {target.Name} was sent away. {target.Name} will live a happy life in the forest.");

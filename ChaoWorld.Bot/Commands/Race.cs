@@ -96,7 +96,7 @@ namespace ChaoWorld.Bot
                         raceInstance.State = RaceInstance.RaceStates.Preparing;
                         await _repo.UpdateRaceInstance(raceInstance);
 
-                        await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race will start in {race.ReadyDelayMinutes} minutes. Use `!race {raceInstance.Id} chao {{id/name}}` to participate.");
+                        await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race will start in {race.ReadyDelayMinutes} minutes. Use `!race {raceInstance.Id} join {{chao id/name}}` to participate.");
 
                         var readyDelay = TimeSpan.FromMinutes(race.ReadyDelayMinutes);
                         //Thread.Sleep(race.ReadyDelayMinutes * 60000);

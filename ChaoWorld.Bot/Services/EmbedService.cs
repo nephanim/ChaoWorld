@@ -53,12 +53,14 @@ namespace ChaoWorld.Bot
             var firstUser = garden.Id.Value == 0 ? "Professor Chao" : users.FirstOrDefault();
 
             var chaoCount = await _repo.GetGardenChaoCount(garden.Id);
+            var activeChao = await _repo.GetActiveChaoForGarden(garden.Id.Value);
 
             var eb = new EmbedBuilder()
                 .Title($"{firstUser}'s Garden")
                 .Footer(new($"Garden ID: {garden.Id} | Created on {garden.CreatedOn}"));
 
             eb.Field(new("Rings", garden.RingBalance.ToString(), true));
+            eb.Field(new("Active Chao", activeChao != null ? activeChao.Name : "(not set)"));
 
             if (chaoCount > 0)
                 eb.Field(new($"Chao ({chaoCount})", $"(see `!garden {garden.Id} list` or `!garden {garden.Id} list full`)", true));
@@ -96,39 +98,44 @@ namespace ChaoWorld.Bot
         {
             var name = race.Name;
             var difficulty = GetDifficultyString(race.Difficulty);
-
-            var desc = $"**Status**: {raceInstance.State}\r**Difficulty**: {difficulty}";
-            if (!string.IsNullOrEmpty(race.Description))
-                desc += $"\r\r{race.Description}\r";
-            if (race.SwimPercentage > 0)
-                desc += $"\r**Swimming**: {race.SwimPercentage * 100}%";
-            if (race.FlyPercentage > 0)
-                desc += $"\r**Flying**: {race.FlyPercentage * 100}%";
-            if(race.RunPercentage > 0)
-                desc += $"\r**Running**: {race.RunPercentage * 100}%";
-            if (race.PowerPercentage > 0)
-                desc += $"\r**Climbing**: {race.PowerPercentage * 100}%";
-            if (race.IntelligencePercentage > 0)
-                desc += $"\r**Puzzles**: {race.IntelligencePercentage * 100}%";
-            if (race.LuckPercentage > 0)
-                desc += $"\r**Traps**: {race.LuckPercentage * 100}%";
-
             var participants = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
-            desc += $"\r\r**Participants**: {participants} / {race.MaximumChao}";
+
+            var eb = new EmbedBuilder()
+                .Title(new(name))
+                .Description(race.Description)
+                .Footer(new(
+                    $"Instance ID: {raceInstance.Id} | Created on {raceInstance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+
+            eb.Field(new("Status", raceInstance.State.GetDescription()));
+            eb.Field(new("Difficulty", difficulty));
+            eb.Field(new("Participants", $"{participants} / {race.MaximumChao}"));
 
             if (raceInstance.WinnerChaoId.HasValue && raceInstance.TimeElapsedSeconds.HasValue)
             {
                 var timeElapsed = TimeSpan.FromSeconds(raceInstance.TimeElapsedSeconds.GetValueOrDefault(0)).ToString("c");
                 var winner = await _repo.GetChao(raceInstance.WinnerChaoId.GetValueOrDefault(0));
                 if (winner != null)
-                    desc += $"\r\r**Winner**: {winner.Name}\r**Time**: {timeElapsed}";
+                {
+                    eb.Field(new("Winner", $"{winner.Name}"));
+                    eb.Field(new("Time", timeElapsed));
+                }
             }
 
-            var eb = new EmbedBuilder()
-                .Title(new(name))
-                .Description(desc)
-                .Footer(new(
-                    $"Instance ID: {raceInstance.Id} | Created on {raceInstance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+            var composition = string.Empty;
+            if (race.SwimPercentage > 0)
+                composition += $"**Swimming**: {race.SwimPercentage * 100}%\r\n";
+            if (race.FlyPercentage > 0)
+                composition += $"**Flying**: {race.FlyPercentage * 100}%\r\n";
+            if (race.RunPercentage > 0)
+                composition += $"**Running**: {race.RunPercentage * 100}%\r\n";
+            if (race.PowerPercentage > 0)
+                composition += $"**Climbing**: {race.PowerPercentage * 100}%\r\n";
+            if (race.IntelligencePercentage > 0)
+                composition += $"**Puzzles**: {race.IntelligencePercentage * 100}%\r\n";
+            if (race.LuckPercentage > 0)
+                composition += $"**Traps**: {race.LuckPercentage * 100}%\r\n";
+            eb.Field(new("Race Composition", composition));
+
             return eb.Build();
         }
 
@@ -136,23 +143,29 @@ namespace ChaoWorld.Bot
         {
             var name = $"Race Progress: {race.Name}";
             var orderedChao = chao.OrderBy(x => x.Position);
-
-            var desc = $"{segment.Description}\r\r";
-            desc += $"Time Elapsed: {timeElapsed.ToString("c")}\r\r";
-            foreach (var c in chao)
-            {
-                var status = string.Empty;
-                if (c.Status == RaceInstanceChaoSegment.SegmentStates.Retired)
-                    status = " :x: (Retired)";
-
-                desc += $"{c.Position}. {c.ChaoName}{status}\r";
-            }
+            var desc = $"{segment.Description}";
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
                 .Description(desc)
                 .Footer(new(
                     $"Instance ID: {raceInstance.Id} | Segment: {segment.RaceIndex} | Created on {raceInstance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+
+            var elapsed = timeElapsed.ToString("c");
+            eb.Field(new("Time Elapsed", elapsed));
+
+            var roster = string.Empty;
+            foreach (var c in chao)
+            {
+                var status = string.Empty;
+                if (c.Status == RaceInstanceChaoSegment.SegmentStates.Retired)
+                    status = " :x: (Retired)";
+
+                roster += $"#{c.Position}. {c.ChaoName}{status}\r\n";
+                //eb.Field(new($"#{c.Position}", $"{c.ChaoName}{status}"));
+            }
+            eb.Field(new("Chao", roster));
+
             return eb.Build();
         }
 

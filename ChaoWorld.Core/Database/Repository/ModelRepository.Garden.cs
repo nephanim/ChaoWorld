@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using SqlKata;
+using Dapper;
 
 namespace ChaoWorld.Core
 {
@@ -27,10 +28,16 @@ namespace ChaoWorld.Core
             return _db.Query<ulong>(query);
         }
 
-        public IAsyncEnumerable<Chao> GetGardenChao(GardenId garden)
+        public async Task<Chao> GetActiveChaoForGarden(long id)
         {
-            var query = new Query("chao").Where("gardenid", garden);
-            return _db.QueryStream<Chao>(query);
+            return await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<Chao>($@"
+                select chao.*
+                from chao
+                join gardens
+                on chao.gardenid = gardens.id
+                where gardens.id = {id}
+                and chao.id = gardens.activechao;
+            "));
         }
 
         public Task<int> GetGardenChaoCount(GardenId garden)
@@ -59,7 +66,8 @@ namespace ChaoWorld.Core
             var query = new Query("gardens").Where("id", garden.Id.Value).AsUpdate(new
             {
                 ringbalance = garden.RingBalance,
-                nextcollecton = garden.NextCollectOn
+                nextcollecton = garden.NextCollectOn,
+                activechao = garden.ActiveChao
             });
             var updatedGarden = await _db.QueryFirst<Garden>(query, extraSql: "returning *");
             return updatedGarden;

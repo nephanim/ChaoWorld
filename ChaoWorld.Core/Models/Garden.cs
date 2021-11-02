@@ -40,7 +40,7 @@ namespace ChaoWorld.Core
 
         public long RingBalance { get; set; }
         public Instant CreatedOn { get; set; }
-
         public Instant NextCollectOn { get; set; }
+        public long? ActiveChao { get; set; }
     }
 }
