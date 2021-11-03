@@ -46,7 +46,7 @@ namespace ChaoWorld.Core
 
             StringBuilder query;
             query = new StringBuilder(@$"
-                select r.name, c.name as winnername, i.*
+                select r.name, r.difficulty, c.name as winnername, i.*
                 from raceinstances i
                 join races r
                 on i.raceid = r.id

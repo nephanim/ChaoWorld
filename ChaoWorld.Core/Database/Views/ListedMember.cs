@@ -13,5 +13,6 @@ namespace ChaoWorld.Core
     {
         public string Name { get; set; }
         public string WinnerName { get; set; }
+        public int Difficulty { get; set; }
     }
 }

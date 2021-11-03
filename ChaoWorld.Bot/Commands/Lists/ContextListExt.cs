@@ -122,9 +122,10 @@ namespace ChaoWorld.Bot
             // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
             // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
             var races = (await db.Execute(conn => conn.QueryRaceList(includeCompletedRaces, includeIncompleteRaces, search)))
+                .OrderBy(x => x.State).ThenByDescending(x => x.CompletedOn).ThenBy(x => x.Difficulty).ThenBy(x => x.Name)
                 .ToList();
 
-            var itemsPerPage = 25; //Maybe do a long list in the future too
+            var itemsPerPage = 20; //Maybe do a long list in the future too
             await ctx.Paginate(races.ToAsyncEnumerable(), races.Count, itemsPerPage, title, null, Renderer);
 
             // Base renderer, dispatches based on type
@@ -144,11 +145,9 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Id}`] **{m.Name}** ({m.State.GetDescription()})";
-                    if (m.WinnerChaoId.HasValue)
-                        ret += $" - Winner: {m.WinnerName}";
-                    if (m.CompletedOn.HasValue)
-                        ret += $" (Completed <t:{m.CompletedOn.Value.ToUnixTimeSeconds()}>)";
+                    var ret = $"[`{m.Id}`] **{m.Name}** {Core.Race.GetDifficultyString(m.Difficulty)} ({m.State.GetDescription()})";
+                    if (m.WinnerChaoId.HasValue && m.CompletedOn.HasValue)
+                        ret += $" • Winner: {m.WinnerName} • <t:{m.CompletedOn.Value.ToUnixTimeSeconds()}>";
                     return ret;
                 }));
             }

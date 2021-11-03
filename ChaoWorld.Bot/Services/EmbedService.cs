@@ -97,7 +97,7 @@ namespace ChaoWorld.Bot
         public async Task<Embed> CreateRaceEmbed(Core.Race race, RaceInstance raceInstance)
         {
             var name = race.Name;
-            var difficulty = GetDifficultyString(race.Difficulty);
+            var difficulty = Core.Race.GetDifficultyString(race.Difficulty);
             var participants = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
 
             var eb = new EmbedBuilder()
@@ -167,44 +167,6 @@ namespace ChaoWorld.Bot
             eb.Field(new("Chao", roster));
 
             return eb.Build();
-        }
-
-        private string GetDifficultyString(int difficulty)
-        {
-            switch (difficulty)
-            {
-                default:
-                case 1:
-                    return "★";
-                case 2:
-                    return "★★";
-                case 3:
-                    return "★★★";
-                case 4:
-                    return "★★★★";
-                case 5:
-                    return "★★★★★";
-                case 6:
-                    return "☠";
-                case 7:
-                    return "☠☠";
-                case 8:
-                    return "☠☠☠";
-                case 9:
-                    return "☠☠☠☠";
-                case 10:
-                    return "☠☠☠☠☠";
-                case 11:
-                    return "🔥";
-                case 12:
-                    return "🔥🔥";
-                case 13:
-                    return "🔥🔥🔥";
-                case 14:
-                    return "🔥🔥🔥🔥";
-                case 15:
-                    return "🔥🔥🔥🔥🔥";
-            }
         }
     }
 }
