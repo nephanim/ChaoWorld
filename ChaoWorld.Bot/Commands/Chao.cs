@@ -49,5 +49,25 @@ namespace ChaoWorld.Bot
             var system = await _repo.GetGarden(target.GardenId.Value);
             await ctx.Reply(embed: await _embeds.CreateChaoEmbed(system, target));
         }
+
+        public async Task PetChao(Context ctx, Core.Chao target)
+        {
+            await ctx.Reply($"{Emojis.Heart} {target.Name} is soothed and smiling.");
+        }
+
+        public async Task RockChao(Context ctx, Core.Chao target)
+        {
+            await ctx.Reply($"{Emojis.Heart} {target.Name} relaxes and coos in your arms.");
+        }
+
+        public async Task CuddleChao(Context ctx, Core.Chao target)
+        {
+            await ctx.Reply($"{Emojis.Heart} {target.Name} falls asleep in your arms.");
+        }
+
+        /*private async Task<Affection> GiveChaoAffection(Context ctx, Core.Chao target)
+        {
+
+        }*/
     }
 }

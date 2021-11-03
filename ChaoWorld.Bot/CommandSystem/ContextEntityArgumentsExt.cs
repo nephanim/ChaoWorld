@@ -139,6 +139,82 @@ namespace ChaoWorld.Bot
             return raceInstance;
         }
 
+        public static async Task<Core.Item> PeekItem(this Context ctx)
+        {
+            var input = ctx.PeekArgument();
+            if (!string.IsNullOrEmpty(input))
+                input = input.Replace("\"", string.Empty);
+
+            // Items might be referenced by their ID or by their name (i.e. item type)
+            // e.g. "!item 123" or "!item 'Red Egg'"
+
+            // Try finding the item by its ID first (most likely usage)
+            long.TryParse(input.Replace("#", string.Empty), out long id);
+            if (await ctx.Repository.GetItem(id) is Core.Item itemById)
+                return itemById;
+
+            // Try looking it up by the name / type instead
+            ItemBase.ItemTypes type;
+            Enum.TryParse(input, out type);
+            if (await ctx.Repository.GetItemByType(ctx.Garden.Id.Value, (int)type) is Core.Item itemByType)
+                return itemByType;
+
+            // We didn't find anything, so we return null.
+            return null;
+        }
+
+        public static async Task<Core.Item> MatchItem(this Context ctx)
+        {
+            // First, peek an item
+            var item = await ctx.PeekItem();
+
+            // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
+            if (item != null) ctx.PopArgument();
+
+            // Finally, we return the item
+            return item;
+        }
+
+        public static async Task<MarketItem> PeekMarketItem(this Context ctx)
+        {
+            var input = ctx.PeekArgument();
+            if (!string.IsNullOrEmpty(input))
+                input = input.Replace("\"", string.Empty).Replace(" ", string.Empty);
+
+            // Market items don't have a global ID, so they'll be referenced by their item type (which could be the type ID or name)
+            // e.g. "!item 2" or "!item 'Red Egg'"
+
+            // Try looking the item up by its type
+            ItemBase.ItemTypes type;
+            if (Enum.TryParse(input, out type))
+            {
+                var marketItem = await ctx.Repository.GetMarketItemByType(type);
+                if (marketItem != null)
+                    return marketItem;
+                else
+                    return new MarketItem
+                    {
+                        Quantity = 0,
+                        ItemType = type
+                    };
+            }
+
+            // We didn't find anything, so we return null.
+            return null;
+        }
+
+        public static async Task<MarketItem> MatchMarketItem(this Context ctx)
+        {
+            // First, peek an item
+            var item = await ctx.PeekMarketItem();
+
+            // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
+            if (item != null) ctx.PopArgument();
+
+            // Finally, we return the item
+            return item;
+        }
+
         public static string CreateChaoNotFoundError(this Context ctx, string input)
         {
             if (ctx.Member != null)

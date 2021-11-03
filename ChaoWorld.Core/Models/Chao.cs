@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 using Newtonsoft.Json;
@@ -290,6 +291,44 @@ namespace ChaoWorld.Core
                 default:
                     return ":regional_indicator_e:";
             }
+        }
+    }
+
+    public class Affection
+    {
+        public long ChaoId { get; set; }
+        public long AccountUid { get; set; }
+        public int FriendshipValue { get; set; }
+
+        public AffectionLevel GetAffectionLevel
+        {
+            get
+            {
+                if (FriendshipValue >= 1000)
+                    return AffectionLevel.Love;
+                if (FriendshipValue >= 500)
+                    return AffectionLevel.Attached;
+                if (FriendshipValue >= 250)
+                    return AffectionLevel.Friendly;
+                if (FriendshipValue >= 0)
+                    return AffectionLevel.Indifferent;
+                if (FriendshipValue <= -250)
+                    return AffectionLevel.Unfriendly;
+                if (FriendshipValue <= -500)
+                    return AffectionLevel.Avoidant;
+                if (FriendshipValue <= -1000)
+                    return AffectionLevel.Hate;
+                else
+                    return AffectionLevel.Indifferent;
+            }
+        }
+
+        public enum AffectionLevel
+        {
+            Hate = -3,
+            Avoidant = -2,
+            Unfriendly = -1,
+            Indifferent, Friendly, Attached, Love
         }
     }
 }

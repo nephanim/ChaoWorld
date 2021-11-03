@@ -15,6 +15,7 @@ namespace ChaoWorld.ScheduledTasks
     public class TaskHandler
     {
         private Timer _periodicTask;
+        private Timer _hourlyTask;
 
         private readonly ILogger _logger;
         private readonly IDatabase _db;
@@ -31,14 +32,21 @@ namespace ChaoWorld.ScheduledTasks
         {
             _logger.Information("Starting scheduled task runner...");
             var timeNow = SystemClock.Instance.GetCurrentInstant();
+
             var timeTillNextWholeMinute = TimeSpan.FromMilliseconds(60000 - timeNow.ToUnixTimeMilliseconds() % 60000 + 250);
             _periodicTask = new Timer(_ =>
             {
-                var __ = UpdatePeriodic();
+                var __ = UpdatePerMinute();
             }, null, timeTillNextWholeMinute, TimeSpan.FromMinutes(1));
+
+            var timeTillNextWholeHour = TimeSpan.FromSeconds(3600 - timeNow.ToUnixTimeSeconds() % 3600);
+            _hourlyTask = new Timer(_ =>
+            {
+                var __ = UpdateHourly();
+            }, null, timeTillNextWholeHour, TimeSpan.FromHours(1));
         }
 
-        private async Task UpdatePeriodic()
+        private async Task UpdatePerMinute()
         {
             _logger.Information("Running per-minute scheduled tasks.");
             var stopwatch = new Stopwatch();
@@ -47,11 +55,29 @@ namespace ChaoWorld.ScheduledTasks
             _logger.Information("Updating database stats...");
             await _repo.UpdateStats();
 
-            _logger.Information("Updating race information...");
+            _logger.Information("Updating available race instances...");
             await _repo.InstantiateRaces();
 
             stopwatch.Stop();
-            _logger.Information("Ran scheduled tasks in {Time}", stopwatch.ElapsedDuration());
+            _logger.Information("Ran per-minute scheduled tasks in {Time}", stopwatch.ElapsedDuration());
+        }
+
+        private async Task UpdateHourly()
+        {
+            _logger.Information("Running hourly scheduled tasks.");
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            _logger.Information("Updating Black Market...");
+            await _repo.ClearMarketListings();
+            var listings = BlackMarket.MakeListings();
+            foreach (var item in listings)
+            {
+                await _repo.AddMarketItem(item);
+            }
+
+            stopwatch.Stop();
+            _logger.Information("Ran hourly scheduled tasks in {Time}", stopwatch.ElapsedDuration());
         }
 
         // we don't have access to ChaoWorld.Bot here, so this needs to be vendored

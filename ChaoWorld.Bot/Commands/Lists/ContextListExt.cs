@@ -55,7 +55,7 @@ namespace ChaoWorld.Bot
                 .SortByChaoListOptions(opts)
                 .ToList();
 
-            var itemsPerPage = opts.Type == ListType.Short ? 25 : 5;
+            var itemsPerPage = opts.Type == ListType.Short ? 20 : 5;
             await ctx.Paginate(chao.ToAsyncEnumerable(), chao.Count, itemsPerPage, embedTitle, color, Renderer);
 
             // Base renderer, dispatches based on type
@@ -149,6 +149,73 @@ namespace ChaoWorld.Bot
                         ret += $" - Winner: {m.WinnerName}";
                     if (m.CompletedOn.HasValue)
                         ret += $" (Completed <t:{m.CompletedOn.Value.ToUnixTimeSeconds()}>)";
+                    return ret;
+                }));
+            }
+        }
+
+        public static async Task RenderInventory(this Context ctx, IDatabase db, Core.Item.ItemCategories[] includeItemCategories, Core.Item.ItemTypes[] includeItemTypes, string title)
+        {
+            // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
+            // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            var items = (await db.Execute(conn => conn.QueryItemList(ctx.Garden.Id.Value, includeItemCategories, includeItemTypes)))
+                .OrderBy(x => x.ItemType.GetDescription())
+                .ToList();
+
+            var itemsPerPage = 25; //Maybe do a long list in the future too
+            await ctx.Paginate(items.ToAsyncEnumerable(), items.Count, itemsPerPage, title, null, Renderer);
+
+            // Base renderer, dispatches based on type
+            Task Renderer(EmbedBuilder eb, IEnumerable<Core.Item> page)
+            {
+                // Add a global footer with the filter/sort string + result count
+                eb.Footer(new($"{"result".ToQuantity(items.Count)}"));
+
+                // Then call the specific renderers
+                ShortRenderer(eb, page);
+                return Task.CompletedTask;
+            }
+
+            void ShortRenderer(EmbedBuilder eb, IEnumerable<Core.Item> page)
+            {
+                // We may end up over the description character limit
+                // so run it through a helper that "makes it work" :)
+                eb.WithSimpleLineContent(page.Select(m =>
+                {
+                    var ret = $"[`{m.Id}`] {m.ItemType.GetDescription()} x{m.Quantity}";
+                    return ret;
+                }));
+            }
+        }
+
+        public static async Task RenderMarketList(this Context ctx, IDatabase db)
+        {
+            // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
+            // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            var items = (await db.Execute(conn => conn.QueryMarketList())).ToList();
+
+            var itemsPerPage = 25; //Maybe do a long list in the future too
+            await ctx.Paginate(items.ToAsyncEnumerable(), items.Count, itemsPerPage, "Black Market", null, Renderer);
+
+            // Base renderer, dispatches based on type
+            Task Renderer(EmbedBuilder eb, IEnumerable<MarketItem> page)
+            {
+                // Add a global footer with the result count and time until refresh
+                var minutesUntilRefresh = (int)System.Math.Ceiling(60 - System.DateTime.Now.TimeOfDay.TotalMinutes % 60);
+                eb.Footer(new($"{"result".ToQuantity(items.Count)} - Refreshes in {minutesUntilRefresh} minute(s)"));
+
+                // Then call the specific renderers
+                ShortRenderer(eb, page);
+                return Task.CompletedTask;
+            }
+
+            void ShortRenderer(EmbedBuilder eb, IEnumerable<MarketItem> page)
+            {
+                // We may end up over the description character limit
+                // so run it through a helper that "makes it work" :)
+                eb.WithSimpleLineContent(page.Select(m =>
+                {
+                    var ret = $"[`{(int)m.ItemType}`] {m.ItemType.GetDescription()} x{m.Quantity} ({string.Format("{0:n0}", m.Price)} rings ea.)";
                     return ret;
                 }));
             }

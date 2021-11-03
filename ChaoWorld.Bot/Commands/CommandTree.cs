@@ -19,8 +19,14 @@ namespace ChaoWorld.Bot
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
         public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order");
-        public static Command RaceInfo = new Command("race {id/name}", "race {id/name}", "Looks up information about a race using either the name or ID");
+        public static Command RaceInfo = new Command("race", "race {id/name}", "Looks up information about a race using either the name or ID");
         public static Command RaceJoin = new Command("race join", "race {race id/name} join {chao id/name}", "Joins a race with the specified chao");
+        public static Command ItemList = new Command("item list", "item list", "Lists all items in your inventory");
+        public static Command ItemUse = new Command("item use", "item {item id/name} use [chao id/name]", "Uses the specified item in your inventory (chao target is only used for certain items)");
+        //public static Command ItemDiscard = new Command("item discard", "item {item id/name} discard", "Discards the specified item from your inventory");
+        public static Command MarketList = new Command("market list", "market list", "Lists all items for sale at the Black Market");
+        public static Command MarketBuy = new Command("market buy", "market buy {id/name} [qty]", "Purchases the specified item from the Black Market (quantity of 1 is assumed if not provided)");
+        //public static Command MarketSell = new Command("market sell", "market {id/name} sell [qty]", "Sells the specified item from your inventory on the Black Market (quantity of 1 is assumed if not provided)");
         public static Command Collect = new Command("collect", "collect", "Can be used every 24 hours to collect rings for use in the market");
         public static Command Help = new Command("help", "help", "Shows help information about Chao World");
         public static Command Admin = new Command("admin", "admin", "What? Nothing to see here...");
@@ -33,15 +39,34 @@ namespace ChaoWorld.Bot
             ChaoInfo, ChaoNew, ChaoRename, ChaoGoodbye
         };
 
+        public static Command[] RaceCommands =
+        {
+            RaceInstanceList, RaceInfo, RaceJoin
+        };
+
+        public static Command[] ItemCommands =
+        {
+            ItemList, ItemUse
+        };
+
+        public static Command[] MarketCommands =
+        {
+            MarketList, MarketBuy //, MarketSell
+        };
+
         public Task ExecuteCommand(Context ctx)
         {
-            if (ctx.Match("garden", "g"))
+            if (ctx.Match("garden", "g", "gardens"))
                 return HandleGardenCommand(ctx);
             if (ctx.Match("chao", "c"))
                 return HandleChaoCommand(ctx);
-            if (ctx.Match("race", "r"))
+            if (ctx.Match("race", "r", "races"))
                 return HandleRaceCommand(ctx);
-            if (ctx.Match("commands", "cmd"))
+            if (ctx.Match("item", "i", "items"))
+                return HandleItemCommand(ctx);
+            if (ctx.Match("market", "m"))
+                return HandleMarketCommand(ctx);
+            if (ctx.Match("commands", "cmd", "command"))
                 return CommandHelpRoot(ctx);
             if (ctx.Match("list", "find", "chao", "search", "query", "l", "f", "fd"))
                 return ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
@@ -55,8 +80,7 @@ namespace ChaoWorld.Bot
                 return ctx.Execute<Misc>(null, m => m.Stats(ctx));
 
             // remove compiler warning
-            return ctx.Reply(
-                $"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
+            return ctx.Reply($"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
         }
 
         private async Task HandleGardenCommand(Context ctx)
@@ -65,7 +89,7 @@ namespace ChaoWorld.Bot
             if (!ctx.HasNext())
                 await ctx.Execute<Garden>(GardenInfo, m => m.Query(ctx, ctx.Garden));
 
-            // First, we match own-system-only commands (ie. no target system parameter)
+            // First, we match own-garden-only commands (ie. no target garden parameter)
             else if (ctx.Match("new", "create", "make", "add", "register", "init", "n"))
                 await ctx.Execute<Garden>(GardenNew, m => m.New(ctx));
             else if (ctx.Match("list", "l", "chao"))
@@ -77,6 +101,7 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "gardens", GardenCommands);
             else
+                // We've exhausted those options - try commands with a target garden parameter
                 await HandleGardenCommandTargeted(ctx);
         }
 
@@ -106,9 +131,7 @@ namespace ChaoWorld.Bot
 
         private async Task HandleChaoCommand(Context ctx)
         {
-            /*if (ctx.Match("new", "n", "add", "create", "register"))
-                await ctx.Execute<Chao>(ChaoNew, m => m.NewChao(ctx));*/
-            if (ctx.Match("list"))
+            if (ctx.Match("list") || !ctx.HasNext())
                 await ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "chao", ChaoCommands);
@@ -135,46 +158,69 @@ namespace ChaoWorld.Bot
 
         private async Task HandleRaceCommand(Context ctx)
         {
-            if (ctx.Match("list", "l"))
+            if (ctx.Match("list", "l") || !ctx.HasNext())
                 await ctx.Execute<RaceList>(RaceInstanceList, m => m.RaceInstanceList(ctx));
-            //else if (ctx.Match("commands", "help))
-            //  await PrintCommandList(ctx, "races", RaceCommands);
+            else if (ctx.Match("commands", "help"))
+                await PrintCommandList(ctx, "races", RaceCommands);
             else if (await ctx.MatchRaceInstance() is { } raceInstanceTarget)
-            {
                 if (ctx.Match("info"))
-                {
                     await ctx.Execute<Race>(RaceInfo, m => m.ViewRaceInstance(ctx, raceInstanceTarget));
-                }
-                else if (ctx.Match("join")) {
-                    //ctx.PopArgument();
+                else if (ctx.Match("join"))
+                {
                     if (ctx.HasNext())
-                    {
                         if (await ctx.MatchChao() is { } chaoTarget)
                             await ctx.Execute<Race>(RaceJoin, m => m.EnterChaoInRace(ctx, chaoTarget, raceInstanceTarget));
                         else
                             await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
-                    }
-                    else if(ctx.Garden.ActiveChao.HasValue)
-                    {
+                    else if (ctx.Garden.ActiveChao.HasValue)
                         if (await ctx.Repository.GetActiveChaoForGarden(ctx.Garden.Id.Value) is { } chaoTarget)
                             await ctx.Execute<Race>(RaceJoin, m => m.EnterChaoInRace(ctx, chaoTarget, raceInstanceTarget));
                         else
                             await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!race {{race id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
-                    }
                     else
-                    {
                         await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!race {{race id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
-                    }
                 }
                 else
-                {
                     await ctx.Execute<Race>(RaceInfo, m => m.ViewRaceInstance(ctx, raceInstanceTarget));
-                }
-            }
-            //else if (!ctx.HasNext())
-                //await PrintCommandExpectedError(ctx, RaceCommands);
+            else if (!ctx.HasNext())
+                await ctx.Execute<RaceList>(RaceInstanceList, m => m.RaceInstanceList(ctx));
             else
-                await PrintCommandNotFoundError(ctx, RaceInstanceList, RaceInfo, RaceJoin);
+                await PrintCommandNotFoundError(ctx, RaceCommands);
+        }
+
+        private async Task HandleItemCommand(Context ctx)
+        {
+            if (ctx.Match("list", "l") || !ctx.HasNext())
+                await ctx.Execute<ItemList>(ItemList, m => m.InventoryItemList(ctx));
+            else if (ctx.Match("commands", "help", "h"))
+                await PrintCommandList(ctx, "items", ItemCommands);
+            else if (await ctx.MatchItem() is { } itemTarget)
+                if (ctx.Match("use", "u"))
+                    await ctx.Execute<Item>(ItemUse, m => m.UseItem(ctx, itemTarget));
+                else
+                    await PrintCommandNotFoundError(ctx, ItemUse);
+            else
+                await PrintCommandNotFoundError(ctx, ItemCommands);
+        }
+
+        private async Task HandleMarketCommand(Context ctx)
+        {
+            if (ctx.Match("list", "l") || !ctx.HasNext())
+                await ctx.Execute<ItemList>(MarketList, m => m.MarketItemList(ctx));
+            else if (ctx.Match("commands", "help", "h"))
+                await PrintCommandList(ctx, "market", MarketCommands);
+            else if (await ctx.MatchMarketItem() is { } marketTargetBuy)
+                if (ctx.Match("buy", "b"))
+                    await ctx.Execute<Item>(MarketBuy, m => m.BuyItem(ctx, marketTargetBuy));
+                else
+                    await PrintCommandNotFoundError(ctx, MarketBuy);
+            else if (ctx.Match("buy", "b"))
+                if (await ctx.MatchMarketItem() is { } marketBuyTarget)
+                    await ctx.Execute<Item>(MarketBuy, m => m.BuyItem(ctx, marketBuyTarget));
+                else
+                    await PrintCommandNotFoundError(ctx, MarketBuy);
+            else
+                await PrintCommandNotFoundError(ctx, MarketCommands);
         }
 
         private async Task CommandHelpRoot(Context ctx)
@@ -199,7 +245,20 @@ namespace ChaoWorld.Bot
                 case "c":
                     await PrintCommandList(ctx, "chao", ChaoCommands);
                     break;
-                // TODO: Add help for race, tournament, market, item commands
+                case "race":
+                case "r":
+                    await PrintCommandList(ctx, "races", RaceCommands);
+                    break;
+                case "item":
+                case "items":
+                case "i":
+                    await PrintCommandList(ctx, "items", ItemCommands);
+                    break;
+                case "market":
+                case "m":
+                    await PrintCommandList(ctx, "market", MarketCommands);
+                    break;
+                // TODO: Add help for tournament and misc commands
                 default:
                     await ctx.Reply("For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
                     break;

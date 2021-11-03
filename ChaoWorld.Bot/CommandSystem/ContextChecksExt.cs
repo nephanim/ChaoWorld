@@ -23,6 +23,13 @@ namespace ChaoWorld.Bot
             return ctx;
         }
 
+        public static Context CheckOwnItem(this Context ctx, Core.Item item)
+        {
+            if (item.GardenId != ctx.Garden?.Id.Value)
+                throw Errors.NotOwnItemError;
+            return ctx;
+        }
+
         public static Context CheckGarden(this Context ctx)
         {
             if (ctx.Garden == null)
