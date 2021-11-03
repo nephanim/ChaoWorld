@@ -76,6 +76,9 @@ namespace ChaoWorld.Core
              await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update chao
                 set
+                    alignmentvalue = {chao.AlignmentValue},
+                    flyswimaffinity = {chao.FlySwimAffinity},
+                    runpoweraffinity = {chao.RunPowerAffinity},
                     swimgrade = {(int)chao.SwimGrade},
                     swimlevel = {chao.SwimLevel},
                     swimvalue = {chao.SwimValue},

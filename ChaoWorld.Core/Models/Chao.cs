@@ -50,12 +50,12 @@ namespace ChaoWorld.Core
         public int Reincarnations { get; set; }
         public EvolutionStates EvolutionState { get; private set; }
         public Alignments Alignment { get; private set; }
-        public int AlignmentValue { get; private set; }
+        public int AlignmentValue { get; set; }
         public int EvolutionProgress { get; private set; }
         public AbilityTypes? FirstEvolutionType { get; private set; }
         public AbilityTypes? SecondEvolutionType { get; private set; }
-        public int FlySwimAffinity { get; private set; }
-        public int RunPowerAffinity { get; private set; }
+        public int FlySwimAffinity { get; set; }
+        public int RunPowerAffinity { get; set; }
         public StatGrades SwimGrade { get; set; }
         public int SwimLevel { get; private set; }
         public int SwimProgress { get; private set; }

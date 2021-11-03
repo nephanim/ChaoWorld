@@ -143,7 +143,7 @@ namespace ChaoWorld.Bot
         {
             var input = ctx.PeekArgument();
             if (!string.IsNullOrEmpty(input))
-                input = input.Replace("\"", string.Empty);
+                input = input.Replace("\"", string.Empty).Replace(" ", string.Empty);
 
             // Items might be referenced by their ID or by their name (i.e. item type)
             // e.g. "!item 123" or "!item 'Red Egg'"

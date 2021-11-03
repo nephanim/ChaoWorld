@@ -72,6 +72,14 @@ namespace ChaoWorld.Bot
                 var statIncreaseAmount = ItemBase.GetPrice(fruit.ItemType) / 10;
                 switch (fruit.ItemType)
                 {
+                    case ItemBase.ItemTypes.HeroFruit:
+                        chao.AlignmentValue += 10;
+                        effect = " Your chao's alignment shifted slightly.";
+                        break;
+                    case ItemBase.ItemTypes.DarkFruit:
+                        chao.AlignmentValue -= 10;
+                        effect = " Your chao's alignment shifted slightly.";
+                        break;
                     case ItemBase.ItemTypes.RoundFruit:
                     case ItemBase.ItemTypes.SquareFruit:
                     case ItemBase.ItemTypes.TriangleFruit:
@@ -106,18 +114,22 @@ namespace ChaoWorld.Bot
                     case ItemBase.ItemTypes.SwimFruit:
                         chao.RaiseSwim(statIncreaseAmount);
                         effect = " Your chao's swimming improved.";
+                        chao.FlySwimAffinity += 10;
                         break;
                     case ItemBase.ItemTypes.FlyFruit:
                         chao.RaiseFly(statIncreaseAmount);
                         effect = " Your chao's flying improved.";
+                        chao.FlySwimAffinity -= 10;
                         break;
                     case ItemBase.ItemTypes.RunFruit:
                         chao.RaiseRun(statIncreaseAmount);
                         effect = " Your chao's running improved.";
+                        chao.RunPowerAffinity -= 10;
                         break;
                     case ItemBase.ItemTypes.PowerFruit:
                         chao.RaisePower(statIncreaseAmount);
                         effect = " Your chao's climbing improved.";
+                        chao.RunPowerAffinity += 10;
                         break;
                     case ItemBase.ItemTypes.SmartFruit:
                         chao.RaiseIntelligence(statIncreaseAmount);
