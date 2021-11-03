@@ -42,12 +42,12 @@ namespace ChaoWorld.Core
         public GardenId GardenId { get; private set; }
         public string Name { get; private set; }
         public Instant CreatedOn { get; private set; }
-        public Colors PrimaryColor { get; private set; }
-        public Colors? SecondaryColor { get; private set; }
-        public bool IsShiny { get; private set; }
-        public bool IsTwoTone { get; private set; }
-        public int Age { get; private set; }
-        public int Reincarnations { get; private set; }
+        public Colors PrimaryColor { get; set; }
+        public Colors? SecondaryColor { get; set; }
+        public bool IsShiny { get; set; }
+        public bool IsTwoTone { get; set; }
+        public int Age { get; set; }
+        public int Reincarnations { get; set; }
         public EvolutionStates EvolutionState { get; private set; }
         public Alignments Alignment { get; private set; }
         public int AlignmentValue { get; private set; }
@@ -56,31 +56,31 @@ namespace ChaoWorld.Core
         public AbilityTypes? SecondEvolutionType { get; private set; }
         public int FlySwimAffinity { get; private set; }
         public int RunPowerAffinity { get; private set; }
-        public StatGrades SwimGrade { get; private set; }
+        public StatGrades SwimGrade { get; set; }
         public int SwimLevel { get; private set; }
         public int SwimProgress { get; private set; }
         public int SwimValue { get; private set; }
-        public StatGrades FlyGrade { get; private set; }
+        public StatGrades FlyGrade { get; set; }
         public int FlyLevel { get; private set; }
         public int FlyProgress { get; private set; }
         public int FlyValue { get; private set; }
-        public StatGrades RunGrade { get; private set; }
+        public StatGrades RunGrade { get; set; }
         public int RunLevel { get; private set; }
         public int RunProgress { get; private set; }
         public int RunValue { get; private set; }
-        public StatGrades PowerGrade { get; private set; }
+        public StatGrades PowerGrade { get; set; }
         public int PowerLevel { get; private set; }
         public int PowerProgress { get; private set; }
         public int PowerValue { get; private set; }
-        public StatGrades StaminaGrade { get; private set; }
+        public StatGrades StaminaGrade { get; set; }
         public int StaminaLevel { get; private set; }
         public int StaminaProgress { get; private set; }
         public int StaminaValue { get; private set; }
-        public StatGrades IntelligenceGrade { get; private set; }
+        public StatGrades IntelligenceGrade { get; set; }
         public int IntelligenceLevel { get; private set; }
         public int IntelligenceProgress { get; private set; }
         public int IntelligenceValue { get; private set; }
-        public StatGrades LuckGrade { get; private set; }
+        public StatGrades LuckGrade { get; set; }
         public int LuckLevel { get; private set; }
         public int LuckProgress { get; private set; }
         public int LuckValue { get; private set; }
@@ -111,7 +111,9 @@ namespace ChaoWorld.Core
         public enum Colors
         {
             Normal, Black, Blue, Brown, Green, Grey, LimeGreen, Orange, Pink, Purple, Red, SkyBlue, White, Yellow,
-            Amethyst, Aquamarine, Emerald, Garnet, Gold, Onyx, Peridot, Ruby, Sapphire, Silver, Topaz
+            Amethyst, Aquamarine, Emerald, Garnet, Gold, Onyx, Peridot, Ruby, Sapphire, Silver, Topaz,
+            Bronze, Moon, Pearl, Glass, Metal,
+            Invisible
         }
 
         public enum EvolutionStates
@@ -137,9 +139,14 @@ namespace ChaoWorld.Core
             E, D, C, B, A, S, X
         }
 
-        public void Initialize()
+        public void Initialize(ItemBase.ItemTypes egg = ItemBase.ItemTypes.NormalEgg)
         {
             Name = "Unnamed";
+            PrimaryColor = ItemBase.GetPrimaryColor(egg);
+            SecondaryColor = ItemBase.GetSecondaryColor(egg);
+            IsShiny = ItemBase.GetShininess(egg);
+            IsTwoTone = ItemBase.GetTwoToneness(egg);
+
             SwimGrade = MiscUtils.GenerateStatGrade();
             FlyGrade = MiscUtils.GenerateStatGrade();
             RunGrade = MiscUtils.GenerateStatGrade();

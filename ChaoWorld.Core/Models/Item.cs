@@ -14,7 +14,9 @@ namespace ChaoWorld.Core
 {
     public class MarketItem : ItemBase
     {
-        public int Price { get; set; }
+        // TODO: Maybe just do this via the attributes, so we can remove the class altogether and simplify the DB...
+        //  Or on the other hand, we're doing a lot of nasty shit with attributes already, so maybe it should all go in the DB. 
+        public int Price { get; set; } 
     }
 
     public class Item : ItemBase
@@ -67,193 +69,206 @@ namespace ChaoWorld.Core
         public enum ItemTypes
         {
             // Common Eggs
-            [Description("White Egg")] [Price(4000)] WhiteEgg,
-            [Description("Red Egg")] [Price(5000)] RedEgg,
-            [Description("Yellow Egg")] [Price(5000)] YellowEgg,
-            [Description("Blue Egg")] [Price(5000)] BlueEgg,
-            [Description("Sky Blue Egg")] [Price(5000)] SkyBlueEgg,
-            [Description("Pink Egg")] [Price(6000)] PinkEgg,
-            [Description("Orange Egg")] [Price(6000)] OrangeEgg,
-            [Description("Brown Egg")] [Price(8000)] BrownEgg,
-            [Description("Purple Egg")] [Price(8000)] PurpleEgg,
-            [Description("Green Egg")] [Price(8000)] GreenEgg,
-            [Description("Grey Egg")] [Price(10000)] GreyEgg,
-            [Description("Lime Green Egg")] [Price(15000)] LimeGreenEgg,
-            [Description("Black Egg")] [Price(20000)] BlackEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("White Egg")] [Price(4000)] [PrimaryColor(Chao.Colors.White)] WhiteEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Red Egg")] [Price(5000)] [PrimaryColor(Chao.Colors.Red)] RedEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Yellow Egg")] [Price(5000)] [PrimaryColor(Chao.Colors.Yellow)] YellowEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Blue Egg")] [Price(5000)] [PrimaryColor(Chao.Colors.Blue)] BlueEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Sky Blue Egg")] [Price(5000)] [PrimaryColor(Chao.Colors.SkyBlue)] SkyBlueEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Pink Egg")] [Price(6000)] [PrimaryColor(Chao.Colors.Pink)] PinkEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Orange Egg")] [Price(6000)] [PrimaryColor(Chao.Colors.Orange)] OrangeEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Brown Egg")] [Price(8000)] [PrimaryColor(Chao.Colors.Brown)] BrownEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Purple Egg")] [Price(8000)] [PrimaryColor(Chao.Colors.Purple)] PurpleEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Green Egg")] [Price(8000)] [PrimaryColor(Chao.Colors.Green)] GreenEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Grey Egg")] [Price(10000)] [PrimaryColor(Chao.Colors.Grey)] GreyEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Lime Green Egg")] [Price(15000)] [PrimaryColor(Chao.Colors.LimeGreen)] LimeGreenEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Black Egg")] [Price(20000)] [PrimaryColor(Chao.Colors.Black)] BlackEgg,
 
             // Uncommon Eggs
-            [Description("Shiny White Egg")] [Price(40000)] ShinyWhiteEgg,
-            [Description("Shiny Red Egg")] [Price(50000)] ShinyRedEgg,
-            [Description("Shiny Yellow Egg")] [Price(50000)] ShinyYellowEgg,
-            [Description("Shiny Blue Egg")] [Price(50000)] ShinyBlueEgg,
-            [Description("Shiny Sky Blue Egg")] [Price(50000)] ShinySkyBlueEgg,
-            [Description("Shiny Pink Egg")] [Price(60000)] ShinyPinkEgg,
-            [Description("Shiny Orange Egg")] [Price(60000)] ShinyOrangeEgg,
-            [Description("Shiny Brown Egg")] [Price(80000)] ShinyBrownEgg,
-            [Description("Shiny Purple Egg")] [Price(80000)] ShinyPurpleEgg,
-            [Description("Shiny Green Egg")] [Price(80000)] ShinyGreenEgg,
-            [Description("Shiny Grey Egg")] [Price(100000)] ShinyGreyEgg,
-            [Description("Shiny Lime Green Egg")] [Price(150000)] ShinyLimeGreenEgg,
-            [Description("Shiny Black Egg")] [Price(200000)] ShinyBlackEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny White Egg")] [Price(40000)] [PrimaryColor(Chao.Colors.White)] [Shiny] ShinyWhiteEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Red Egg")] [Price(50000)] [PrimaryColor(Chao.Colors.Red)] [Shiny] ShinyRedEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Yellow Egg")] [Price(50000)] [PrimaryColor(Chao.Colors.Yellow)] [Shiny] ShinyYellowEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Blue Egg")] [Price(50000)] [PrimaryColor(Chao.Colors.Blue)] [Shiny] ShinyBlueEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Sky Blue Egg")] [Price(50000)] [PrimaryColor(Chao.Colors.SkyBlue)] [Shiny] ShinySkyBlueEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Pink Egg")] [Price(60000)] [PrimaryColor(Chao.Colors.Pink)] [Shiny] ShinyPinkEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Orange Egg")] [Price(60000)] [PrimaryColor(Chao.Colors.Orange)] [Shiny] ShinyOrangeEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Brown Egg")] [Price(80000)] [PrimaryColor(Chao.Colors.Brown)] [Shiny] ShinyBrownEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Purple Egg")] [Price(80000)] [PrimaryColor(Chao.Colors.Purple)] [Shiny] ShinyPurpleEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Green Egg")] [Price(80000)] [PrimaryColor(Chao.Colors.Green)] [Shiny] ShinyGreenEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Grey Egg")] [Price(100000)] [PrimaryColor(Chao.Colors.Grey)] [Shiny] ShinyGreyEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Lime Green Egg")] [Price(150000)] [PrimaryColor(Chao.Colors.LimeGreen)] [Shiny] ShinyLimeGreenEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Black Egg")] [Price(200000)] [PrimaryColor(Chao.Colors.Black)] [Shiny] ShinyBlackEgg,
 
             // Rare Eggs
-            [Description("Amethyst Egg")] AmethystEgg,
-            [Description("Aquamarine Egg")] AquamarineEgg,
-            [Description("Emerald Egg")] EmeraldEgg,
-            [Description("Garnet Egg")] GarnetEgg,
-            [Description("Gold Egg")] GoldEgg,
-            [Description("Onyx Egg")] OnyxEgg,
-            [Description("Peridot Egg")] PeridotEgg,
-            [Description("Ruby Egg")] RubyEgg,
-            [Description("Sapphire Egg")] SapphireEgg,
-            [Description("Silver Egg")] SilverEgg,
-            [Description("Topaz Egg")] TopazEgg,
-            [Description("Bronze Egg")] BronzeEgg,
-            [Description("Moon Egg")] MoonEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Amethyst Egg")] [PrimaryColor(Chao.Colors.Amethyst)] AmethystEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Aquamarine Egg")] [PrimaryColor(Chao.Colors.Aquamarine)] AquamarineEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Emerald Egg")] [PrimaryColor(Chao.Colors.Emerald)] EmeraldEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Garnet Egg")] [PrimaryColor(Chao.Colors.Garnet)] GarnetEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Gold Egg")] [PrimaryColor(Chao.Colors.Gold)] GoldEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Onyx Egg")] [PrimaryColor(Chao.Colors.Onyx)] OnyxEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Peridot Egg")] [PrimaryColor(Chao.Colors.Peridot)] PeridotEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Ruby Egg")] [PrimaryColor(Chao.Colors.Ruby)] RubyEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Sapphire Egg")] [PrimaryColor(Chao.Colors.Sapphire)] SapphireEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Silver Egg")] [PrimaryColor(Chao.Colors.Silver)] SilverEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Topaz Egg")] [PrimaryColor(Chao.Colors.Topaz)] TopazEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Bronze Egg")] [PrimaryColor(Chao.Colors.Bronze)] BronzeEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Moon Egg")] [PrimaryColor(Chao.Colors.Moon)] MoonEgg,
 
             // Non-Market Eggs
-            [Description("Normal Egg")] NormalEgg,
-            [Description("Shiny Normal Egg")] ShinyNormalEgg,
-            [Description("Pearl Egg")] PearlEgg,
-            [Description("Glass Egg")] GlassEgg,
-            [Description("Metal Egg")] MetalEgg,
-            [Description("Weird Egg")] TextureEgg,
-            [Description("Strange White Egg")] WhiteTwoToneEgg,
-            [Description("Strange Red Egg")] RedTwoToneEgg,
-            [Description("Strange Yellow Egg")] YellowTwoToneEgg,
-            [Description("Strange Blue Egg")] BlueTwoToneEgg,
-            [Description("Strange Sky Blue Egg")] SkyBlueTwoToneEgg,
-            [Description("Strange Pink Egg")] PinkTwoToneEgg,
-            [Description("Strange Orange Egg")] OrangeTwoToneEgg,
-            [Description("Strange Brown Egg")] BrownTwoToneEgg,
-            [Description("Strange Purple Egg")] PurpleTwoToneEgg,
-            [Description("Strange Green Egg")] GreenTwoToneEgg,
-            [Description("Strange Grey Egg")] GreyTwoToneEgg,
-            [Description("Strange Lime Green Egg")] LimeGreenTwoToneEgg,
-            [Description("Strange Black Egg")] BlackTwoToneEgg,
-            [Description("Colorful Egg")] MultiColorEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Normal Egg")] [PrimaryColor(Chao.Colors.Normal)] NormalEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Shiny Normal Egg")] [PrimaryColor(Chao.Colors.Normal)] [Shiny] ShinyNormalEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Pearl Egg")] [PrimaryColor(Chao.Colors.Pearl)] PearlEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Glass Egg")] [PrimaryColor(Chao.Colors.Glass)] GlassEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Metal Egg")] [PrimaryColor(Chao.Colors.Metal)] MetalEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Weird Egg")] [PrimaryColor(Chao.Colors.Normal)] TextureEgg, // TODO: Decide how to handle texture chao - just make each their own eggs?
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange White Egg")] [PrimaryColor(Chao.Colors.White)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] WhiteTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Red Egg")] [PrimaryColor(Chao.Colors.Red)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] edTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Yellow Egg")] [PrimaryColor(Chao.Colors.Yellow)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] YellowTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Blue Egg")] [PrimaryColor(Chao.Colors.Blue)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] BlueTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Sky Blue Egg")] [PrimaryColor(Chao.Colors.SkyBlue)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] SkyBlueTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Pink Egg")] [PrimaryColor(Chao.Colors.Pink)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] PinkTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Orange Egg")] [PrimaryColor(Chao.Colors.Orange)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] OrangeTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Brown Egg")] [PrimaryColor(Chao.Colors.Brown)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] BrownTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Purple Egg")] [PrimaryColor(Chao.Colors.Purple)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] PurpleTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Green Egg")] [PrimaryColor(Chao.Colors.Green)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] GreenTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Grey Egg")] [PrimaryColor(Chao.Colors.Grey)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] GreyTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Lime Green Egg")] [PrimaryColor(Chao.Colors.LimeGreen)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] LimeGreenTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Black Egg")] [PrimaryColor(Chao.Colors.Black)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] BlackTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny White Egg")] [PrimaryColor(Chao.Colors.White)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyWhiteTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Red Egg")] [PrimaryColor(Chao.Colors.Red)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyRedTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Yellow Egg")] [PrimaryColor(Chao.Colors.Yellow)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyYellowTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Blue Egg")] [PrimaryColor(Chao.Colors.Blue)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyBlueTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Sky Blue Egg")] [PrimaryColor(Chao.Colors.SkyBlue)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinySkyBlueTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Pink Egg")] [PrimaryColor(Chao.Colors.Pink)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyPinkTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Orange Egg")] [PrimaryColor(Chao.Colors.Orange)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyOrangeTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Brown Egg")] [PrimaryColor(Chao.Colors.Brown)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyBrownTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Purple Egg")] [PrimaryColor(Chao.Colors.Purple)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyPurpleTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Green Egg")] [PrimaryColor(Chao.Colors.Green)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyGreenTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Grey Egg")] [PrimaryColor(Chao.Colors.Grey)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyGreyTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Lime Green Egg")] [PrimaryColor(Chao.Colors.LimeGreen)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyLimeGreenTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Shiny Black Egg")] [PrimaryColor(Chao.Colors.Black)] [SecondaryColor(Chao.Colors.Normal)] [TwoTone] ShinyBlackTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Colorful Egg")] [TwoTone] MultiColorEgg, // TODO: Decide how to handle color mix chao... specifically how the eggs are going to work
 
             // Common Fruits
-            [Description("Tasty Fruit")] [Price(80)] TastyFruit = 1000,
-            [Description("Dark Fruit")] [Price(120)] DarkFruit,
-            [Description("Hero Fruit")] [Price(120)] HeroFruit,
-            [Description("Round Fruit")] [Price(80)] RoundFruit,
-            [Description("Square Fruit")] [Price(80)] SquareFruit,
-            [Description("Triangle Fruit")] [Price(80)] TriangleFruit,
-            [Description("Chao Fruit")] [Price(5000)] ChaoFruit,
-            [Description("Heart Fruit")] [Price(300)] HeartFruit,
-            [Description("Mushroom")] [Price(300)] Mushroom,
-            [Description("Strong Fruit")] [Price(500)] StrongFruit,
-            [Description("Swim Fruit")] [Price(1000)] SwimFruit,
-            [Description("Fly Fruit")] [Price(1000)] FlyFruit,
-            [Description("Run Fruit")] [Price(1000)] RunFruit,
-            [Description("Power Fruit")] [Price(1000)] PowerFruit,
-            [Description("Smart Fruit")] [Price(1000)] SmartFruit,
-            [Description("Lucky Mushroom")] [Price(1000)] LuckyMushroom,
-            [Description("Mint Candy")] [Price(10000)] MintCandy,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Tasty Fruit")] [Price(80)] TastyFruit = 1000,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Dark Fruit")] [Price(120)] DarkFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Hero Fruit")] [Price(120)] HeroFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Round Fruit")] [Price(80)] RoundFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Square Fruit")] [Price(80)] SquareFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Triangle Fruit")] [Price(80)] TriangleFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Chao Fruit")] [Price(5000)] ChaoFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Heart Fruit")] [Price(300)] HeartFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Mushroom")] [Price(300)] Mushroom,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Strong Fruit")] [Price(500)] StrongFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Swim Fruit")] [Price(1000)] SwimFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Fly Fruit")] [Price(1000)] FlyFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Run Fruit")] [Price(1000)] RunFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Power Fruit")] [Price(1000)] PowerFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Smart Fruit")] [Price(1000)] SmartFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Lucky Mushroom")] [Price(1000)] LuckyMushroom,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Mint Candy")] [Price(10000)] MintCandy,
 
             // Rare Fruits
-            [Description("Hyper Swim Fruit")] [Price(100000)] HyperSwimFruit,
-            [Description("Hyper Fly Fruit")] [Price(100000)] HyperFlyFruit,
-            [Description("Hyper Run Fruit")] [Price(100000)] HyperRunFruit,
-            [Description("Hyper Power Fruit")] [Price(100000)] HyperPowerFruit,
-            [Description("Hyper Stamina Fruit")] [Price(100000)] HyperStaminaFruit,
-            [Description("Hyper Smart Fruit")] [Price(100000)] HyperSmartFruit,
-            [Description("Hyper Lucky Mushroom")] [Price(100000)] HyperLuckyMushroom,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Hyper Swim Fruit")] [Price(100000)] HyperSwimFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Hyper Fly Fruit")] [Price(100000)] HyperFlyFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Hyper Run Fruit")] [Price(100000)] HyperRunFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Hyper Power Fruit")] [Price(100000)] HyperPowerFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Hyper Stamina Fruit")] [Price(100000)] HyperStaminaFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Hyper Smart Fruit")] [Price(100000)] HyperSmartFruit,
+            [ItemCategory(ItemCategories.Fruit)] [Description("Hyper Lucky Mushroom")] [Price(100000)] HyperLuckyMushroom,
 
             // Seeds
-            [Description("Round Seed")] [Price(30000)] RoundSeed = 2000,
-            [Description("Square Seed")] [Price(30000)] SquareSeed,
-            [Description("Triangle Seed")] [Price(30000)] TriangleSeed,
-            [Description("Hero Seed")] [Price(40000)] HeroSeed,
-            [Description("Dark Seed")] [Price(40000)] DarkSeed,
-            [Description("Tasty Seed")] [Price(20000)] TastySeed,
-            [Description("Strong Seed")] [Price(50000)] StrongSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Round Seed")] [Price(30000)] RoundSeed = 2000,
+            [ItemCategory(ItemCategories.Seed)] [Description("Square Seed")] [Price(30000)] SquareSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Triangle Seed")] [Price(30000)] TriangleSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Hero Seed")] [Price(40000)] HeroSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Dark Seed")] [Price(40000)] DarkSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Tasty Seed")] [Price(20000)] TastySeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Strong Seed")] [Price(50000)] StrongSeed,
 
             // Special
-            [Description("Suspicious Potion")] [Price(30000)] SuspiciousPotion = 3000,
-            [Description("Chaos Juice")] [Price(100000)] ChaosJuice,
-            [Description("Negative Mirror")] [Price(10000)] NegativeMirror,
-            [Description("Toy Parts")] [Price(100000)] ToyParts,
+            [ItemCategory(ItemCategories.Special)] [Description("Suspicious Potion")] [Price(30000)] SuspiciousPotion = 3000,
+            [ItemCategory(ItemCategories.Special)] [Description("Chaos Juice")] [Price(100000)] ChaosJuice,
+            [ItemCategory(ItemCategories.Special)] [Description("Negative Mirror")] [Price(10000)] NegativeMirror,
+            [ItemCategory(ItemCategories.Special)] [Description("Toy Parts")] [Price(100000)] ToyParts,
 
             // Non-Market Hats
-            [Description("Normal Eggshell")] NormalEggshell = 4000,
-            [Description("White Eggshell")] WhiteEggshell,
-            [Description("Red Eggshell")] RedEggshell,
-            [Description("Yellow Eggshell")] YellowEggshell,
-            [Description("Blue Eggshell")] BlueEggshell,
-            [Description("Sky Blue Eggshell")] SkyBlueEggshell,
-            [Description("Pink Eggshell")] PinkEggshell,
-            [Description("Orange Eggshell")] OrangeEggshell,
-            [Description("Brown Eggshell")] BrownEggshell,
-            [Description("Purple Eggshell")] PurpleEggshell,
-            [Description("Green Eggshell")] GreenEggshell,
-            [Description("Grey Eggshell")] GreyEggshell,
-            [Description("Lime Green Eggshell")] LimeGreenEggshell,
-            [Description("Black Eggshell")] BlackEggshell,
-            [Description("Shiny Normal Eggshell")] ShinyNormalEggshell,
-            [Description("Shiny White Eggshell")] ShinyWhiteEggshell,
-            [Description("Shiny Red Eggshell")] ShinyRedEggshell,
-            [Description("Shiny Yellow Eggshell")] ShinyYellowEggshell,
-            [Description("Shiny Blue Eggshell")] ShinyBlueEggshell,
-            [Description("Shiny Sky Blue Eggshell")] ShinySkyBlueEggshell,
-            [Description("Shiny Pink Eggshell")] ShinyPinkEggshell,
-            [Description("Shiny Orange Eggshell")] ShinyOrangeEggshell,
-            [Description("Shiny Brown Eggshell")] ShinyBrownEggshell,
-            [Description("Shiny Purple Eggshell")] ShinyPurpleEggshell,
-            [Description("Shiny Green Eggshell")] ShinyGreenEggshell,
-            [Description("Shiny Grey Eggshell")] ShinyGreyEggshell,
-            [Description("Shiny Lime Green Eggshell")] ShinyLimeGreenEggshell,
-            [Description("Shiny Black Eggshell")] ShinyBlackEggshell,
-            [Description("Shiny Amethyst Eggshell")] ShinyAmethystEggshell,
-            [Description("Shiny Aquamarine Eggshell")] ShinyAquamarineEggshell,
-            [Description("Shiny Emerald Eggshell")] ShinyEmeraldEggshell,
-            [Description("Shiny Garnet Eggshell")] ShinyGarnetEggshell,
-            [Description("Shiny Gold Eggshell")] ShinyGoldEggshell,
-            [Description("Shiny Onyx Eggshell")] ShinyOnyxEggshell,
-            [Description("Shiny Peridot Eggshell")] ShinyPeridotEggshell,
-            [Description("Shiny Ruby Eggshell")] ShinyRubyEggshell,
-            [Description("Shiny Sapphire Eggshell")] ShinySapphireEggshell,
-            [Description("Shiny Silver Eggshell")] ShinySilverEggshell,
-            [Description("Shiny Topaz Eggshell")] ShinyTopazEggshell,
-            [Description("Shiny Bronze Eggshell")] ShinyBronzeEggshell,
-            [Description("Shiny Moon Eggshell")] ShinyMoonEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Normal Eggshell")] NormalEggshell = 4000,
+            [ItemCategory(ItemCategories.Hat)] [Description("White Eggshell")] WhiteEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Red Eggshell")] RedEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Yellow Eggshell")] YellowEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Blue Eggshell")] BlueEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Sky Blue Eggshell")] SkyBlueEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Pink Eggshell")] PinkEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Orange Eggshell")] OrangeEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Brown Eggshell")] BrownEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Purple Eggshell")] PurpleEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Green Eggshell")] GreenEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Grey Eggshell")] GreyEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Lime Green Eggshell")] LimeGreenEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Black Eggshell")] BlackEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Normal Eggshell")] ShinyNormalEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny White Eggshell")] ShinyWhiteEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Red Eggshell")] ShinyRedEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Yellow Eggshell")] ShinyYellowEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Blue Eggshell")] ShinyBlueEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Sky Blue Eggshell")] ShinySkyBlueEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Pink Eggshell")] ShinyPinkEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Orange Eggshell")] ShinyOrangeEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Brown Eggshell")] ShinyBrownEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Purple Eggshell")] ShinyPurpleEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Green Eggshell")] ShinyGreenEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Grey Eggshell")] ShinyGreyEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Lime Green Eggshell")] ShinyLimeGreenEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Black Eggshell")] ShinyBlackEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Amethyst Eggshell")] ShinyAmethystEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Aquamarine Eggshell")] ShinyAquamarineEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Emerald Eggshell")] ShinyEmeraldEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Garnet Eggshell")] ShinyGarnetEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Gold Eggshell")] ShinyGoldEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Onyx Eggshell")] ShinyOnyxEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Peridot Eggshell")] ShinyPeridotEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Ruby Eggshell")] ShinyRubyEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Sapphire Eggshell")] ShinySapphireEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Silver Eggshell")] ShinySilverEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Topaz Eggshell")] ShinyTopazEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Bronze Eggshell")] ShinyBronzeEggshell,
+            [ItemCategory(ItemCategories.Hat)] [Description("Shiny Moon Eggshell")] ShinyMoonEggshell,
 
             // Market Hats
-            [Description("Pumpkin")] Pumpkin = 5000,
-            [Description("Skull")] Skull,
-            [Description("Apple")] Apple,
-            [Description("Cardboard Box")] CardboardBox,
-            [Description("Pan")] Pan,
-            [Description("Paper Bag")] PaperBag,
-            [Description("Empty Can")] EmptyCan,
-            [Description("Stump")] Stump,
-            [Description("Flower Pot")] FlowerPot,
-            [Description("Bucket")] Bucket,
-            [Description("Watermelon")] Watermelon,
-            [Description("Red Wool Beanie")] RedWoolBeanie,
-            [Description("Blue Wool Beanie")] BlueWoolBeanie,
-            [Description("Black Wool Beanie")] BlackWoolBeanie,
+            [ItemCategory(ItemCategories.Hat)] [Description("Pumpkin")] Pumpkin = 5000,
+            [ItemCategory(ItemCategories.Hat)] [Description("Skull")] Skull,
+            [ItemCategory(ItemCategories.Hat)] [Description("Apple")] Apple,
+            [ItemCategory(ItemCategories.Hat)] [Description("Cardboard Box")] CardboardBox,
+            [ItemCategory(ItemCategories.Hat)] [Description("Pan")] Pan,
+            [ItemCategory(ItemCategories.Hat)] [Description("Paper Bag")] PaperBag,
+            [ItemCategory(ItemCategories.Hat)] [Description("Empty Can")] EmptyCan,
+            [ItemCategory(ItemCategories.Hat)] [Description("Stump")] Stump,
+            [ItemCategory(ItemCategories.Hat)] [Description("Flower Pot")] FlowerPot,
+            [ItemCategory(ItemCategories.Hat)] [Description("Bucket")] Bucket,
+            [ItemCategory(ItemCategories.Hat)] [Description("Watermelon")] Watermelon,
+            [ItemCategory(ItemCategories.Hat)] [Description("Red Wool Beanie")] RedWoolBeanie,
+            [ItemCategory(ItemCategories.Hat)] [Description("Blue Wool Beanie")] BlueWoolBeanie,
+            [ItemCategory(ItemCategories.Hat)] [Description("Black Wool Beanie")] BlackWoolBeanie,
 
             // Lenses
-            [Description("Normal Lens")] NormalLens = 10000,
-            [Description("White Lens")] WhiteLens,
-            [Description("Red Lens")] RedLens,
-            [Description("Yellow Lens")] YellowLens,
-            [Description("Blue Lens")] BlueLens,
-            [Description("Sky Blue Lens")] SkyBlueLens,
-            [Description("Pink Lens")] PinkLens,
-            [Description("Orange Lens")] OrangeLens,
-            [Description("Brown Lens")] BrownLens,
-            [Description("Purple Lens")] PurpleLens,
-            [Description("Green Lens")] GreenLens,
-            [Description("Grey Lens")] GreyLens,
-            [Description("Lime Green Lens")] LimeGreenLens,
-            [Description("Black Lens")] BlackLens,
-            [Description("Devil Lens")] DevilLens,
-            [Description("Angel Lens")] AngelLens,
-            [Description("Chaos Lens")] ChaosLens,
-            [Description("Robot Lens")] RobotLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Normal Lens")] NormalLens = 10000,
+            [ItemCategory(ItemCategories.Lens)] [Description("White Lens")] WhiteLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Red Lens")] RedLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Yellow Lens")] YellowLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Blue Lens")] BlueLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Sky Blue Lens")] SkyBlueLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Pink Lens")] PinkLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Orange Lens")] OrangeLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Brown Lens")] BrownLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Purple Lens")] PurpleLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Green Lens")] GreenLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Grey Lens")] GreyLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Lime Green Lens")] LimeGreenLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Black Lens")] BlackLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Devil Lens")] DevilLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Angel Lens")] AngelLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Chaos Lens")] ChaosLens,
+            [ItemCategory(ItemCategories.Lens)] [Description("Robot Lens")] RobotLens,
 
             // Placeholder
             [Description("???")] Placeholder = 1000000 // This is just for use as a boundary, nobody should have this in their inventory :^)
@@ -272,12 +287,105 @@ namespace ChaoWorld.Core
                            Attribute.GetCustomAttribute(field,
                              typeof(PriceAttribute)) as PriceAttribute;
                     if (attr != null)
-                    {
                         return attr.Price;
-                    }
                 }
             }
             return 5000000; // In case we mess up, make it stupid expensive so it's obvious and gets fixed
+        }
+
+        public static ItemCategories GetCategory(ItemTypes value)
+        {
+            Type type = value.GetType();
+            string name = Enum.GetName(type, value);
+            if (name != null)
+            {
+                FieldInfo field = type.GetField(name);
+                if (field != null)
+                {
+                    ItemCategoryAttribute attr =
+                           Attribute.GetCustomAttribute(field,
+                             typeof(ItemCategoryAttribute)) as ItemCategoryAttribute;
+                    if (attr != null)
+                        return attr.Category;
+                }
+            }
+            return ItemCategories.Special; // In case we mess up, make it special so it's obvious
+        }
+
+        public static Chao.Colors GetPrimaryColor(ItemTypes egg)
+        {
+            Type type = egg.GetType();
+            string name = Enum.GetName(type, egg);
+            if (name != null)
+            {
+                FieldInfo field = type.GetField(name);
+                if (field != null)
+                {
+                    PrimaryColorAttribute attr =
+                           Attribute.GetCustomAttribute(field,
+                             typeof(PrimaryColorAttribute)) as PrimaryColorAttribute;
+                    if (attr != null)
+                        return attr.Color;
+                }
+            }
+            return Chao.Colors.Normal; // In case we mess up, just produce a normal chao
+        }
+
+        public static Chao.Colors? GetSecondaryColor(ItemTypes egg)
+        {
+            Type type = egg.GetType();
+            string name = Enum.GetName(type, egg);
+            if (name != null)
+            {
+                FieldInfo field = type.GetField(name);
+                if (field != null)
+                {
+                    SecondaryColorAttribute attr =
+                           Attribute.GetCustomAttribute(field,
+                             typeof(SecondaryColorAttribute)) as SecondaryColorAttribute;
+                    if (attr != null)
+                        return attr.Color;
+                }
+            }
+            return null;
+        }
+
+        public static bool GetShininess(ItemTypes egg)
+        {
+            Type type = egg.GetType();
+            string name = Enum.GetName(type, egg);
+            if (name != null)
+            {
+                FieldInfo field = type.GetField(name);
+                if (field != null)
+                {
+                    ShinyAttribute attr =
+                           Attribute.GetCustomAttribute(field,
+                             typeof(ShinyAttribute)) as ShinyAttribute;
+                    if (attr != null)
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool GetTwoToneness(ItemTypes egg)
+        {
+            Type type = egg.GetType();
+            string name = Enum.GetName(type, egg);
+            if (name != null)
+            {
+                FieldInfo field = type.GetField(name);
+                if (field != null)
+                {
+                    TwoToneAttribute attr =
+                           Attribute.GetCustomAttribute(field,
+                             typeof(TwoToneAttribute)) as TwoToneAttribute;
+                    if (attr != null)
+                        return true;
+                }
+            }
+            return false;
         }
     }
 

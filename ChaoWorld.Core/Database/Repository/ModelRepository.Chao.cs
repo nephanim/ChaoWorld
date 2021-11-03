@@ -52,6 +52,10 @@ namespace ChaoWorld.Core
             {
                 gardenid = garden,
                 name = chao.Name,
+                isshiny = chao.IsShiny,
+                istwotone = chao.IsTwoTone,
+                primarycolor = (int)chao.PrimaryColor,
+                secondarycolor = (int?)chao.SecondaryColor,
                 swimgrade = chao.SwimGrade,
                 flygrade = chao.FlyGrade,
                 rungrade = chao.RunGrade,
