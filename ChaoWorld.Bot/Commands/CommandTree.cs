@@ -15,6 +15,9 @@ namespace ChaoWorld.Bot
         public static Command GardenFind = new Command("garden find", "garden {id} find [full] [search term]", "Searches a garden for chao given a search term");
         public static Command GardenRaise = new Command("garden raise", "garden raise {chao id/name}", "Selects a chao to use by default with certain commands");
         public static Command ChaoInfo = new Command("chao", "chao {id/name}", "Looks up information about a chao using either the name or ID");
+        public static Command ChaoPet = new Command("chao pet", "chao {id/name} pet", "Pets the specified chao");
+        public static Command ChaoRock = new Command("chao rock", "chao {id/name} rock", "Rocks the specified chao in your arms");
+        public static Command ChaoCuddle = new Command("chao cuddle", "chao {id/name} cuddle", "Cuddles the specified chao");
         public static Command ChaoNew = new Command("chao new", "chao new", "Creates a new chao"); //TODO: Remove this when the market is done
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
@@ -36,7 +39,7 @@ namespace ChaoWorld.Bot
         };
 
         public static Command[] ChaoCommands = {
-            ChaoInfo, ChaoNew, ChaoRename, ChaoGoodbye
+            ChaoInfo, ChaoNew, ChaoRename, ChaoGoodbye, ChaoPet, ChaoRock, ChaoCuddle
         };
 
         public static Command[] RaceCommands =
@@ -150,6 +153,12 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<ChaoEdit>(ChaoRename, m => m.Name(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet", "depart", "goodbye", "farewell"))
                 await ctx.Execute<ChaoEdit>(ChaoGoodbye, m => m.Delete(ctx, target));
+            else if (ctx.Match("pet"))
+                await ctx.Execute<Chao>(ChaoPet, m => m.PetChao(ctx, target));
+            else if (ctx.Match("rock"))
+                await ctx.Execute<Chao>(ChaoRock, m => m.RockChao(ctx, target));
+            else if (ctx.Match("cuddle"))
+                await ctx.Execute<Chao>(ChaoCuddle, m => m.CuddleChao(ctx, target));
             else if (!ctx.HasNext()) // Bare command
                 await ctx.Execute<Chao>(ChaoInfo, m => m.ViewChao(ctx, target));
             else
