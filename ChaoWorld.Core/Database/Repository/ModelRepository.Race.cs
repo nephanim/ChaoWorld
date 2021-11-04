@@ -261,6 +261,7 @@ namespace ChaoWorld.Core
                     state = r.finishstate
                 from ranks r
                 where c.chaoid = r.chaoid
+                and c.raceinstanceid = {instance.Id}
             "));
             _logger.Information($"Finalized chao statistics for race instance {instance.Id} of race {instance.RaceId}");
         }
@@ -293,6 +294,17 @@ namespace ChaoWorld.Core
                 _logger.Error($"Failed to instantiate races: {e.Message}");
             }
             
+        }
+
+        public async Task<ChaoRaceStats> GetRaceStats(long chaoId)
+        {
+            var stats = await _db.Execute(async conn => await conn.QuerySingleAsync<ChaoRaceStats>($@"
+                select chaoid, count(chaoid) totalraces, sum(case when state = 1 then 1 else 0 end) totalwins, sum(case when state = 2 then 1 else 0 end) totalretires
+                from raceinstancechao
+                where chaoid = {chaoId}
+                group by chaoid
+            "));
+            return stats;
         }
     }
 }

@@ -167,4 +167,30 @@ namespace ChaoWorld.Core
             [Description("Retired")] Retired
         }
     }
+
+    public class ChaoRaceStats
+    {
+        public long ChaoId { get; set; }
+        public long TotalRaces { get; set; }
+        public long TotalWins { get; set; }
+        public long TotalRetires { get; set; }
+        public double WinRate
+        {
+            get
+            {
+                return TotalRaces > 0
+                    ? (double)TotalWins / (double)TotalRaces * 100.0
+                    : 0;
+            }
+        }
+        public double RetireRate
+        {
+            get
+            {
+                return TotalRaces > 0
+                    ? (double)TotalRetires / (double)TotalRaces * 100.0
+                    : 0;
+            }
+        }
+    }
 }

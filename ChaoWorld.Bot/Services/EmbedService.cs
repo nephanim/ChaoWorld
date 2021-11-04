@@ -73,6 +73,12 @@ namespace ChaoWorld.Bot
         public async Task<Embed> CreateChaoEmbed(Core.Garden garden, Core.Chao chao)
         {
             var name = chao.Name;
+            var raceStats = await _repo.GetRaceStats(chao.Id.Value);
+            var totalRaces = string.Format("{0:n0}", raceStats.TotalRaces);
+            var totalWins = string.Format("{0:n0}", raceStats.TotalWins);
+            var totalRetires = string.Format("{0:n0}", raceStats.TotalRetires);
+            var winRate = raceStats.WinRate.ToString("N2");
+            var retireRate = raceStats.RetireRate.ToString("N2");
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
@@ -90,6 +96,7 @@ namespace ChaoWorld.Bot
             eb.Field(new($"Stamina (Lv.{chao.StaminaLevel:D2})", $"{chao.GetEmojiGrade(chao.StaminaGrade)} : {chao.StaminaProgress:D2}/100 ({chao.StaminaValue:D4})"));
             eb.Field(new($"Intelligence (Lv.{chao.IntelligenceLevel:D2})", $"{chao.GetEmojiGrade(chao.IntelligenceGrade)} : {chao.IntelligenceProgress:D2}/100 ({chao.IntelligenceValue:D4})"));
             eb.Field(new($"Luck (Lv.{chao.LuckLevel:D2})", $"{chao.GetEmojiGrade(chao.LuckGrade)} : {chao.LuckProgress:D2}/100 ({chao.LuckValue:D4})"));
+            eb.Field(new($"Race Stats", $"**Total Races**: {totalRaces}\r\n**Wins**: {totalWins} ({winRate}%)\r\n**Retires**: {totalRetires} ({retireRate}%)"));
 
             return eb.Build();
         }
@@ -153,16 +160,19 @@ namespace ChaoWorld.Bot
 
             var elapsed = timeElapsed.ToString("c");
             eb.Field(new("Time Elapsed", elapsed));
+            var elapsedSeconds = timeElapsed.TotalSeconds;
 
             var roster = string.Empty;
             foreach (var c in chao)
             {
                 var status = string.Empty;
+                var lagTime = string.Empty;
                 if (c.Status == RaceInstanceChaoSegment.SegmentStates.Retired)
                     status = " :x: (Retired)";
+                else if (c.TotalTimeSeconds > elapsedSeconds)
+                    lagTime = $" *+{c.TotalTimeSeconds - elapsedSeconds}s*";
 
-                roster += $"#{c.Position}. {c.ChaoName}{status}\r\n";
-                //eb.Field(new($"#{c.Position}", $"{c.ChaoName}{status}"));
+                roster += $"#{c.Position}. {c.ChaoName}{lagTime}{status}\r\n";
             }
             eb.Field(new("Chao", roster));
 

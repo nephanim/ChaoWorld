@@ -217,7 +217,8 @@ namespace ChaoWorld.Bot
                         ChaoId = s.ChaoId,
                         ChaoName = allChao.FirstOrDefault(x => x.Id.Value == s.ChaoId).Name,
                         Status = s.State,
-                        Position = i
+                        Position = i,
+                        TotalTimeSeconds = s.TotalTimeSeconds.GetValueOrDefault(0)
                     });
                     i++;
                 }

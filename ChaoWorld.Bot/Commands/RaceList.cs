@@ -69,5 +69,6 @@ namespace ChaoWorld.Bot
         public string ChaoName { get; set; }
         public RaceInstanceChaoSegment.SegmentStates Status { get; set; }
         public int Position { get; set; }
+        public int TotalTimeSeconds { get; set; }
     }
 }
