@@ -107,7 +107,7 @@ namespace ChaoWorld.Bot
                 $"Wins: {totalWins} ({winRate}%)\r\n" +
                 $"Retires: {totalRetires} ({retireRate}%)"
             ));
-            //eb.Field(new($"Image Url", $"{imageUrl}"));
+            eb.Color(await GetDiscordColor(chao));
 
             return eb.Build();
         }
@@ -188,6 +188,56 @@ namespace ChaoWorld.Bot
             eb.Field(new("Chao", roster));
 
             return eb.Build();
+        }
+
+        private async Task<uint> GetDiscordColor(Core.Chao chao)
+        {
+            switch (chao.PrimaryColor)
+            {
+                case Core.Chao.Colors.Normal:
+                case Core.Chao.Colors.Blue:
+                case Core.Chao.Colors.SkyBlue:
+                case Core.Chao.Colors.Aquamarine:
+                case Core.Chao.Colors.Moon:
+                case Core.Chao.Colors.Sapphire:
+                case Core.Chao.Colors.Topaz:
+                    return 3447003; // BLUE
+                case Core.Chao.Colors.Black:
+                    return 2303786; // BLACK
+                case Core.Chao.Colors.Brown:
+                case Core.Chao.Colors.Bronze:
+                    return 11027200; // DARK ORANGE
+                case Core.Chao.Colors.Amethyst:
+                case Core.Chao.Colors.Purple:
+                    return 10181046; // PURPLE
+                case Core.Chao.Colors.Emerald:
+                case Core.Chao.Colors.Green:
+                case Core.Chao.Colors.LimeGreen:
+                case Core.Chao.Colors.Peridot:
+                    return 3066993; // GREEN
+                case Core.Chao.Colors.Glass:
+                case Core.Chao.Colors.Grey:
+                case Core.Chao.Colors.Metal:
+                case Core.Chao.Colors.Silver:
+                    return 9807270; // GREY
+                case Core.Chao.Colors.Garnet:
+                case Core.Chao.Colors.Yellow:
+                    return 16776960; // YELLOW
+                case Core.Chao.Colors.Gold:
+                    return 15844367; // GOLD
+                case Core.Chao.Colors.Orange:
+                    return 15105570; // ORANGE
+                case Core.Chao.Colors.Pearl:
+                case Core.Chao.Colors.White:
+                    return 16777215; // WHITE
+                case Core.Chao.Colors.Pink:
+                    return 15277667; // LUMINOUS VIVID PINK
+                case Core.Chao.Colors.Red:
+                case Core.Chao.Colors.Ruby:
+                    return 15158332; // RED
+                default:
+                    return 0; // DEFAULT
+            }
         }
     }
 }
