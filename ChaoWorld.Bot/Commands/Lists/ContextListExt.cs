@@ -133,6 +133,7 @@ namespace ChaoWorld.Bot
             {
                 // Add a global footer with the filter/sort string + result count
                 eb.Footer(new($"{"result".ToQuantity(races.Count)}"));
+                eb.Thumbnail(new("https://nephanim.com/chao/resources/misc/chaorace.jpg"));
 
                 // Then call the specific renderers
                 ShortRenderer(eb, page);
@@ -202,6 +203,7 @@ namespace ChaoWorld.Bot
                 // Add a global footer with the result count and time until refresh
                 var minutesUntilRefresh = (int)System.Math.Ceiling(60 - System.DateTime.Now.TimeOfDay.TotalMinutes % 60);
                 eb.Footer(new($"{"result".ToQuantity(items.Count)} - Refreshes in {minutesUntilRefresh} minute(s)"));
+                eb.Thumbnail(new("https://nephanim.com/chao/resources/misc/blackmarket.jpg"));
 
                 // Then call the specific renderers
                 ShortRenderer(eb, page);
