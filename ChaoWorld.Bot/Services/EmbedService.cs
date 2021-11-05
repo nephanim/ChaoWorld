@@ -74,11 +74,11 @@ namespace ChaoWorld.Bot
         {
             var name = chao.Name;
             var raceStats = await _repo.GetRaceStats(chao.Id.Value);
-            var totalRaces = string.Format("{0:n0}", raceStats.TotalRaces);
-            var totalWins = string.Format("{0:n0}", raceStats.TotalWins);
-            var totalRetires = string.Format("{0:n0}", raceStats.TotalRetires);
-            var winRate = raceStats.WinRate.ToString("N2");
-            var retireRate = raceStats.RetireRate.ToString("N2");
+            var totalRaces = raceStats != null ? string.Format("{0:n0}", raceStats.TotalRaces) : "0";
+            var totalWins = raceStats != null ? string.Format("{0:n0}", raceStats.TotalWins) : "0";
+            var totalRetires = raceStats != null ? string.Format("{0:n0}", raceStats.TotalRetires) : "0";
+            var winRate = raceStats != null ? raceStats.WinRate.ToString("N2") : "0";
+            var retireRate = raceStats != null ? raceStats.RetireRate.ToString("N2") : "0";
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
