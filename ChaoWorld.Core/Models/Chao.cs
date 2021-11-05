@@ -92,9 +92,11 @@ namespace ChaoWorld.Core
                 var typeDescription = "";
                 if (IsShiny)
                     typeDescription += $"Shiny ";
-                if (IsTwoTone && SecondaryColor.HasValue)
-                    typeDescription += $"Two-Tone {PrimaryColor}/{SecondaryColor} ";
+                if (IsTwoTone)
+                    typeDescription += $"Two-Tone ";
                 typeDescription += $"{PrimaryColor}";
+                if (SecondaryColor.HasValue)
+                    typeDescription += $"/{SecondaryColor} Mix";
                 //if (EvolutionState == Core.Chao.EvolutionStates.Egg)
                     //typeDescription += $" Egg";
                 //else
@@ -139,7 +141,7 @@ namespace ChaoWorld.Core
             E, D, C, B, A, S, X
         }
 
-        public void Initialize(ItemBase.ItemTypes egg = ItemBase.ItemTypes.NormalEgg)
+        public void Initialize(ItemBase.ItemTypes egg = ItemBase.ItemTypes.NormalTwoToneEgg)
         {
             Name = "Unnamed";
             PrimaryColor = ItemBase.GetPrimaryColor(egg);

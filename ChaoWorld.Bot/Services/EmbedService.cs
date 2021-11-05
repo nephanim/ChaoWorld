@@ -79,24 +79,35 @@ namespace ChaoWorld.Bot
             var totalRetires = raceStats != null ? string.Format("{0:n0}", raceStats.TotalRetires) : "0";
             var winRate = raceStats != null ? raceStats.WinRate.ToString("N2") : "0";
             var retireRate = raceStats != null ? raceStats.RetireRate.ToString("N2") : "0";
+            var imageUrl = MiscUtils.GenerateThumbnailForChao(chao);
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
-                .Thumbnail(new("https://chao-island.com/assets/images/gallery/twotone/child/childtwotoneregular.jpg"))
+                .Thumbnail(new(imageUrl))
+                //.Image(new(imageUrl))
                 .Description(chao.Appearance)
                 .Footer(new(
                     $"Garden ID: {garden.Id} | Chao ID: {chao.Id} {$"| Created on {chao.CreatedOn.FormatZoned(DateTimeZone.Utc)}"}"));
 
-            eb.Field(new("Age", chao.Age.ToString()));
-            eb.Field(new("Reincarnations", chao.Reincarnations.ToString()));
-            eb.Field(new($"Swim (Lv.{chao.SwimLevel:D2})", $"{chao.GetEmojiGrade(chao.SwimGrade)} : {chao.SwimProgress:D2}/100 ({chao.SwimValue:D4})"));
-            eb.Field(new($"Fly (Lv.{chao.FlyLevel:D2})", $"{chao.GetEmojiGrade(chao.FlyGrade)} : {chao.FlyProgress:D2}/100 ({chao.FlyValue:D4})"));
-            eb.Field(new($"Run (Lv.{chao.RunLevel:D2})", $"{chao.GetEmojiGrade(chao.RunGrade)} : {chao.RunProgress:D2}/100 ({chao.RunValue:D4})"));
-            eb.Field(new($"Power (Lv.{chao.PowerLevel:D2})", $"{chao.GetEmojiGrade(chao.PowerGrade)} : {chao.PowerProgress:D2}/100 ({chao.PowerValue:D4})"));
-            eb.Field(new($"Stamina (Lv.{chao.StaminaLevel:D2})", $"{chao.GetEmojiGrade(chao.StaminaGrade)} : {chao.StaminaProgress:D2}/100 ({chao.StaminaValue:D4})"));
-            eb.Field(new($"Intelligence (Lv.{chao.IntelligenceLevel:D2})", $"{chao.GetEmojiGrade(chao.IntelligenceGrade)} : {chao.IntelligenceProgress:D2}/100 ({chao.IntelligenceValue:D4})"));
-            eb.Field(new($"Luck (Lv.{chao.LuckLevel:D2})", $"{chao.GetEmojiGrade(chao.LuckGrade)} : {chao.LuckProgress:D2}/100 ({chao.LuckValue:D4})"));
-            eb.Field(new($"Race Stats", $"**Total Races**: {totalRaces}\r\n**Wins**: {totalWins} ({winRate}%)\r\n**Retires**: {totalRetires} ({retireRate}%)"));
+            eb.Field(new("__General Info:__",
+                $"Age: {chao.Age}\r\n" +
+                $"Reincarnations: {chao.Reincarnations}"
+            ));
+            eb.Field(new($"__Abilities:__",
+                $"**Swim** (Lv.{chao.SwimLevel:D2})\r\n{chao.SwimGrade} • {chao.SwimProgress:D2}/100 ({chao.SwimValue:D4})\r\n"
+                + $"**Fly** (Lv.{chao.FlyLevel:D2})\r\n{chao.FlyGrade} • {chao.FlyProgress:D2}/100 ({chao.FlyValue:D4})\r\n"
+                + $"**Run** (Lv.{chao.RunLevel:D2})\r\n{chao.RunGrade} • {chao.RunProgress:D2}/100 ({chao.RunValue:D4})\r\n"
+                + $"**Power** (Lv.{chao.PowerLevel:D2})\r\n{chao.PowerGrade} • {chao.PowerProgress:D2}/100 ({chao.PowerValue:D4})\r\n"
+                + $"**Stamina** (Lv.{chao.StaminaLevel:D2})\r\n{chao.StaminaGrade} • {chao.StaminaProgress:D2}/100 ({chao.StaminaValue:D4})\r\n"
+                + $"**Intelligence** (Lv.{chao.IntelligenceLevel:D2})\r\n{chao.IntelligenceGrade} • {chao.IntelligenceProgress:D2}/100 ({chao.IntelligenceValue:D4})\r\n"
+                + $"**Luck** (Lv.{chao.LuckLevel:D2})\r\n{chao.LuckGrade} • {chao.LuckProgress:D2}/100 ({chao.LuckValue:D4})"
+            ));
+            eb.Field(new($"__Race Stats:__",
+                $"Races: {totalRaces}\r\n" +
+                $"Wins: {totalWins} ({winRate}%)\r\n" +
+                $"Retires: {totalRetires} ({retireRate}%)"
+            ));
+            //eb.Field(new($"Image Url", $"{imageUrl}"));
 
             return eb.Build();
         }

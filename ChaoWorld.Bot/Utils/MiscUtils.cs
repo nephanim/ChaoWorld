@@ -66,5 +66,34 @@ namespace ChaoWorld.Bot
             // This may expanded at some point.
             return true;
         }
+
+        public static string GenerateThumbnailForChao(Core.Chao chao)
+        {
+            var urlRoot = "https://nephanim.com/chao/resources/";
+            var shiny = chao.IsShiny ? "shiny_" : "";
+            var twoTone = chao.IsTwoTone ? "_twotone" : "";
+            var color = chao.PrimaryColor.ToString().ToLower();
+            var mixColor = chao.SecondaryColor.HasValue ? $"_{chao.SecondaryColor.Value.ToString().ToLower()}" : "";
+            var firstAbilityType = chao.FirstEvolutionType.HasValue ? $"{chao.FirstEvolutionType.Value.ToString().ToLower()}/" : "";
+            var secondAbilityType = chao.SecondEvolutionType.HasValue ? $"{chao.SecondEvolutionType.Value.ToString().ToLower()}/" : "";
+
+            // Alignment is determined upon first evolution, so if the chao is still a child, we'll adjust it based on their current leaning
+            var alignment = chao.Alignment.ToString().ToLower();
+            if (chao.EvolutionState == Core.Chao.EvolutionStates.Child)
+            {
+                if (chao.AlignmentValue >= 50)
+                    alignment = "hero/";
+                else if (chao.AlignmentValue <= -50)
+                    alignment = "dark/";
+                else
+                    alignment = "neutral/";
+            }
+            var child = chao.EvolutionState == Core.Chao.EvolutionStates.Child ? "child/" : "";
+
+            // Examples (separated out for clarity):
+            //  https://bytebarcafe.com/chao/resources/ child/ neutral/ shiny_orange_twotone.jpg
+            //  https://bytebarcafe.com/chao/resources/ dark/ fly/ run/ white.jpg
+            return $"{urlRoot}{child}{alignment}{firstAbilityType}{secondAbilityType}{shiny}{color}{mixColor}{twoTone}.jpg";
+        }
     }
 }
