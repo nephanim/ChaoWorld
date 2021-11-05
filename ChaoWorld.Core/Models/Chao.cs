@@ -94,28 +94,55 @@ namespace ChaoWorld.Core
                     typeDescription += $"Shiny ";
                 if (IsTwoTone)
                     typeDescription += $"Two-Tone ";
-                typeDescription += $"{PrimaryColor}";
+                typeDescription += $"{PrimaryColor.GetDescription()}";
                 if (SecondaryColor.HasValue)
-                    typeDescription += $"/{SecondaryColor} Mix";
+                    typeDescription += $"/{SecondaryColor.GetDescription()} Mix";
                 //if (EvolutionState == Core.Chao.EvolutionStates.Egg)
                     //typeDescription += $" Egg";
                 //else
                 if (EvolutionState == EvolutionStates.Child)
                     typeDescription += $" Child";
                 else if (EvolutionState == EvolutionStates.First)
-                    typeDescription += $" {Alignment} {FirstEvolutionType}";
+                    typeDescription += $" {Alignment} {FirstEvolutionType.GetDescription()}";
                 else if (EvolutionState == EvolutionStates.Second && SecondEvolutionType.HasValue)
-                    typeDescription += $" {Alignment} {FirstEvolutionType}/{SecondEvolutionType}";
+                    typeDescription += $" {Alignment} {FirstEvolutionType.GetDescription()}/{SecondEvolutionType.GetDescription()}";
                 return typeDescription;
             }
         }
 
         public enum Colors
         {
-            Normal, Black, Blue, Brown, Green, Grey, LimeGreen, Orange, Pink, Purple, Red, SkyBlue, White, Yellow,
-            Amethyst, Aquamarine, Emerald, Garnet, Gold, Onyx, Peridot, Ruby, Sapphire, Silver, Topaz,
-            Bronze, Moon, Pearl, Glass, Metal,
-            Invisible
+            [Description("Normal")] Normal,
+            [Description("Black")] Black,
+            [Description("Blue")] Blue,
+            [Description("Brown")] Brown,
+            [Description("Green")] Green,
+            [Description("Grey")] Grey,
+            [Description("Lime Green")] LimeGreen,
+            [Description("Orange")] Orange,
+            [Description("Pink")] Pink,
+            [Description("Purple")] Purple,
+            [Description("Red")] Red,
+            [Description("Sky Blue")] SkyBlue,
+            [Description("White")] White,
+            [Description("Yellow")] Yellow,
+            [Description("Amethyst")] Amethyst,
+            [Description("Aquamarine")] Aquamarine,
+            [Description("Emerald")] Emerald,
+            [Description("Garnet")] Garnet,
+            [Description("Gold")] Gold,
+            [Description("Onyx")] Onyx,
+            [Description("Peridot")] Peridot,
+            [Description("Ruby")] Ruby,
+            [Description("Sapphire")] Sapphire,
+            [Description("Silver")] Silver,
+            [Description("Topaz")] Topaz,
+            [Description("Bronze")] Bronze,
+            [Description("Moon")] Moon,
+            [Description("Pearl")] Pearl,
+            [Description("Glass")] Glass,
+            [Description("Metal")] Metal,
+            [Description("Invisible")] Invisible
         }
 
         public enum EvolutionStates
@@ -131,9 +158,16 @@ namespace ChaoWorld.Core
 
         public enum AbilityTypes
         {
-            Normal, Swim, Fly, Run, Power,
-            SwimRun, SwimPower, FlyRun, FlyPower,
-            Chaos
+            [Description("Normal")] Normal,
+            [Description("Swim")] Swim,
+            [Description("Fly")] Fly,
+            [Description("Run")] Run,
+            [Description("Power")] Power,
+            [Description("Swim-Run")] SwimRun,
+            [Description("Swim-Power")] SwimPower,
+            [Description("Fly-Run")] FlyRun,
+            [Description("Fly-Power")] FlyPower,
+            [Description("Chaos")] Chaos
         }
 
         public enum StatGrades
