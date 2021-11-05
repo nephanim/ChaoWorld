@@ -87,6 +87,10 @@ namespace ChaoWorld.Bot
             if (ctx.Member != null && await ctx.Repository.GetChao(id) is Core.Chao chaoById)
                 return chaoById;
 
+            // Last chance, try fuzzy matching
+            if (await ctx.Repository.GetChaoByNameWithFuzzyMatching(input) is Core.Chao globalChaoFuzzyMatch)
+                return globalChaoFuzzyMatch;
+
             // We didn't find anything, so we return null.
             return null;
         }
@@ -122,6 +126,10 @@ namespace ChaoWorld.Bot
             // Try looking it up by the race name
             if (await ctx.Repository.GetRaceInstanceByName(input) is RaceInstance raceInstanceByName)
                 return raceInstanceByName;
+
+            // Last chance, try a fuzzy match
+            if (await ctx.Repository.GetRaceInstanceByNameWithFuzzyMatching(input) is RaceInstance raceInstanceFuzzy)
+                return raceInstanceFuzzy;
 
             // We didn't find anything, so we return null.
             return null;

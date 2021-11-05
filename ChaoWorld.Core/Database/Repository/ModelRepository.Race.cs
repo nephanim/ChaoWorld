@@ -45,6 +45,17 @@ namespace ChaoWorld.Core
             return await _db.QueryFirst<RaceInstance?>(query);
         }
 
+        public async Task<RaceInstance?> GetRaceInstanceByNameWithFuzzyMatching(string name)
+        {
+            var query = new Query("raceinstances").Join("races", "races.id", "raceinstances.raceid", "=")
+                .Where("raceinstances.state", "!=", (int)Core.RaceInstance.RaceStates.Completed)
+                .Where("raceinstances.state", "!=", (int)Core.RaceInstance.RaceStates.Canceled)
+                .Select("raceinstances.*")
+                .OrderByRaw("similarity(races.name, lower(?)) desc", name.ToLower().Replace("\"", string.Empty))
+                .Limit(1);
+            return await _db.QueryFirst<RaceInstance?>(query);
+        }
+
         public async Task<int> GetRaceInstanceChaoCount(long raceInstanceId)
         {
             var query = new Query("raceinstancechao").Where("raceinstanceid", raceInstanceId).SelectRaw("count(chaoid)");

@@ -33,6 +33,14 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Chao?>(query);
         }
 
+        public Task<Chao?> GetChaoByNameWithFuzzyMatching(string name)
+        {
+            var query = new Query("chao")
+                .OrderByRaw("similarity(name, lower(?)) desc", name.ToLower().Replace("\"", string.Empty))
+                .Limit(1);
+            return _db.QueryFirst<Chao?>(query);
+        }
+
         public async Task<Chao?> GetRandomChao(int gardenId)
         {
             var chao = await _db.Execute(conn => conn.QueryAsync<Chao?>($@"
