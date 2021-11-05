@@ -59,7 +59,7 @@ namespace ChaoWorld.Bot
                 .Title($"{firstUser}'s Garden")
                 .Footer(new($"Garden ID: {garden.Id} | Created on {garden.CreatedOn}"));
 
-            eb.Field(new("Rings", garden.RingBalance.ToString(), true));
+            eb.Field(new("Rings", string.Format("{0:n0}", garden.RingBalance), true));
             eb.Field(new("Active Chao", activeChao != null ? activeChao.Name : "(not set)"));
 
             if (chaoCount > 0)
