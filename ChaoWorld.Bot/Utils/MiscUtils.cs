@@ -93,7 +93,7 @@ namespace ChaoWorld.Bot
             // Examples (separated out for clarity):
             //  https://bytebarcafe.com/chao/resources/ child/ neutral/ shiny_orange_twotone.jpg
             //  https://bytebarcafe.com/chao/resources/ dark/ fly/ run/ white.jpg
-            return $"{urlRoot}{child}{alignment}{firstAbilityType}{secondAbilityType}{shiny}{color}{mixColor}{twoTone}.jpg";
+            return $"{urlRoot}{child}{alignment}{firstAbilityType}{secondAbilityType}{shiny}{color}{mixColor}{twoTone}.jpg?i=1";
         }
     }
 }
