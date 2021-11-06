@@ -112,6 +112,7 @@ namespace ChaoWorld.Bot
                 $"Wins: {totalWins} ({winRate}%)\r\n" +
                 $"Retires: {totalRetires} ({retireRate}%)"
             ));
+            //eb.Field(new("Image URL", imageUrl));
             eb.Color(await GetDiscordColor(chao));
 
             return eb.Build();

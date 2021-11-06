@@ -71,10 +71,10 @@ namespace ChaoWorld.ScheduledTasks
             foreach (var c in chao)
             {
                 var abilityType = c.GetEffectiveAbilityType();
+                c.Alignment = c.GetEffectiveAlignment();
                 c.EvolutionState = Chao.EvolutionStates.First;
                 c.FirstEvolutionType = abilityType;
                 c.RaiseStatGrade(abilityType);
-                c.Alignment = c.GetEffectiveAlignment();
                 c.FlySwimAffinity = 0;
                 c.RunPowerAffinity = 0;
                 await _repo.UpdateChao(c);

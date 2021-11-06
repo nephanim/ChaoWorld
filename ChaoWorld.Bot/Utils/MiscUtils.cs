@@ -78,7 +78,7 @@ namespace ChaoWorld.Bot
             var secondAbilityType = chao.SecondEvolutionType.HasValue ? $"{chao.SecondEvolutionType.Value.ToString().ToLower()}/" : "";
 
             // Alignment is determined upon first evolution, so if the chao is still a child, we'll adjust it based on their current leaning
-            var alignment = chao.Alignment.ToString().ToLower();
+            var alignment = $"{chao.Alignment.ToString().ToLower()}/";
             if (chao.EvolutionState == Core.Chao.EvolutionStates.Child)
             {
                 if (chao.AlignmentValue >= 50)
