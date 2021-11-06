@@ -90,8 +90,13 @@ namespace ChaoWorld.Bot
                     $"Garden ID: {garden.Id} | Chao ID: {chao.Id} {$"| Created on {chao.CreatedOn.FormatZoned(DateTimeZone.Utc)}"}"));
 
             eb.Field(new("__General Info:__",
-                $"Age: {chao.Age}\r\n" +
+                $"Age: {chao.CurrentAge}\r\n" +
+                //$"Total Age: {chao.TotalAge}\r\n" +
                 $"Reincarnations: {chao.Reincarnations}"
+            ));
+            eb.Field(new($"__Development:__",
+                $"Affinity: {chao.GetEffectiveAbilityType().GetDescription()}\r\n" +
+                $"Alignment: {chao.GetEffectiveAlignment()}"
             ));
             eb.Field(new($"__Abilities:__",
                 $"**Swim** (Lv.{chao.SwimLevel:D2})\r\n{chao.SwimGrade} • {chao.SwimProgress:D2}/100 ({chao.SwimValue:D4})\r\n"

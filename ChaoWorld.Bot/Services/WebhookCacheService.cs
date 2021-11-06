@@ -17,7 +17,7 @@ namespace ChaoWorld.Bot
 {
     public class WebhookCacheService
     {
-        public static readonly string WebhookName = "ChaoWorld Proxy Webhook";
+        public static readonly string WebhookName = "Chao World Events Webhook";
 
         private readonly DiscordApiClient _rest;
         private readonly ConcurrentDictionary<ulong, Lazy<Task<Webhook>>> _webhooks;

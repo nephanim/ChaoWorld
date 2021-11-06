@@ -42,20 +42,81 @@ namespace ChaoWorld.Core
         public GardenId GardenId { get; private set; }
         public string Name { get; private set; }
         public Instant CreatedOn { get; private set; }
+        public Instant RebirthOn { get; set; }
+
+        //Appearance stats
         public Colors PrimaryColor { get; set; }
         public Colors? SecondaryColor { get; set; }
         public bool IsShiny { get; set; }
         public bool IsTwoTone { get; set; }
-        public int Age { get; set; }
+
+        //Development stats
+        public int CurrentAge
+        {
+            get
+            {
+                var now = SystemClock.Instance.GetCurrentInstant();
+                var elapsed = now - RebirthOn;
+                return (elapsed.Days / 7);
+            }
+        }
+        public int TotalAge
+        {
+            get
+            {
+                var now = SystemClock.Instance.GetCurrentInstant();
+                var elapsed = now - CreatedOn;
+                return (elapsed.Days / 7);
+            }
+        }
         public int Reincarnations { get; set; }
         public EvolutionStates EvolutionState { get; private set; }
         public Alignments Alignment { get; private set; }
         public int AlignmentValue { get; set; }
-        public int EvolutionProgress { get; private set; }
         public AbilityTypes? FirstEvolutionType { get; private set; }
         public AbilityTypes? SecondEvolutionType { get; private set; }
         public int FlySwimAffinity { get; set; }
         public int RunPowerAffinity { get; set; }
+        
+        // Some helpers for affinity calculations
+        public int FlyAffinity
+        {
+            get
+            {
+                return FlySwimAffinity <= -50
+                    ? Math.Abs(FlySwimAffinity)
+                    : 0;
+            }
+        }
+        public int SwimAffinity
+        {
+            get
+            {
+                return FlySwimAffinity >= 50
+                    ? FlySwimAffinity
+                    : 0;
+            }
+        }
+        public int RunAffinity
+        {
+            get
+            {
+                return RunPowerAffinity <= -50
+                    ? Math.Abs(RunPowerAffinity)
+                    : 0;
+            }
+        }
+        public int PowerAffinity
+        {
+            get
+            {
+                return RunPowerAffinity >= 50
+                    ? RunPowerAffinity
+                    : 0;
+            }
+        }
+
+        // Abilities
         public StatGrades SwimGrade { get; set; }
         public int SwimLevel { get; private set; }
         public int SwimProgress { get; private set; }
@@ -334,6 +395,52 @@ namespace ChaoWorld.Core
                 default:
                     return ":regional_indicator_e:";
             }
+        }
+
+        public Alignments GetEffectiveAlignment()
+        {
+            if (EvolutionState != EvolutionStates.Child)
+                return Alignment;
+            else if (AlignmentValue > 50)
+                return Alignments.Hero;
+            else if (AlignmentValue < -50)
+                return Alignments.Dark;
+            else
+                return Alignments.Neutral;
+        }
+
+        public AbilityTypes GetEffectiveAbilityType()
+        {
+            if (SecondEvolutionType.HasValue)
+                // This chao isn't going to change anymore regardless of affinity
+                return SecondEvolutionType.Value;
+
+            // Not at second evolution yet, so what will our next evolution be?
+            if (Math.Abs(FlySwimAffinity) < 50 && Math.Abs(RunPowerAffinity) < 50)
+                return AbilityTypes.Normal; // This is the only way we should ever get the Normal ability type
+            // These evolution types are only available for second evolution, but we'll check them first to rule them out
+            else if (FirstEvolutionType.HasValue && FlyAffinity >= 50 && RunAffinity >= 50)
+                return AbilityTypes.FlyRun;
+            else if (FirstEvolutionType.HasValue && FlyAffinity >= 50 && PowerAffinity >= 50)
+                return AbilityTypes.FlyPower;
+            else if (FirstEvolutionType.HasValue && SwimAffinity >= 50 && RunAffinity >= 50)
+                return AbilityTypes.SwimRun;
+            else if (FirstEvolutionType.HasValue && SwimAffinity >= 50 && PowerAffinity >= 50)
+                return AbilityTypes.SwimPower;
+            // For ties beyond this point, swim > run/power > fly
+            else if (SwimAffinity >= 50 && RunAffinity <= SwimAffinity && PowerAffinity <= SwimAffinity)
+                return AbilityTypes.Swim;
+            else if (RunAffinity >= 50 && FlyAffinity <= RunAffinity)
+                return AbilityTypes.Run;
+            else if (PowerAffinity >= 50 && FlyAffinity <= PowerAffinity)
+                return AbilityTypes.Power;
+            else
+                return AbilityTypes.Fly;
+        }
+
+        public bool IsReadyForFirstEvolution()
+        {
+            return !FirstEvolutionType.HasValue && CurrentAge >= 1;
         }
     }
 

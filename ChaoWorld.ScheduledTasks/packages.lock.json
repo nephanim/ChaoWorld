@@ -384,6 +384,16 @@
           "Npgsql": "4.1.5"
         }
       },
+      "Polly": {
+        "type": "Transitive",
+        "resolved": "7.2.1",
+        "contentHash": "Od8SnPlpQr+PuAS0YzY3jgtzaDNknlIuAaldN2VEIyTvm/wCg22C5nUkUV1BEG8rIsub5RFMoV/NEQ0tM/+7Uw=="
+      },
+      "Polly.Contrib.WaitAndRetry": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "1MUQLiSo4KDkQe6nzQRhIU05lm9jlexX5BVsbuw0SL82ynZ+GzAHQxJVDPVBboxV37Po3SG077aX8DuSy8TkaA=="
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -491,6 +501,26 @@
         "resolved": "4.3.0",
         "contentHash": "VB5cn/7OzUfzdnC8tqAIMQciVLiq2epm2NrAm1E9OjNRyG4lVhfR61SMcLizejzQP8R8Uf/0l5qOIbUEi+RdEg=="
       },
+      "Sentry": {
+        "type": "Transitive",
+        "resolved": "2.1.6",
+        "contentHash": "Haii3y9JZX9Z/HrHyy8r0cLj6WvTTFS4xbGI0UtItZ53yB/hGaWeXD5mvk47HAVOHeix8Gg64tguxIBCicoMAQ==",
+        "dependencies": {
+          "Newtonsoft.Json": "11.0.2",
+          "Sentry.PlatformAbstractions": "1.1.1",
+          "Sentry.Protocol": "2.1.6"
+        }
+      },
+      "Sentry.PlatformAbstractions": {
+        "type": "Transitive",
+        "resolved": "1.1.1",
+        "contentHash": "ug99ZPdcQQY2Q2smO5tWfxUdMQF8f90UdCKMSfhucJVOAQtKWM0rXcqLvVZRlXDzeB/xNQWLSuw56I5MuaOS9g=="
+      },
+      "Sentry.Protocol": {
+        "type": "Transitive",
+        "resolved": "2.1.6",
+        "contentHash": "AXVI9e/mYp5NI/r+Tfk//YyXGGCUxq698xnOuJbiDUJ2FYw88BdB1Ewmv29pA8FTh/MLBWTPIwTVBWMouZrQBA=="
+      },
       "Serilog": {
         "type": "Transitive",
         "resolved": "2.10.0",
@@ -584,6 +614,11 @@
           "System.Collections.Concurrent": "4.0.12",
           "System.Threading.Timer": "4.0.1"
         }
+      },
+      "SixLabors.ImageSharp": {
+        "type": "Transitive",
+        "resolved": "1.0.2",
+        "contentHash": "iZJ37Iss3pUkFl961x1aka85QuvgY9oNZabHijzVnHs4QTz6EMNx3zjJDyvK/0+Ryj6JPv/PC7GVIJXLHtu2nQ=="
       },
       "SqlKata": {
         "type": "Transitive",
@@ -1319,6 +1354,16 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
+      "chaoworld.bot": {
+        "type": "Project",
+        "dependencies": {
+          "ChaoWorld.Core": "1.0.0",
+          "Humanizer.Core": "2.8.26",
+          "Myriad": "1.0.0",
+          "Sentry": "2.1.6",
+          "SixLabors.ImageSharp": "1.0.2"
+        }
+      },
       "chaoworld.core": {
         "type": "Project",
         "dependencies": {
@@ -1352,6 +1397,15 @@
           "SqlKata": "2.3.7",
           "SqlKata.Execution": "2.3.7",
           "System.Interactive.Async": "5.0.0"
+        }
+      },
+      "myriad": {
+        "type": "Project",
+        "dependencies": {
+          "Polly": "7.2.1",
+          "Polly.Contrib.WaitAndRetry": "1.1.1",
+          "Serilog": "2.10.0",
+          "System.Linq.Async": "5.0.0"
         }
       }
     }

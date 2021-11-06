@@ -105,7 +105,7 @@ namespace ChaoWorld.Bot
                 foreach (var m in page)
                 {
                     var profile = new StringBuilder($"**ID**: {m.Id}");
-                    profile.Append($"\n**Age**: {m.Age}");
+                    profile.Append($"\n**Age**: {m.CurrentAge}");
                     profile.Append($"\n**Reincarnations**: {m.Reincarnations}");
                     profile.Append($"\n**Type**: {m.Appearance}");
                     profile.Append($"\n**Stat Grades**: {m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade}");
