@@ -76,6 +76,10 @@ namespace ChaoWorld.Bot
             {
                 var __ = UpdatePeriodic();
             }, null, timeTillNextWholeMinute, TimeSpan.FromMinutes(1));
+
+            // Clean up orphaned race instances
+            PurgeOrphanedRaceInstances();
+            _logger.Information("Reset incomplete (pending, in progress) race instances");
         }
 
         public PermissionSet PermissionsIn(ulong channelId)
@@ -314,18 +318,15 @@ namespace ChaoWorld.Bot
             }
         }
 
-        /*private async void BuildInstances()
-        {
-            await InstantiateRaces();
-        }
-        private async Task InstantiateRaces()
+        private async Task PurgeOrphanedRaceInstances()
         {
             using (var conn = await _db.Obtain())
             {
-                var test = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<int>("select garden_count from info"));
-                _logger.Information($"Test value is: {test}");
+                await _db.Execute(conn => conn.QueryAsync(@$"
+                      delete from raceinstances
+                      where raceinstances.state in ({(int)RaceInstance.RaceStates.Preparing}, {(int)RaceInstance.RaceStates.InProgress})"
+                ));
             }
-                
-        }*/
+        }
     }
 }

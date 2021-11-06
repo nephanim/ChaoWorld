@@ -58,8 +58,27 @@ namespace ChaoWorld.ScheduledTasks
             _logger.Information("Updating available race instances...");
             await _repo.InstantiateRaces();
 
+            _logger.Information("Checking for chao to evolve...");
+            await RunFirstEvolutions();
+
             stopwatch.Stop();
             _logger.Information("Ran per-minute scheduled tasks in {Time}", stopwatch.ElapsedDuration());
+        }
+
+        private async Task RunFirstEvolutions()
+        {
+            var chao = await _repo.GetChaoReadyForFirstEvolution();
+            foreach (var c in chao)
+            {
+                var abilityType = c.GetEffectiveAbilityType();
+                c.EvolutionState = Chao.EvolutionStates.First;
+                c.FirstEvolutionType = abilityType;
+                c.RaiseStatGrade(abilityType);
+                c.Alignment = c.GetEffectiveAlignment();
+                c.FlySwimAffinity = 0;
+                c.RunPowerAffinity = 0;
+                await _repo.UpdateChao(c);
+            }
         }
 
         private async Task UpdateHourly()

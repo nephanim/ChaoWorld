@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using SqlKata;
 using Dapper;
+using System.Collections.Generic;
 
 namespace ChaoWorld.Core
 {
@@ -54,6 +55,14 @@ namespace ChaoWorld.Core
             return arr[randomIndex];
         }
 
+        public async Task<IEnumerable<Chao>> GetChaoReadyForFirstEvolution()
+        {
+            var query = new Query("chao")
+                .Where("evolutionstate", Chao.EvolutionStates.Child)
+                .WhereRaw("trunc(date_part('day', current_timestamp - rebirthon)) >= 7");
+            return await _db.Query<Chao>(query);
+        }
+
         public async Task<Chao> CreateChao(GardenId garden, Chao chao, IChaoWorldConnection? conn = null)
         {
             var query = new Query("chao").AsInsert(new
@@ -81,9 +90,16 @@ namespace ChaoWorld.Core
         // TODO: Add other properties in here - just don't want to troubleshoot issues with types / evolution until I get there
         public async Task UpdateChao(Chao chao, IChaoWorldConnection? conn = null)
         {
+            var firstEvolution = chao.FirstEvolutionType.HasValue
+                ? $"firstevolutiontype = {(int)chao.FirstEvolutionType.Value}, "
+                : string.Empty;
+
              await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update chao
                 set
+                    evolutionstate = {(int)chao.EvolutionState},
+                    {firstEvolution}
+                    alignment = {(int)chao.Alignment},
                     alignmentvalue = {chao.AlignmentValue},
                     flyswimaffinity = {chao.FlySwimAffinity},
                     runpoweraffinity = {chao.RunPowerAffinity},

@@ -70,11 +70,11 @@ namespace ChaoWorld.Core
             }
         }
         public int Reincarnations { get; set; }
-        public EvolutionStates EvolutionState { get; private set; }
-        public Alignments Alignment { get; private set; }
+        public EvolutionStates EvolutionState { get; set; }
+        public Alignments Alignment { get; set; }
         public int AlignmentValue { get; set; }
-        public AbilityTypes? FirstEvolutionType { get; private set; }
-        public AbilityTypes? SecondEvolutionType { get; private set; }
+        public AbilityTypes? FirstEvolutionType { get; set; }
+        public AbilityTypes? SecondEvolutionType { get; set; }
         public int FlySwimAffinity { get; set; }
         public int RunPowerAffinity { get; set; }
         
@@ -251,6 +251,34 @@ namespace ChaoWorld.Core
             StaminaGrade = MiscUtils.GenerateStatGrade();
             IntelligenceGrade = MiscUtils.GenerateStatGrade();
             LuckGrade = MiscUtils.GenerateStatGrade();
+        }
+
+        public void RaiseStatGrade(AbilityTypes type)
+        {
+            switch (type)
+            {
+                case AbilityTypes.Swim:
+                    if (SwimGrade < StatGrades.S)
+                        SwimGrade++;
+                    break;
+                case AbilityTypes.Fly:
+                    if (FlyGrade < StatGrades.S)
+                        FlyGrade++;
+                    break;
+                case AbilityTypes.Run:
+                    if (RunGrade < StatGrades.S)
+                        RunGrade++;
+                    break;
+                case AbilityTypes.Power:
+                    if (PowerGrade < StatGrades.S)
+                        PowerGrade++;
+                    break;
+                case AbilityTypes.Normal:
+                default:
+                    if (StaminaGrade < StatGrades.S)
+                        StaminaGrade++;
+                    break;
+            }
         }
 
         public void RaiseSwim(int amount)
