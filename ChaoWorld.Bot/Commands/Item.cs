@@ -23,6 +23,11 @@ namespace ChaoWorld.Bot
             ctx.CheckGarden();
             ctx.CheckOwnItem(item);
 
+            // Since many items will require a chao target, go ahead and decide who we would use
+            // Very important that this is scoped to the garden context! Item handlers should use this one rather than fetching their own
+            var chao = await ctx.MatchChao(ctx.Garden.Id) ?? await _repo.GetActiveChaoForGarden(ctx.Garden.Id.Value);
+            ctx.CheckOwnChao(chao);
+
             // TODO: Implement remaining item types
             //  * Seeds - I want to do more than just give them a bunch of fruits. Make them water their plants daily, and it will yield fruit that can be sold or used (until it dies).
             //  * Special - suspicious potions for reincarnation, chaos juice for better stat yield when reincarnating, negative mirrors, toy parts for building omochao...
@@ -36,7 +41,7 @@ namespace ChaoWorld.Bot
                         await HandleUseEgg(ctx, item);
                         break;
                     case ItemBase.ItemCategories.Fruit:
-                        await HandleUseFruit(ctx, item);
+                        await HandleUseFruit(ctx, item, chao);
                         break;
                     default:
                         await ctx.Reply($"{Emojis.Error} {item.ItemType.GetDescription()} cannot be used right now.");
@@ -63,9 +68,8 @@ namespace ChaoWorld.Bot
             await ctx.Reply($"{Emojis.Success} {egg.ItemType.GetDescription()} hatched! Your chao (ID: `{chao.Id}`) is currently unnamed. Use `!chao {chao.Id} rename {{new name}}` to give it a name.");
         }
 
-        private async Task HandleUseFruit(Context ctx, Core.Item fruit)
+        private async Task HandleUseFruit(Context ctx, Core.Item fruit, Core.Chao chao)
         {
-            var chao = await ctx.MatchChao() ?? await _repo.GetActiveChaoForGarden(ctx.Garden.Id.Value);
             var effect = string.Empty;
             if (chao != null)
             {

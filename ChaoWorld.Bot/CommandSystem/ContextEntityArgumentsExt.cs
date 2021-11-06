@@ -67,6 +67,8 @@ namespace ChaoWorld.Bot
         public static async Task<Core.Chao> PeekChao(this Context ctx, GardenId? restrictToSystem = null)
         {
             var input = ctx.PeekArgument();
+            if (string.IsNullOrEmpty(input))
+                return null;
 
             // Chao references can have one of three forms, depending on
             // whether you're in a garden or not:
