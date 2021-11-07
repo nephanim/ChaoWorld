@@ -310,8 +310,13 @@ namespace ChaoWorld.Core
         public async Task<ChaoRaceStats> GetRaceStats(long chaoId)
         {
             var stats = await _db.Execute(async conn => await conn.QueryFirstOrDefaultAsync<ChaoRaceStats>($@"
-                select chaoid, count(chaoid) totalraces, sum(case when state = 1 then 1 else 0 end) totalwins, sum(case when state = 2 then 1 else 0 end) totalretires
-                from raceinstancechao
+                select r.chaoid,
+                    count(r.chaoid) totalraces,
+                    sum(case when i.winnerchaoid = r.chaoid then 1 else 0 end) totalwins,
+                    sum(case when r.state = 2 then 1 else 0 end) totalretires
+                from raceinstancechao r
+                join raceinstances i
+                on r.raceinstanceid = i.id
                 where chaoid = {chaoId}
                 group by chaoid
             "));
