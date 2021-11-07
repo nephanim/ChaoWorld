@@ -41,7 +41,8 @@ namespace ChaoWorld.Core
                 "lower(races.name) = lower(?)",
                 name.ToLower().Replace("\"", string.Empty))
             .Select("raceinstances.*")
-            .OrderByDesc("createdon").Limit(1);
+            .OrderByDesc("raceinstances.id")
+            .Limit(1);
             return await _db.QueryFirst<RaceInstance?>(query);
         }
 
