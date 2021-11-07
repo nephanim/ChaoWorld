@@ -165,7 +165,7 @@ namespace ChaoWorld.Bot
 
             // Try looking it up by the name / type instead
             ItemBase.ItemTypes type;
-            Enum.TryParse(input, out type);
+            Enum.TryParse(input, ignoreCase: true, out type);
             if (await ctx.Repository.GetItemByType(ctx.Garden.Id.Value, (int)type) is Core.Item itemByType)
                 return itemByType;
 
