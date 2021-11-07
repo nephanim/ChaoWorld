@@ -24,6 +24,7 @@ create table if not exists chao
     isshiny boolean not null default false,
     istwotone boolean not null default false,
     reincarnations integer not null default 0,
+    reincarnationstatfactor double precision not null default 0.10,
     rebirthon timestamp without time zone not null default (current_timestamp),
     evolutionstate integer not null default 0,
     alignment integer not null default 0,

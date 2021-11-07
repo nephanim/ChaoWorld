@@ -92,13 +92,19 @@ namespace ChaoWorld.Core
         {
             var firstEvolution = chao.FirstEvolutionType.HasValue
                 ? $"firstevolutiontype = {(int)chao.FirstEvolutionType.Value}, "
-                : string.Empty;
+                : $"firstevolutiontype = null, ";
+            var secondEvolution = chao.SecondEvolutionType.HasValue
+                ? $"secondevolutiontype = {(int)chao.SecondEvolutionType.Value}, "
+                : $"secondevolutiontype = null, ";
 
              await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update chao
                 set
+                    reincarnations = {chao.Reincarnations},
+                    reincarnationstatfactor = {chao.ReincarnationStatFactor},
                     evolutionstate = {(int)chao.EvolutionState},
                     {firstEvolution}
+                    {secondEvolution}
                     alignment = {(int)chao.Alignment},
                     alignmentvalue = {chao.AlignmentValue},
                     flyswimaffinity = {chao.FlySwimAffinity},

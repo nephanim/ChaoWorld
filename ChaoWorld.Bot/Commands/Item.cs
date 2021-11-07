@@ -43,6 +43,9 @@ namespace ChaoWorld.Bot
                     case ItemBase.ItemCategories.Fruit:
                         await HandleUseFruit(ctx, item, chao);
                         break;
+                    case ItemBase.ItemCategories.Special:
+                        await HandleUseSpecial(ctx, item, chao);
+                        break;
                     default:
                         await ctx.Reply($"{Emojis.Error} {item.ItemType.GetDescription()} cannot be used right now.");
                         break;
@@ -237,6 +240,28 @@ namespace ChaoWorld.Bot
                 await ctx.Reply($"{Emojis.Error} You can't eat {fruit.ItemType.GetDescription()}. Did you mean to give this to your chao? (Try `!item \"{fruit.ItemType.GetDescription()}\" use {{chao id/name}}` instead.)");
             }
             await _repo.UpdateChao(chao);
+        }
+
+        public async Task HandleUseSpecial(Context ctx, Core.Item item, Core.Chao chao)
+        {
+            var effect = string.Empty;
+            switch (item.ItemType)
+            {
+                case ItemBase.ItemTypes.SuspiciousPotion:
+                    chao.Reincarnate();
+                    effect = " Your chao disappears into a cocoon, only to reemerge as a child.";
+                    break;
+                case ItemBase.ItemTypes.ChaosJuice:
+                    if (chao.ReincarnationStatFactor < 0.7) // TODO: Make a conscious decision about what this threshold should be, stats can get up to 9797 at 70%
+                        chao.ReincarnationStatFactor += 0.01;
+                    effect = " Chaos energy strengthens your chao's soul.";
+                    break;
+                case ItemBase.ItemTypes.NegativeMirror:
+                    // TODO: Implement reverse mirror effects (needs lots of image work...)
+                    break;
+            }
+            await _repo.UpdateChao(chao);
+            await ctx.Reply($"{Emojis.Success} {chao.Name} used the {item.ItemType.GetDescription()}!{effect}");
         }
 
         public async Task BuyItem(Context ctx, MarketItem item)

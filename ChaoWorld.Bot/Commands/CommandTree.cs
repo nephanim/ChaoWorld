@@ -177,7 +177,7 @@ namespace ChaoWorld.Bot
                 else if (ctx.Match("join"))
                 {
                     if (ctx.HasNext())
-                        if (await ctx.MatchChao() is { } chaoTarget)
+                        if (await ctx.MatchChao(ctx.Garden.Id) is { } chaoTarget)
                             await ctx.Execute<Race>(RaceJoin, m => m.EnterChaoInRace(ctx, chaoTarget, raceInstanceTarget));
                         else
                             await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");

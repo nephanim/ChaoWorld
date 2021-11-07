@@ -112,6 +112,7 @@ namespace ChaoWorld.Core
             [ItemCategory(ItemCategories.Egg)] [Description("Topaz Egg")] [PrimaryColor(Chao.Colors.Topaz)] TopazEgg,
             [ItemCategory(ItemCategories.Egg)] [Description("Bronze Egg")] [PrimaryColor(Chao.Colors.Bronze)] BronzeEgg,
             [ItemCategory(ItemCategories.Egg)] [Description("Moon Egg")] [PrimaryColor(Chao.Colors.Moon)] MoonEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Toy Parts")] [Price(100000)] ToyParts, // TODO: Decide how to handle Omochao
 
             // Non-Market Eggs
             [ItemCategory(ItemCategories.Egg)] [Description("Normal Egg")] [PrimaryColor(Chao.Colors.Normal)] NormalEgg,
@@ -190,7 +191,6 @@ namespace ChaoWorld.Core
             [ItemCategory(ItemCategories.Special)] [Description("Suspicious Potion")] [Price(30000)] SuspiciousPotion = 3000,
             [ItemCategory(ItemCategories.Special)] [Description("Chaos Juice")] [Price(100000)] ChaosJuice,
             [ItemCategory(ItemCategories.Special)] [Description("Negative Mirror")] [Price(10000)] NegativeMirror,
-            [ItemCategory(ItemCategories.Special)] [Description("Toy Parts")] [Price(100000)] ToyParts,
 
             // Non-Market Hats
             [ItemCategory(ItemCategories.Hat)] [Description("Normal Eggshell")] NormalEggshell = 4000,
