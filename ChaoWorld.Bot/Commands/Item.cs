@@ -81,10 +81,12 @@ namespace ChaoWorld.Bot
                 {
                     case ItemBase.ItemTypes.HeroFruit:
                         chao.AlignmentValue += 10;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Your chao's alignment shifted slightly.";
                         break;
                     case ItemBase.ItemTypes.DarkFruit:
                         chao.AlignmentValue -= 10;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Your chao's alignment shifted slightly.";
                         break;
                     case ItemBase.ItemTypes.RoundFruit:
@@ -100,6 +102,7 @@ namespace ChaoWorld.Bot
                         var random = new Random();
                         if (random.Next(1, 3) == 1) {
                             chao.RaiseLuck(statIncreaseAmount);
+                            chao.RaiseStamina(statIncreaseAmount);
                             effect = " Your chao's luck improved.";
                         } else
                         {
@@ -120,33 +123,40 @@ namespace ChaoWorld.Bot
                         break;
                     case ItemBase.ItemTypes.SwimFruit:
                         chao.RaiseSwim(statIncreaseAmount);
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Your chao's swimming improved.";
                         chao.FlySwimAffinity += 10;
                         break;
                     case ItemBase.ItemTypes.FlyFruit:
                         chao.RaiseFly(statIncreaseAmount);
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Your chao's flying improved.";
                         chao.FlySwimAffinity -= 10;
                         break;
                     case ItemBase.ItemTypes.RunFruit:
                         chao.RaiseRun(statIncreaseAmount);
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Your chao's running improved.";
                         chao.RunPowerAffinity -= 10;
                         break;
                     case ItemBase.ItemTypes.PowerFruit:
                         chao.RaisePower(statIncreaseAmount);
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Your chao's climbing improved.";
                         chao.RunPowerAffinity += 10;
                         break;
                     case ItemBase.ItemTypes.SmartFruit:
                         chao.RaiseIntelligence(statIncreaseAmount);
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Your chao's intelligence improved.";
                         break;
                     case ItemBase.ItemTypes.LuckyMushroom:
                         chao.RaiseLuck(statIncreaseAmount);
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Your chao's luck improved.";
                         break;
                     case ItemBase.ItemTypes.HyperSwimFruit:
+                        chao.RaiseStamina(statIncreaseAmount);
                         if (chao.SwimGrade == Core.Chao.StatGrades.S)
                         {
                             chao.SwimGrade = Core.Chao.StatGrades.X;
@@ -158,6 +168,7 @@ namespace ChaoWorld.Bot
                         }
                         break;
                     case ItemBase.ItemTypes.HyperFlyFruit:
+                        chao.RaiseStamina(statIncreaseAmount);
                         if (chao.FlyGrade == Core.Chao.StatGrades.S)
                         {
                             chao.FlyGrade = Core.Chao.StatGrades.X;
@@ -170,6 +181,7 @@ namespace ChaoWorld.Bot
                         }
                         break;
                     case ItemBase.ItemTypes.HyperRunFruit:
+                        chao.RaiseStamina(statIncreaseAmount);
                         if (chao.RunGrade == Core.Chao.StatGrades.S)
                         {
                             chao.RunGrade = Core.Chao.StatGrades.X;
@@ -182,6 +194,7 @@ namespace ChaoWorld.Bot
                         }
                         break;
                     case ItemBase.ItemTypes.HyperPowerFruit:
+                        chao.RaiseStamina(statIncreaseAmount);
                         if (chao.PowerGrade == Core.Chao.StatGrades.S)
                         {
                             chao.PowerGrade = Core.Chao.StatGrades.X;
@@ -194,6 +207,7 @@ namespace ChaoWorld.Bot
                         }
                         break;
                     case ItemBase.ItemTypes.HyperStaminaFruit:
+                        chao.RaiseStamina(statIncreaseAmount);
                         if (chao.StaminaGrade == Core.Chao.StatGrades.S)
                         {
                             chao.StaminaGrade = Core.Chao.StatGrades.X;
@@ -206,6 +220,7 @@ namespace ChaoWorld.Bot
                         }
                         break;
                     case ItemBase.ItemTypes.HyperSmartFruit:
+                        chao.RaiseStamina(statIncreaseAmount);
                         if (chao.IntelligenceGrade == Core.Chao.StatGrades.S)
                         {
                             chao.IntelligenceGrade = Core.Chao.StatGrades.X;
@@ -218,6 +233,7 @@ namespace ChaoWorld.Bot
                         }
                         break;
                     case ItemBase.ItemTypes.HyperLuckyMushroom:
+                        chao.RaiseStamina(statIncreaseAmount);
                         if (chao.LuckGrade == Core.Chao.StatGrades.S)
                         {
                             chao.LuckGrade = Core.Chao.StatGrades.X;
