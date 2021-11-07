@@ -33,30 +33,14 @@ namespace ChaoWorld.Bot
             _rest = rest;
         }
 
-        public async Task<(ulong Id, User? User)[]> GetUsers(IEnumerable<ulong> ids)
+        public async Task<Embed> CreateGardenEmbed(Context ctx, Core.Garden garden)
         {
-            async Task<(ulong Id, User? User)> Inner(ulong id)
-            {
-                var user = await _cache.GetOrFetchUser(_rest, id);
-                return (id, user);
-            }
-
-            return await Task.WhenAll(ids.Select(Inner));
-        }
-
-        public async Task<Embed> CreateGardenEmbed(Context cctx, Core.Garden garden)
-        {
-
-            // Fetch/render info for all accounts simultaneously
-            var accounts = await _repo.GetGardenAccounts(garden.Id);
-            var users = (await GetUsers(accounts)).Select(x => x.User?.Username ?? $"({x.Id})");
-            var firstUser = garden.Id.Value == 0 ? "Professor Chao" : users.FirstOrDefault();
-
+            var gardenOwner = await ctx.GetCachedGardenOwner(garden.Id);
             var chaoCount = await _repo.GetGardenChaoCount(garden.Id);
             var activeChao = await _repo.GetActiveChaoForGarden(garden.Id.Value);
 
             var eb = new EmbedBuilder()
-                .Title($"{firstUser}'s Garden")
+                .Title($"{gardenOwner}'s Garden")
                 .Footer(new($"Garden ID: {garden.Id} | Created on {garden.CreatedOn}"));
 
             eb.Field(new("Rings", string.Format("{0:n0}", garden.RingBalance), true));
@@ -118,14 +102,16 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
-        public async Task<Embed> CreateRaceEmbed(Core.Race race, RaceInstance raceInstance)
+        public async Task<Embed> CreateRaceEmbed(Context ctx, Core.Race race, RaceInstance raceInstance)
         {
             var name = race.Name;
             var difficulty = Core.Race.GetDifficultyString(race.Difficulty);
             var participants = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
+            var imageUrl = MiscUtils.GenerateThumbnailForRace(race);
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
+                .Thumbnail(new(imageUrl))
                 .Description(race.Description)
                 .Footer(new(
                     $"Instance ID: {raceInstance.Id} | Created on {raceInstance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
@@ -140,8 +126,11 @@ namespace ChaoWorld.Bot
                 var winner = await _repo.GetChao(raceInstance.WinnerChaoId.GetValueOrDefault(0));
                 if (winner != null)
                 {
-                    eb.Field(new("Winner", $"{winner.Name}"));
+                    var chaoImageUrl = MiscUtils.GenerateThumbnailForChao(winner);
+                    var winnerOwner = await ctx.GetCachedGardenOwner(winner.GardenId);
+                    eb.Field(new("Winner", $"{winner.Name} ({winnerOwner})"));
                     eb.Field(new("Time", timeElapsed));
+                    eb.Image(new(chaoImageUrl));
                 }
             }
 
@@ -168,9 +157,11 @@ namespace ChaoWorld.Bot
             var name = $"Race Progress: {race.Name}";
             var orderedChao = chao.OrderBy(x => x.Position);
             var desc = $"{segment.Description}";
+            var imageUrl = MiscUtils.GenerateThumbnailForRace(race);
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
+                .Thumbnail(new(imageUrl))
                 .Description(desc)
                 .Footer(new(
                     $"Instance ID: {raceInstance.Id} | Segment: {segment.RaceIndex} | Created on {raceInstance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));

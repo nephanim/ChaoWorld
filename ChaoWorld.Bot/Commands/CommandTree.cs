@@ -24,6 +24,7 @@ namespace ChaoWorld.Bot
         public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order");
         public static Command RaceInfo = new Command("race", "race {id/name}", "Looks up information about a race using either the name or ID");
         public static Command RaceJoin = new Command("race join", "race join {race id/name} [chao id/name]", "Joins a race with the specified chao (garden default is used if no chao is specified)");
+        public static Command RaceLeave = new Command("race leave", "race leave", "Leaves a race your chao is currently waiting for (provided it hasn't started yet)");
         public static Command ItemList = new Command("item list", "item list", "Lists all items in your inventory");
         public static Command ItemUse = new Command("item use", "item use {item id/name} [chao id/name]", "Uses the specified item in your inventory (chao target is only used for certain items)");
         //public static Command ItemDiscard = new Command("item discard", "item {item id/name} discard", "Discards the specified item from your inventory");
@@ -44,7 +45,7 @@ namespace ChaoWorld.Bot
 
         public static Command[] RaceCommands =
         {
-            RaceInstanceList, RaceInfo, RaceJoin
+            RaceInstanceList, RaceInfo, RaceJoin, RaceLeave
         };
 
         public static Command[] ItemCommands =
@@ -169,6 +170,8 @@ namespace ChaoWorld.Bot
         {
             if (ctx.Match("list", "l") || !ctx.HasNext())
                 await ctx.Execute<RaceList>(RaceInstanceList, m => m.RaceInstanceList(ctx));
+            else if (ctx.Match("withdraw", "leave", "quit", "abandon", "cancel"))
+                await ctx.Execute<Race>(RaceLeave, m => m.LeaveRace(ctx));
             else if (ctx.Match("commands", "help", "h"))
                 await PrintCommandList(ctx, "races", RaceCommands);
             else if (ctx.Match("join", "j")) // !race join x x

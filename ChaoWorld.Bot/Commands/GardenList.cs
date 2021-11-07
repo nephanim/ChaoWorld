@@ -21,12 +21,10 @@ namespace ChaoWorld.Bot
         {
             if (target == null) throw Errors.NoGardenError;
 
-            var accounts = await ctx.Repository.GetGardenAccounts(target.Id);
-            var users = (await _embeds.GetUsers(accounts)).Select(x => x.User?.Username ?? $"({x.Id})");
-            var firstUser = target.Id.Value == 0 ? "Professor Chao" : users.FirstOrDefault();
+            var gardenOwner = await ctx.GetCachedGardenOwner(target.Id);
 
             var opts = ctx.ParseChaoListOptions();
-            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(firstUser, opts), null, opts);
+            await ctx.RenderChaoList(_db, target.Id, GetEmbedTitle(gardenOwner, opts), null, opts);
         }
 
         private string GetEmbedTitle(string user, ChaoListOptions opts)

@@ -13,6 +13,11 @@ using Npgsql;
 using ChaoWorld.Core;
 
 using Polly.Timeout;
+using System.Collections.Generic;
+using Myriad.Types;
+using Myriad.Cache;
+using Myriad.Rest;
+using Myriad.Extensions;
 
 namespace ChaoWorld.Bot
 {
@@ -94,6 +99,27 @@ namespace ChaoWorld.Bot
             //  https://bytebarcafe.com/chao/resources/ child/ neutral/ shiny_orange_twotone.jpg
             //  https://bytebarcafe.com/chao/resources/ dark/ fly/ run/ white.jpg
             return $"{urlRoot}{child}{alignment}{firstAbilityType}{secondAbilityType}{shiny}{color}{mixColor}{twoTone}.jpg?i=1";
+        }
+
+        public static string GenerateThumbnailForRace(Core.Race race)
+        {
+            var urlRoot = "https://nephanim.com/chao/resources/races/";
+            var name = race.Name.ToLower().Replace(" ", string.Empty);
+            return $"{urlRoot}{name}.png?i=1";
+        }
+
+        public static async Task<string> GetCachedGardenOwnerName(IDiscordCache cache, DiscordApiClient rest, IEnumerable<ulong> accountIds, int gardenId)
+        {
+            if (gardenId == 0) return "Professor Chao";
+
+            async Task<string> Inner(ulong id)
+            {
+                var user = await cache.GetOrFetchUser(rest, id);
+                return user.Username;
+            }
+
+            var users = await Task.WhenAll(accountIds.Select(Inner));
+            return users.FirstOrDefault();
         }
     }
 }

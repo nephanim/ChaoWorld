@@ -154,6 +154,16 @@ namespace ChaoWorld.Core
             _logger.Information($"Chao {chao.Id} joined instance {raceInstance.Id} of race {raceInstance.RaceId}");
         }
 
+        public async Task RemoveChaoFromRaceInstance(RaceInstance raceInstance, Chao chao)
+        {
+            var query = new Query("raceinstancechao")
+                .Where("raceinstanceid", raceInstance.Id)
+                .Where("chaoid", chao.Id)
+                .AsDelete();
+            await _db.ExecuteQuery(query);
+            _logger.Information($"Chao {chao.Id} left instance {raceInstance.Id} of race {raceInstance.RaceId}");
+        }
+
         public async Task AddSegmentsToRaceInstance(RaceInstance raceInstance, IChaoWorldConnection? conn = null)
         {
             // This does the following:

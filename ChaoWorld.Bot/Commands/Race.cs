@@ -46,7 +46,7 @@ namespace ChaoWorld.Bot
         public async Task ViewRaceInstance(Context ctx, Core.RaceInstance target)
         {
             var race = await _repo.GetRaceById(target.RaceId);
-            await ctx.Reply(embed: await _embeds.CreateRaceEmbed(race, target));
+            await ctx.Reply(embed: await _embeds.CreateRaceEmbed(ctx, race, target));
         }
 
         public async Task EnterChaoInRace(Context ctx, Core.Chao chao, RaceInstance raceInstance)
@@ -105,6 +105,27 @@ namespace ChaoWorld.Bot
                     }
                 }
             }
+        }
+
+        public async Task LeaveRace(Context ctx)
+        {
+            ctx.CheckGarden();
+
+            var activeRace = await _repo.GetActiveRaceByGarden(ctx.Garden.Id.Value);
+            if (activeRace != null)
+            {
+                if (activeRace.State == RaceInstance.RaceStates.New || activeRace.State == RaceInstance.RaceStates.Preparing)
+                {
+                    var raceChao = await _repo.GetRaceInstanceChao(activeRace);
+                    var chao = raceChao.FirstOrDefault(x => x.GardenId == ctx.Garden.Id);
+                    if (chao != null)
+                        await _repo.RemoveChaoFromRaceInstance(activeRace, chao);
+                    await ctx.Reply($"{Emojis.Success} You are no longer waiting for the race to start.");
+                } else
+                    await ctx.Reply($"{Emojis.Error} You can no longer withdraw from the race. Please wait for it to finish.");
+            }
+            else
+                await ctx.Reply($"{Emojis.Error} None of your chao are currently participating in a race.");
         }
 
         public async Task StartRace(Context ctx, Core.Race race, RaceInstance raceInstance)
@@ -176,7 +197,7 @@ namespace ChaoWorld.Bot
                 await _repo.GiveRaceRewards(raceInstance, prizeRings); // Award the prize to the winner
 
                 raceInstance = await _repo.GetRaceInstanceById(raceInstance.Id); // Refresh our instance information (because some of it is stale)
-                await ctx.Reply(embed: await _embeds.CreateRaceEmbed(race, raceInstance));
+                await ctx.Reply(embed: await _embeds.CreateRaceEmbed(ctx, race, raceInstance));
                 await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has finished. Thanks for playing!");
                 result.Complete = true;
             }

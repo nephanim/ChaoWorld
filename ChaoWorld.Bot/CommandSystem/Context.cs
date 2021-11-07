@@ -127,6 +127,12 @@ namespace ChaoWorld.Bot
             }
         }
 
+        public async Task<string> GetCachedGardenOwner(GardenId gardenId)
+        {
+            var accounts = await _repo.GetGardenAccounts(gardenId);
+            return await MiscUtils.GetCachedGardenOwnerName(_cache, _rest, accounts, gardenId.Value);
+        }
+
         public IComponentContext Services => _provider;
     }
 }
