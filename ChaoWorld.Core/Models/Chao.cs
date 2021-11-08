@@ -432,9 +432,9 @@ namespace ChaoWorld.Core
         {
             if (EvolutionState != EvolutionStates.Child)
                 return Alignment;
-            else if (AlignmentValue > 50)
+            else if (AlignmentValue >= 50)
                 return Alignments.Hero;
-            else if (AlignmentValue < -50)
+            else if (AlignmentValue <= -50)
                 return Alignments.Dark;
             else
                 return Alignments.Neutral;
