@@ -12,7 +12,7 @@ namespace ChaoWorld.Core
         public static readonly int MaxDescriptionLength = 1000;
         public static readonly int MaxProxyTagLength = 100;
         public static readonly int MaxSwitchChaoCount = 150;
-        public static readonly int MaxChaoNameLength = 100; // Fair bit larger than MaxProxyNameLength for bookkeeping
+        public static readonly int MaxChaoNameLength = 30; // Fair bit larger than MaxProxyNameLength for bookkeeping
         public static readonly int MaxGroupNameLength = 100;
         public static readonly int MaxPronounsLength = 100;
         public static readonly int MaxUriLength = 256; // May need to be set higher, I know there are URLs longer than this in prod (they can rehost, I guess...)
