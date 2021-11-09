@@ -74,8 +74,8 @@ namespace ChaoWorld.Bot
                     $"Garden ID: {garden.Id} | Chao ID: {chao.Id} {$"| Created on {chao.CreatedOn.FormatZoned(DateTimeZone.Utc)}"}"));
 
             eb.Field(new("__General Info:__",
-                $"Age: {chao.CurrentAge}\r\n" +
-                //$"Total Age: {chao.TotalAge}\r\n" +
+                $"Current Age: {chao.CurrentAge}\r\n" +
+                $"Total Age: {chao.TotalAge}\r\n" +
                 $"Reincarnations: {chao.Reincarnations}"
             ));
             eb.Field(new($"__Development:__",
