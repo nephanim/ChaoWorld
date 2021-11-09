@@ -333,5 +333,30 @@ namespace ChaoWorld.Core
             "));
             return stats;
         }
+
+        public async Task UpdateRacePingSetting(ulong accountId, bool allowPings)
+        {
+            await _db.Execute(conn => conn.QueryAsync(@$"
+                update accounts
+                set enableracepings = {allowPings}
+                where uid = {accountId}
+            "));
+            _logger.Information($"Updated account settings for {accountId} (enable race pings: {allowPings}");
+        }
+
+        public async Task<IEnumerable<ulong>> GetAccountsToPingForRace(long raceInstanceId)
+        {
+            return await _db.Execute(conn => conn.QueryAsync<ulong>(@$"
+                    select a.uid
+                    from raceinstancechao ric
+                    join chao c
+                    on ric.chaoid = c.id
+                    join accounts a
+                    on c.gardenid = a.gardenid
+                    where ric.raceinstanceid = {raceInstanceId}
+                    and c.gardenid > 0
+                    and enableracepings = true
+                "));
+        }
     }
 }

@@ -10,7 +10,10 @@ create table if not exists gardens
 create table if not exists accounts
 (
     uid bigint primary key,
-    gardenid serial not null references gardens (id) on delete cascade
+    gardenid serial not null references gardens (id) on delete cascade,
+    enableracepings boolean not null default false,
+    enabletournamentpings boolean not null default false,
+    enableexpeditionpings boolean not null default false
 );
 
 create table if not exists chao

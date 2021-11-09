@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using ChaoWorld.Core;
 using System.Threading;
 using System.Collections.Generic;
+using Myriad.Rest.Types;
 
 namespace ChaoWorld.Bot
 {
@@ -128,6 +129,18 @@ namespace ChaoWorld.Bot
                 await ctx.Reply($"{Emojis.Error} None of your chao are currently participating in a race.");
         }
 
+        public async Task UpdatePingSettings(Context ctx)
+        {
+            var allowPings = false;
+            if (ctx.Match("enable", "on", "yes", "1", "true", "accept", "allow"))
+                allowPings = true;
+            await _repo.UpdateRacePingSetting(ctx.Author.Id, allowPings);
+            if (allowPings)
+                await ctx.Reply($"{Emojis.Success} Race pings are now enabled.");
+            else
+                await ctx.Reply($"{Emojis.Success} Race pings are now disabled.");
+        }
+
         public async Task StartRace(Context ctx, Core.Race race, RaceInstance raceInstance)
         {
             // The ready delay period is over -- time to race!
@@ -198,7 +211,15 @@ namespace ChaoWorld.Bot
 
                 raceInstance = await _repo.GetRaceInstanceById(raceInstance.Id); // Refresh our instance information (because some of it is stale)
                 await ctx.Reply(embed: await _embeds.CreateRaceEmbed(ctx, race, raceInstance));
-                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has finished. Thanks for playing!");
+
+                var notifyList = await _repo.GetAccountsToPingForRace(raceInstance.Id);
+                var notifyString = notifyList.Any() ? " " + string.Join(" ", notifyList.Select(x => $"<@{x}>").ToArray()) : "";
+                var mentions = new AllowedMentions
+                {
+                    Users = notifyList.ToArray()
+                };
+                
+                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has finished. Thanks for playing!{notifyString}", mentions: mentions);
                 result.Complete = true;
             }
             else if (segments.All(x => x.State == RaceInstanceChaoSegment.SegmentStates.Retired))
