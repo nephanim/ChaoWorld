@@ -74,10 +74,11 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckGarden();
 
-            var now = NodaTime.SystemClock.Instance.GetCurrentInstant();
+            var now = SystemClock.Instance.GetCurrentInstant();
             if (ctx.Garden.NextCollectOn < now)
             {
-                var ringsFound = new System.Random().Next(100, 1000);
+                var maxLuck = await _repo.GetHighestLuckInGarden(ctx.Garden.Id);
+                var ringsFound = new System.Random().Next(100, 1000 + maxLuck/10);
                 ctx.Garden.RingBalance += ringsFound;
                 var duration = Duration.FromDays(1);
                 ctx.Garden.NextCollectOn = now.Plus(duration);
@@ -99,7 +100,6 @@ namespace ChaoWorld.Bot
 
                 await ctx.Reply($"{Emojis.Error} You couldn't find anything. Please wait another {timeRemaining} to collect rings.");
             }
-                
         }
 
         public async Task Stats(Context ctx)

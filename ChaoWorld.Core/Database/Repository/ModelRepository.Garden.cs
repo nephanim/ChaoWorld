@@ -43,7 +43,12 @@ namespace ChaoWorld.Core
         public Task<int> GetGardenChaoCount(GardenId garden)
         {
             var query = new Query("chao").SelectRaw("count(*)").Where("gardenid", garden);
+            return _db.QueryFirst<int>(query);
+        }
 
+        public Task<int> GetHighestLuckInGarden(GardenId garden)
+        {
+            var query = new Query("chao").SelectRaw("max(luckvalue)").Where("gardenid", garden);
             return _db.QueryFirst<int>(query);
         }
 
