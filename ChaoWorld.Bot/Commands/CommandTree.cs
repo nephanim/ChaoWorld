@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Humanizer;
 
 using ChaoWorld.Core;
+using System;
 
 namespace ChaoWorld.Bot
 {
@@ -25,6 +26,7 @@ namespace ChaoWorld.Bot
         public static Command RaceInfo = new Command("race", "race {id/name}", "Looks up information about a race using either the name or ID");
         public static Command RaceJoin = new Command("race join", "race join {race id/name} [chao id/name]", "Joins a race with the specified chao (garden default is used if no chao is specified)");
         public static Command RaceLeave = new Command("race leave", "race leave", "Leaves a race your chao is currently waiting for (provided it hasn't started yet)");
+        public static Command RacePings = new Command("race pings", "race pings {on/off}", "Updates account settings for pings on race completion (e.g. `!race pings on` will notify you when your chao completes a race");
         public static Command ItemList = new Command("item list", "item list", "Lists all items in your inventory");
         public static Command ItemUse = new Command("item use", "item use {item id/name} [chao id/name]", "Uses the specified item in your inventory (chao target is only used for certain items)");
         //public static Command ItemDiscard = new Command("item discard", "item {item id/name} discard", "Discards the specified item from your inventory");
@@ -45,7 +47,7 @@ namespace ChaoWorld.Bot
 
         public static Command[] RaceCommands =
         {
-            RaceInstanceList, RaceInfo, RaceJoin, RaceLeave
+            RaceInstanceList, RaceInfo, RaceJoin, RaceLeave, RacePings
         };
 
         public static Command[] ItemCommands =
@@ -66,6 +68,8 @@ namespace ChaoWorld.Bot
                 return HandleChaoCommand(ctx);
             if (ctx.Match("race", "r", "races"))
                 return HandleRaceCommand(ctx);
+            if (ctx.Match("tournament"))
+                return HandleTournamentCommand(ctx);
             if (ctx.Match("item", "i", "items"))
                 return HandleItemCommand(ctx);
             if (ctx.Match("market", "m"))
@@ -141,6 +145,21 @@ namespace ChaoWorld.Bot
                 await PrintCommandList(ctx, "chao", ChaoCommands);
             else if (await ctx.MatchChao() is Core.Chao target)
                 await HandleChaoCommandTargeted(ctx, target);
+            else if (ctx.Match("pet"))
+                if (await ctx.MatchChao() is Core.Chao petTarget)
+                    await ctx.Execute<Chao>(ChaoPet, m => m.PetChao(ctx, petTarget));
+                else
+                    await PrintCommandNotFoundError(ctx, ChaoPet);
+            else if (ctx.Match("rock"))
+                if (await ctx.MatchChao() is Core.Chao rockTarget)
+                    await ctx.Execute<Chao>(ChaoRock, m => m.RockChao(ctx, rockTarget));
+                else
+                    await PrintCommandNotFoundError(ctx, ChaoRock);
+            else if (ctx.Match("cuddle"))
+                if (await ctx.MatchChao() is Core.Chao cuddleTarget)
+                    await ctx.Execute<Chao>(ChaoCuddle, m => m.CuddleChao(ctx, cuddleTarget));
+                else
+                    await PrintCommandNotFoundError(ctx, ChaoCuddle);
             else if (!ctx.HasNext())
                 await PrintCommandExpectedError(ctx, ChaoNew, ChaoInfo, ChaoRename, ChaoGoodbye);
             else
@@ -172,6 +191,8 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<RaceList>(RaceInstanceList, m => m.RaceInstanceList(ctx));
             else if (ctx.Match("withdraw", "leave", "quit", "abandon", "cancel"))
                 await ctx.Execute<Race>(RaceLeave, m => m.LeaveRace(ctx));
+            else if (ctx.Match("ping", "pings", "notify"))
+                await ctx.Execute<Race>(RacePings, m => m.UpdatePingSettings(ctx));
             else if (ctx.Match("commands", "help", "h"))
                 await PrintCommandList(ctx, "races", RaceCommands);
             else if (ctx.Match("join", "j")) // !race join x x
@@ -214,6 +235,35 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<Race>(RaceInfo, m => m.ViewRaceInstance(ctx, raceInstanceTarget));
             else if (!ctx.HasNext())
                 await ctx.Execute<RaceList>(RaceInstanceList, m => m.RaceInstanceList(ctx));
+            else
+                await PrintCommandNotFoundError(ctx, RaceCommands);
+        }
+
+        private async Task HandleTournamentCommand(Context ctx)
+        {
+            if (ctx.Match("simulate"))
+            {
+                try
+                {
+                    var remainder = ctx.RemainderOrNull();
+                    var chaoIds = remainder.Split(" ");
+                    var chao1 = long.Parse(chaoIds[0]);
+                    var chao2 = long.Parse(chaoIds[1]);
+                    var instance = new TournamentInstanceMatch()
+                    {
+                        Id = 1,
+                        TournamentInstanceId = 1,
+                        LeftChaoId = chao1,
+                        RightChaoId = chao2,
+                        State = TournamentInstance.TournamentStates.InProgress
+                    };
+                    await ctx.Execute<Tournament>(RaceJoin, m => m.ProcessMatch(ctx, instance));
+                }
+                catch (Exception e)
+                {
+                    await ctx.Reply($"{Emojis.Error} Couldn't simulate the match due to an error: {e.Message}");
+                }
+            }
             else
                 await PrintCommandNotFoundError(ctx, RaceCommands);
         }
