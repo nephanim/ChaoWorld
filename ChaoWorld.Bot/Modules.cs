@@ -56,6 +56,7 @@ namespace ChaoWorld.Bot
             builder.RegisterType<GardenList>().AsSelf();
             builder.RegisterType<Race>().AsSelf();
             builder.RegisterType<RaceList>().AsSelf();
+            builder.RegisterType<Tournament>().AsSelf();
             builder.RegisterType<Item>().AsSelf();
             builder.RegisterType<ItemList>().AsSelf();
 
