@@ -12,7 +12,7 @@ namespace ChaoWorld.Core
     internal class DatabaseMigrator
     {
         private const string RootPath = "ChaoWorld.Core.Database"; // "resource path" root for SQL files
-        private const int TargetSchemaVersion = 7;
+        private const int TargetSchemaVersion = 8;
         private readonly ILogger _logger;
 
         public DatabaseMigrator(ILogger logger)

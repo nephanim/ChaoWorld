@@ -1,65 +1,56 @@
-create table if not exists gardens
+create table if not exists tournaments
 (
-	id serial primary key,
-    ringbalance bigint not null default 0,
-    createdon timestamp without time zone not null default (current_timestamp)
+	id integer primary key,
+    name text not null,
+    description text not null,
+    availableon timestamp without time zone not null default (current_timestamp),
+    frequencyminutes integer not null,
+    readydelayminutes integer not null default 5,
+    isenabled boolean not null default false,
+    minimumchao integer not null default 1,
+    maximumchao integer not null default 8,
+    prizerings integer not null default 0
 );
 
-create table if not exists accounts
-(
-    uid bigint primary key,
-    gardenid serial not null references gardens (id) on delete cascade
-);
+insert into tournaments
+	(id, name, description, frequencyminutes, readydelayminutes, isenabled, minimumchao, maximumchao, prizerings)
+values
+	(1, 'Duel', 'Honorable duel between two chao for bragging rights', 1, 1, false, 2, 2, 30),
+	(2, 'Small Tournament', 'Small-scale tournament with two rounds', 1, 1, true, 1, 4, 100),
+	(3, 'Medium Tournament', 'Typical-scale tournament with three rounds', 3, 3, true, 1, 8, 200),
+	(4, 'Large Tournament', 'Large-scale tournament with four rounds', 5, 5, true, 1, 16, 300),
+	(5, 'World Championship', 'Massive-scale tournament open to everyone', 10, 10, false, 1, 32, 400);
 
-create table if not exists chao
+create table if not exists tournamentinstances
 (
 	id bigserial primary key,
-    gardenid serial not null references gardens (id) on delete cascade,
-    name text not null,
-    isactive boolean not null,
-    isdeleted boolean not null,
+    tournamentid integer not null references tournaments (id) on delete cascade,
+    state integer not null default 0,
     createdon timestamp without time zone not null default (current_timestamp),
-    deletedon timestamp without time zone,
-    primarycolor integer not null default 0,
-    secondarycolor integer,
-    isshiny boolean not null,
-    istwotone boolean not null,
-    age integer not null default 0,
-    reincarnations integer not null default 0,
-    evolutionstate integer not null default 0,
-    alignment integer not null default 0,
-    alignmentvalue integer not null default 0,
-    evolutionprogress integer not null default 0,
-    firstevolutiontype integer,
-    secondevolutiontype integer,
-    flyswimaffinity integer not null default 0,
-    runpoweraffinity integer not null default 0,
-    swimgrade integer not null default 0,
-    swimlevel integer not null default 0,
-    swimprogress integer not null default 0,
-    swimvalue integer not null default 0,
-    flygrade integer not null default 0,
-    flylevel integer not null default 0,
-    flyprogress integer not null default 0,
-    flyvalue integer not null default 0,
-    rungrade integer not null default 0,
-    runlevel integer not null default 0,
-    runprogress integer not null default 0,
-    runvalue integer not null default 0,
-    powergrade integer not null default 0,
-    powerlevel integer not null default 0,
-    powerprogress integer not null default 0,
-    powervalue integer not null default 0,
-    staminagrade integer not null default 0,
-    staminalevel integer not null default 0,
-    staminaprogress integer not null default 0,
-    staminavalue integer not null default 0,
-    intelligencegrade integer not null default 0,
-    intelligencelevel integer not null default 0,
-    intelligenceprogress integer not null default 0,
-    intelligencevalue integer not null default 0,
-    luckgrade integer not null default 0,
-    lucklevel integer not null default 0,
-    luckprogress integer not null default 0,
-    luckvalue integer not null default 0
+    readyon timestamp without time zone,
+    completedon timestamp without time zone,
+    winnerchaoid bigint
 );
+
+create table if not exists tournamentinstancechao
+(
+    tournamentinstanceid bigserial not null references tournamentinstances (id) on delete cascade,
+    chaoid bigint not null,
+    state integer not null default 0,
+    iswinner bool,
+    highestround integer
+);
+
+create table if not exists tournamentinstancematches
+(
+    tournamentinstanceid bigserial not null references tournamentinstances (id) on delete cascade,
+    state integer not null default 0,
+    roundnumber integer not null,
+	roundorder integer not null,
+	leftchaoid bigint not null,
+	rightchaoid bigint not null,
+	winnerchaoid bigint,
+	elapsedtimeseconds integer
+);
+
+update info set schema_version = 8;
