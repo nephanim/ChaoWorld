@@ -49,6 +49,7 @@ namespace ChaoWorld.Core
         public Colors? SecondaryColor { get; set; }
         public bool IsShiny { get; set; }
         public bool IsTwoTone { get; set; }
+        public bool IsReversed { get; set; }
 
         //Development stats
         public int CurrentAge
@@ -152,6 +153,8 @@ namespace ChaoWorld.Core
             get
             {
                 var typeDescription = "";
+                if (IsReversed)
+                    typeDescription += $"Reverse ";
                 if (IsShiny)
                     typeDescription += $"Shiny ";
                 if (IsTwoTone)

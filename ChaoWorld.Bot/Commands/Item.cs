@@ -273,7 +273,8 @@ namespace ChaoWorld.Bot
                     effect = " Chaos energy strengthens your chao's soul.";
                     break;
                 case ItemBase.ItemTypes.NegativeMirror:
-                    // TODO: Implement reverse mirror effects (needs lots of image work...)
+                    chao.IsReversed = !chao.IsReversed;
+                    effect = " Inside the mirror is the light to your chao's darkness, the darkness to their light. They trade places and the mirror shatters.";
                     break;
             }
             await _repo.UpdateChao(chao);

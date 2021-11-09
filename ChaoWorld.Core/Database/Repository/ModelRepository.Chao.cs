@@ -109,6 +109,7 @@ namespace ChaoWorld.Core
                     alignmentvalue = {chao.AlignmentValue},
                     flyswimaffinity = {chao.FlySwimAffinity},
                     runpoweraffinity = {chao.RunPowerAffinity},
+                    isreversed = {chao.IsReversed},
                     swimgrade = {(int)chao.SwimGrade},
                     swimlevel = {chao.SwimLevel},
                     swimvalue = {chao.SwimValue},
