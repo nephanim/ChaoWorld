@@ -121,7 +121,7 @@ namespace ChaoWorld.Bot
                 }
 
                 // Wait to simulate real-time combat
-                await Task.Delay(cycleTime);
+                await Task.Delay(cycleTime * 1000);
                 matchTime += cycleTime;
 
                 if (!match.WinnerChaoId.HasValue)
@@ -132,9 +132,15 @@ namespace ChaoWorld.Bot
                     attackerRecovering = attacker.RemainingZeal <= 0;
                     defenderRecovering = defender.RemainingZeal <= 0;
                     if (attackerRecovering)
+                    {
                         attacker.NextAttackIn += GetZealRecoveryTime(attacker.Chao) + attacker.AttackDelay;
+                        attacker.RemainingZeal = 100;
+                    }
                     if (defenderRecovering)
+                    {
                         defender.NextAttackIn += GetZealRecoveryTime(defender.Chao) + defender.AttackDelay;
+                        defender.RemainingZeal = 100;
+                    }
                 }
                 else
                 {
@@ -207,9 +213,11 @@ namespace ChaoWorld.Bot
             // Weak attacker, strong defender -- 0
             // Evenly matched -- ~1/3 of power as damage
             // Strong attacker, weak defender -- ~1/2 of power as damage, capping at 1500
+            // Additional variation of +/- 10%
+            var randomFactor = new Random().Next(90, 110) / 100.0;
             return (int)Math.Min(1500, (
-                    attacker.PowerValue /
-                        (2.0 + (defender.SwimValue / (1.0 + attacker.PowerValue)))
+                    100 + attacker.PowerValue /
+                        (2.0 + (defender.SwimValue / (1.0 + attacker.PowerValue))) * randomFactor
                 ));
         }
         private int GetKnockback(Core.Chao attacker, Core.Chao defender)
@@ -218,8 +226,10 @@ namespace ChaoWorld.Bot
             // Weak attacker, strong defender -- 5
             // Evenly matched -- 15
             // Strong attacker, weak defender -- 100 (instant ringout if the hit lands)
+            // Additional variation of +/- 10%
+            var randomFactor = new Random().Next(90, 110) / 100.0;
             return (int)Math.Min(100, (
-                    5.0 + (attacker.PowerValue / (1.0 + defender.FlyValue)) * 10.0
+                    5.0 + (attacker.PowerValue / (1.0 + defender.FlyValue)) * 10.0 * randomFactor
                 ));
         } 
 
