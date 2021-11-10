@@ -12,7 +12,8 @@ values
     (8, 'Peridot', 'Intermediate race. Running is key to victory.', 60, 3, true, 1, 8, 200, 2, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00),
     (9, 'Garnet', 'Intermediate race. Power is key to victory.', 60, 3, true, 1, 8, 200, 2, 0.05, 0.05, 0.45, 0.45, 0.00, 0.00),
     (10, 'Onyx', 'Intermediate race. Intelligence and luck are key to victory.', 90, 5, true, 1, 8, 300, 3, 0.07, 0.02, 0.51, 0.00, 0.20, 0.20),
-    (11, 'Diamond', 'Intermediate race. General ability is key to victory.', 120, 10, true, 1, 8, 400, 4, 0.14, 0.04, 0.42, 0.08, 0.16, 0.16);
+    (11, 'Diamond', 'Intermediate race. General ability is key to victory.', 120, 10, true, 1, 8, 400, 4, 0.14, 0.04, 0.42, 0.08, 0.16, 0.16),
+    (12, 'River Run', 'Expert race. Swimming and flying are key to victory.', 120, 10, true, 1, 8, 500, 5, 0.35, 0.29, 0.04, 0, 0.18, 0.14);
 
 insert into racesegments
     (id, raceid, description, raceindex, terraintype, startelevation, endelevation, terraindistance, staminalossmultiplier,
@@ -81,6 +82,16 @@ values
     (50, 11, 'The path spirals down, merging with another tunnel. The grassy ledge overlooking the crab pool lies at the bottom.', 9, 0, 40, 40, 40, 1.0, 0, 0, 0),
     (51, 11, 'The chao reach the crab pool, spring off the ledge, and begin to swim across.', 10, 1, 40, 30, 30, 1.0, 0, 0, 0),
     (52, 11, 'Reaching the far side of the pool, the chao take the short path around the upcoming bend in the race route.', 11, 0, 30, 30, 10, 1.0, 0, 0, 0),
-    (53, 11, 'Though the straightaway is a long one, it''s all that remains. Pitfalls surprise some chao on their way, causing them to fall in or stumble.', 12, 0, 30, 30, 40, 1.0, 0, 0, 30);
+    (53, 11, 'Though the straightaway is a long one, it''s all that remains. Pitfalls surprise some chao on their way, causing them to fall in or stumble.', 12, 0, 30, 30, 40, 1.0, 0, 0, 30),
+    --River Run
+    (54, 12, 'The chao all sprint toward the cliff ahead.', 0, 0, 150, 150, 10, 1.0, 0, 0, 0),
+    (55, 12, 'Flying out of Block Canyon, the river valley sparkles below. The course bends to the right toward a waterfall that spills over the ground below.', 1, 0, 150, 90, 10, 1.0, 0, 0, 0),
+    (56, 12, 'The chao plunge into the water, following the current toward the edge of the waterfall...', 2, 1, 90, 90, 10, 1.0, 20, 0, 0),
+    (57, 12, 'The valley closes in around them as the chao glide down from the waterfall into the winding river.', 3, 1, 90, 40, 30, 1.0, 0, 0, 0),
+    (58, 12, 'The river current begins to pick up. Boulders ahead divide it into three sections, forcing the chao to choose which route to take.', 4, 1, 40, 40, 20, 1.0, 20, 0, 30),
+    (59, 12, 'After weaving between the rocks, there is another waterfall. Intense rapids lie below. The chao glide over the dangerous waters as far as they can.', 5, 1, 40, 10, 50, 2.0, 30, 0, 0),
+    (60, 12, 'The rapids continue. Some chao struggle to keep their heads above the surface, while others are finding the fastest current through to safer waters.', 6, 1, 10, 10, 30, 2.0, 30, 90, 0),
+    (61, 12, 'The river calms as it flows into a humid cave, then splits into multiple unmarked tunnels. The chao choose their routes carefully.', 7, 1, 10, 10, 20, 1.0, 0, 0, 40),
+    (62, 12, 'The river tunnels come back together just before the flags of the finish line, arching over the river.', 8, 1, 10, 10, 10, 1.0, 0, 0, 0);
 
 update info set schema_version = 4;
