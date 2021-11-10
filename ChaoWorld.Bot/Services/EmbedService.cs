@@ -245,7 +245,7 @@ namespace ChaoWorld.Bot
                     continue;
 
                 if (chao.State == TournamentInstance.TournamentStates.Canceled)
-                    retiredList.Append($"{combatant.Name} :x: (Retired)\r\n");
+                    retiredList.Append($"{combatant.Name} :x:\r\n");
                 else
                     advancingList.Append($"{combatant.Name}\r\n");
             }

@@ -146,11 +146,11 @@ namespace ChaoWorld.Bot
                 {
                     // Determine how many slots to fill with NPC chao and select random chao to fill those
                     var currentChaoCount = await _repo.GetTournamentInstanceChaoCount(instance.Id);
-                    var limit = GetTourneyFillLimit(currentChaoCount, tourney.MaximumChao);
-                    await _repo.LogMessage($"Tournament instance {instance.Id} has {currentChaoCount} participants. Filling to {limit}.");
+                    //var limit = GetTourneyFillLimit(currentChaoCount, tourney.MaximumChao);
+                    //await _repo.LogMessage($"Tournament instance {instance.Id} has {currentChaoCount} participants. Filling to {limit}.");
 
                     var joiningNPCs = new List<Core.Chao>();
-                    while (currentChaoCount < limit)
+                    while (currentChaoCount < tourney.MaximumChao)
                     {
                         var npc = await _repo.GetRandomChao(0); // Garden 0 is a special holding place reserved for NPCs
                         if (joiningNPCs.All(x => x.Id != npc.Id))
