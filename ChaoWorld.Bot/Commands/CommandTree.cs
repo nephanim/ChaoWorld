@@ -22,11 +22,16 @@ namespace ChaoWorld.Bot
         public static Command ChaoNew = new Command("chao new", "chao new", "Creates a new chao"); //TODO: Remove this when the market is done
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
-        public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order");
+        public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order, with optional filters");
         public static Command RaceInfo = new Command("race", "race {id/name}", "Looks up information about a race using either the name or ID");
         public static Command RaceJoin = new Command("race join", "race join {race id/name} [chao id/name]", "Joins a race with the specified chao (garden default is used if no chao is specified)");
         public static Command RaceLeave = new Command("race leave", "race leave", "Leaves a race your chao is currently waiting for (provided it hasn't started yet)");
         public static Command RacePings = new Command("race pings", "race pings {on/off}", "Updates account settings for pings on race completion (e.g. `!race pings on` will notify you when your chao completes a race");
+        public static Command TournamentInstanceList = new Command("tournament list", "tournament list [all/complete/incomplete]", "Lists all tournaments in reverse chronological order, with optional filters");
+        public static Command TournamentInfo = new Command("tournament", "tournament {id/name}", "Looks up information about a tournament using either the name or ID");
+        public static Command TournamentJoin = new Command("tournament join", "tournament join {tournament id/name} [chao id/name]", "Joins a tournament with the specified chao (garden default is used if no chao is specified)");
+        public static Command TournamentLeave = new Command("tournament leave", "tournament leave", "Leaves a tournament your chao is currently waiting for (provided it hasn't started yet)");
+        public static Command TournamentPings = new Command("tournament pings", "tournament pings {on/off}", "Updates account settings for pings on completion of tournament matches (e.g. `!tournament pings on` will notify you when your chao completes a match");
         public static Command ItemList = new Command("item list", "item list", "Lists all items in your inventory");
         public static Command ItemUse = new Command("item use", "item use {item id/name} [chao id/name]", "Uses the specified item in your inventory (chao target is only used for certain items)");
         //public static Command ItemDiscard = new Command("item discard", "item {item id/name} discard", "Discards the specified item from your inventory");
@@ -48,6 +53,11 @@ namespace ChaoWorld.Bot
         public static Command[] RaceCommands =
         {
             RaceInstanceList, RaceInfo, RaceJoin, RaceLeave, RacePings
+        };
+
+        public static Command[] TournamentCommands =
+        {
+            TournamentInstanceList, TournamentInfo, TournamentJoin, TournamentLeave, TournamentPings
         };
 
         public static Command[] ItemCommands =
@@ -245,19 +255,52 @@ namespace ChaoWorld.Bot
             {
                 try
                 {
-                    var remainder = ctx.RemainderOrNull();
-                    var chaoIds = remainder.Split(" ");
-                    var chao1 = long.Parse(chaoIds[0]);
-                    var chao2 = long.Parse(chaoIds[1]);
-                    var instance = new TournamentInstanceMatch()
+                    if (ctx.Match("join", "j")) // !tournament x join x
                     {
-                        Id = 1,
-                        TournamentInstanceId = 1,
-                        LeftChaoId = chao1,
-                        RightChaoId = chao2,
-                        State = TournamentInstance.TournamentStates.InProgress
-                    };
-                    await ctx.Execute<Tournament>(RaceJoin, m => m.ProcessMatch(ctx, instance));
+                        if (await ctx.MatchTournamentInstance() is { } tournamentTarget)
+                        {
+                            if (ctx.HasNext())
+                                if (await ctx.MatchChao(ctx.Garden.Id) is { } chaoTarget)
+                                    await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
+                                else
+                                    await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
+                            else if (ctx.Garden.ActiveChao.HasValue)
+                                if (await ctx.Repository.GetActiveChaoForGarden(ctx.Garden.Id.Value) is { } chaoTarget)
+                                    await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
+                                else
+                                    await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
+                            else
+                                await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
+                        }
+                        else
+                            await PrintCommandNotFoundError(ctx, TournamentCommands);
+                    }
+                    else if (await ctx.MatchTournamentInstance() is { } tournamentTarget)
+                    {
+                        if (ctx.Match("join", "j")) // !tournament x join x
+                        {
+                            if (ctx.HasNext())
+                                if (await ctx.MatchChao(ctx.Garden.Id) is { } chaoTarget)
+                                    await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
+                                else
+                                    await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
+                            else if (ctx.Garden.ActiveChao.HasValue)
+                                if (await ctx.Repository.GetActiveChaoForGarden(ctx.Garden.Id.Value) is { } chaoTarget)
+                                    await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
+                                else
+                                    await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
+                            else
+                                await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
+                        }
+                        else
+                        {
+                            await ctx.Execute<Tournament>(TournamentInfo, m => m.ViewTournamentInstance(ctx, tournamentTarget));
+                        }
+                    }
+                    else if (!ctx.HasNext())
+                        await ctx.Execute<TournamentList>(TournamentInstanceList, m => m.TournamentInstanceList(ctx));
+                    else
+                        await PrintCommandNotFoundError(ctx, TournamentCommands);
                 }
                 catch (Exception e)
                 {

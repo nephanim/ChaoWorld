@@ -304,7 +304,8 @@ namespace ChaoWorld.Core
                     left join raceinstances i
                     on r.id = i.raceid
                     and i.state not in ({(int)RaceInstance.RaceStates.Completed}, {(int)RaceInstance.RaceStates.Canceled})
-                    where i.id is null
+                    where r.isenabled = true
+                    and i.id is null
                     and r.availableon < current_timestamp
                     returning *
                 "));

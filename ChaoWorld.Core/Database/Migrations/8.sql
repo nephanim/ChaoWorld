@@ -45,6 +45,7 @@ create table if not exists tournamentinstancematches
 (
     tournamentinstanceid bigserial not null references tournamentinstances (id) on delete cascade,
     state integer not null default 0,
+    resulttype integer,
     roundnumber integer not null,
 	roundorder integer not null,
 	leftchaoid bigint not null,

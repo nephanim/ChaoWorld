@@ -54,6 +54,9 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckOwnChao(chao); //You can only enter your own chao in a race...
 
+            var activeInRace = await _repo.GetActiveRaceByGarden(chao.GardenId.Value);
+            var activeInTourney = await _repo.GetActiveTournamentByGarden(chao.GardenId.Value);
+
             if (raceInstance.State == RaceInstance.RaceStates.InProgress
                 || raceInstance.State == RaceInstance.RaceStates.Completed
                 || raceInstance.State == RaceInstance.RaceStates.Canceled)
@@ -61,10 +64,17 @@ namespace ChaoWorld.Bot
                 // Race isn't joinable - sorry!
                 await ctx.Reply($"{Emojis.Error} This race is {Core.MiscUtils.GetDescription(raceInstance.State).ToLower()} and can no longer be joined.");
             }
-            else if (await _repo.GetActiveRaceByGarden(chao.GardenId.Value) != null)
+            else if (activeInRace != null)
             {
                 // There's a chao in this garden that's already participating in a race.
-                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a race. Please support your chao in that race first!");
+                var race = await _repo.GetRaceById(activeInRace.RaceId);
+                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {race.Name} race. Please support your chao in that race first!");
+            }
+            else if (activeInTourney != null)
+            {
+                // There's a chao in this garden that's already participating in a tournament.
+                var tourney = await _repo.GetTournamentById(activeInTourney.TournamentId);
+                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} tournament. Please support your chao's tournament first!");
             }
             else
             {

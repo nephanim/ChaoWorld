@@ -64,6 +64,41 @@ namespace ChaoWorld.Core
             return conn.QueryAsync<ListedRace>(query.ToString(), new { filter = search });
         }
 
+        public static Task<IEnumerable<ListedTournament>> QueryTournamentList(this IChaoWorldConnection conn, bool includeCompletedRaces, bool includeIncompleteRaces, string search)
+        {
+            var includeStates = new List<int>();
+            if (includeCompletedRaces)
+            {
+                includeStates.Add((int)TournamentInstance.TournamentStates.Completed);
+                includeStates.Add((int)TournamentInstance.TournamentStates.Canceled);
+            }
+            if (includeIncompleteRaces)
+            {
+                includeStates.Add((int)TournamentInstance.TournamentStates.New);
+                includeStates.Add((int)TournamentInstance.TournamentStates.Preparing);
+                includeStates.Add((int)TournamentInstance.TournamentStates.InProgress);
+            }
+
+            StringBuilder query;
+            query = new StringBuilder(@$"
+                select t.name, c.name as winnername, i.*
+                from tournamentinstances i
+                join tournaments t
+                on i.tournamentid = t.id
+                left join chao c
+                on i.winnerchaoid = c.id
+                where i.state in ({string.Join(",", includeStates)})");
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                static string Filter(string column) => $"lower({column}) like concat('%', lower(@filter), '%')";
+                query.Append($" and ({Filter("t.name")})");
+            }
+            query.Append(" order by i.state asc, i.createdon desc");
+
+            return conn.QueryAsync<ListedTournament>(query.ToString(), new { filter = search });
+        }
+
         public static Task<IEnumerable<Item>> QueryItemList(this IChaoWorldConnection conn, long gardenId, Item.ItemCategories[] includeItemCategories, Item.ItemTypes[] includeItemTypes)
         {
             StringBuilder query;

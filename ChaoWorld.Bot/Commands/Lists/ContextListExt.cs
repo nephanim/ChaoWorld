@@ -154,6 +154,43 @@ namespace ChaoWorld.Bot
             }
         }
 
+        public static async Task RenderTournamentList(this Context ctx, IDatabase db, bool includeCompleted, bool includeIncomplete, string title, string search)
+        {
+            // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
+            // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            var instances = (await db.Execute(conn => conn.QueryTournamentList(includeCompleted, includeIncomplete, search)))
+                .OrderBy(x => x.State).ThenByDescending(x => x.CompletedOn).ThenBy(x => x.TournamentId)
+                .ToList();
+
+            var itemsPerPage = 20; //Maybe do a long list in the future too
+            await ctx.Paginate(instances.ToAsyncEnumerable(), instances.Count, itemsPerPage, title, null, Renderer);
+
+            // Base renderer, dispatches based on type
+            Task Renderer(EmbedBuilder eb, IEnumerable<ListedTournament> page)
+            {
+                // Add a global footer with the filter/sort string + result count
+                eb.Footer(new($"{"result".ToQuantity(instances.Count)}"));
+                eb.Thumbnail(new(MiscUtils.GenerateThumbnailForTournament()));
+
+                // Then call the specific renderers
+                ShortRenderer(eb, page);
+                return Task.CompletedTask;
+            }
+
+            void ShortRenderer(EmbedBuilder eb, IEnumerable<ListedTournament> page)
+            {
+                // We may end up over the description character limit
+                // so run it through a helper that "makes it work" :)
+                eb.WithSimpleLineContent(page.Select(m =>
+                {
+                    var ret = $"[`{m.Id}`] **{m.Name}** ({m.State.GetDescription()})";
+                    if (m.WinnerChaoId.HasValue && m.CompletedOn.HasValue)
+                        ret += $" • Winner: {m.WinnerName} • <t:{m.CompletedOn.Value.ToUnixTimeSeconds()}>";
+                    return ret;
+                }));
+            }
+        }
+
         public static async Task RenderInventory(this Context ctx, IDatabase db, Core.Item.ItemCategories[] includeItemCategories, Core.Item.ItemTypes[] includeItemTypes, string title)
         {
             // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime

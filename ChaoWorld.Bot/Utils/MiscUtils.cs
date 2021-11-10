@@ -108,6 +108,11 @@ namespace ChaoWorld.Bot
             return $"{urlRoot}{name}.png?i=1";
         }
 
+        public static string GenerateThumbnailForTournament()
+        {
+            return "https://nephanim.com/chao/resources/misc/chaokarate.jpg";
+        }
+
         public static async Task<string> GetCachedGardenOwnerName(IDiscordCache cache, DiscordApiClient rest, IEnumerable<ulong> accountIds, int gardenId)
         {
             if (gardenId == 0) return "Professor Chao";

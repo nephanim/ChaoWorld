@@ -15,4 +15,10 @@ namespace ChaoWorld.Core
         public string WinnerName { get; set; }
         public int Difficulty { get; set; }
     }
+
+    public class ListedTournament: TournamentInstance
+    {
+        public string Name { get; set; }
+        public string WinnerName { get; set; }
+    }
 }

@@ -149,6 +149,42 @@ namespace ChaoWorld.Bot
             return raceInstance;
         }
 
+        public static async Task<TournamentInstance> PeekTournamentInstance(this Context ctx)
+        {
+            var input = ctx.PeekArgument();
+
+            // Tournament instances might be referenced by their ID or by the name of the associated tournament
+            // e.g. "!tournament 123" or "!tournament 'Large'"
+
+            // Try finding the tournament instance by its ID first (most likely usage)
+            long.TryParse(input.Replace("#", string.Empty), out long id);
+            if (await ctx.Repository.GetTournamentInstanceById(id) is TournamentInstance tournamentInstanceById)
+                return tournamentInstanceById;
+
+            // Try looking it up by the race name
+            if (await ctx.Repository.GetTournamentInstanceByName(input) is TournamentInstance tournamentInstanceByName)
+                return tournamentInstanceByName;
+
+            // Last chance, try a fuzzy match
+            if (await ctx.Repository.GetTournamentInstanceByNameWithFuzzyMatching(input) is TournamentInstance tournamentInstanceFuzzy)
+                return tournamentInstanceFuzzy;
+
+            // We didn't find anything, so we return null.
+            return null;
+        }
+
+        public static async Task<TournamentInstance> MatchTournamentInstance(this Context ctx)
+        {
+            // First, peek a tournament instance
+            var tournamentInstance = await ctx.PeekTournamentInstance();
+
+            // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
+            if (tournamentInstance != null) ctx.PopArgument();
+
+            // Finally, we return the chao value.
+            return tournamentInstance;
+        }
+        
         public static async Task<Core.Item> PeekItem(this Context ctx)
         {
             var input = ctx.PeekArgument();
@@ -196,7 +232,7 @@ namespace ChaoWorld.Bot
 
             // Try looking the item up by its type
             ItemBase.ItemTypes type;
-            if (Enum.TryParse(input, out type))
+            if (Enum.TryParse(input, ignoreCase: true, out type))
             {
                 var marketItem = await ctx.Repository.GetMarketItemByType(type);
                 if (marketItem != null)

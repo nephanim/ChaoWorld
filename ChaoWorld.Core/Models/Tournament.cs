@@ -31,6 +31,10 @@ namespace ChaoWorld.Core
         public Instant? ReadyOn { get; set; }
         public Instant? CompletedOn { get; set; }
         public long? WinnerChaoId { get; set; }
+        public int Rounds { get; set; }
+        public int Matches { get; set; }
+        public int TotalTimeElapsedSeconds { get; set; }
+        public int RoundElapsedTimeSeconds { get; set; }
         public enum TournamentStates
         {
             [Description("New")] New,
@@ -60,7 +64,16 @@ namespace ChaoWorld.Core
         public TournamentCombatant Right { get; set; }
         public long? WinnerChaoId { get; set; }
         public TournamentInstance.TournamentStates State { get; set; }
+        public TournamentResultTypes? ResultType { get; set; }
         public int ElapsedTimeSeconds { get; set; }
+
+        public enum TournamentResultTypes
+        {
+            [Description("Timed Out")] TimedOut,
+            [Description("Knockout")] Knockout,
+            [Description("Double Knockout")] DoubleKnockout,
+            [Description("Ringout")] Ringout
+        }
     }
 
     public class TournamentCombatant
@@ -71,5 +84,6 @@ namespace ChaoWorld.Core
         public int AttackDelay { get; set; }
         public int NextAttackIn { get; set; }
         public int EdgeDistance { get; set; }
+        public string Emoji { get; set; }
     }
 }

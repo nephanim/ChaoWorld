@@ -15,6 +15,7 @@ using Myriad.Types;
 using NodaTime;
 
 using ChaoWorld.Core;
+using System.Text;
 
 namespace ChaoWorld.Bot
 {
@@ -45,11 +46,7 @@ namespace ChaoWorld.Bot
 
             eb.Field(new("Rings", string.Format("{0:n0}", garden.RingBalance), true));
             eb.Field(new("Active Chao", activeChao != null ? activeChao.Name : "(not set)"));
-
-            if (chaoCount > 0)
-                eb.Field(new($"Chao ({chaoCount})", $"(see `!garden {garden.Id} list` or `!garden {garden.Id} list full`)", true));
-            else
-                eb.Field(new($"Chao ({chaoCount})", "Add one with `!chao new`!", true));
+            eb.Field(new($"Chao ({chaoCount})", $"(see `!garden {garden.Id} list`", true));
 
             return eb.Build();
         }
@@ -183,6 +180,111 @@ namespace ChaoWorld.Bot
                 roster += $"#{c.Position}. {c.ChaoName}{lagTime}{status}\r\n";
             }
             eb.Field(new("Chao", roster));
+
+            return eb.Build();
+        }
+
+        public async Task<Embed> CreateTournamentEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance)
+        {
+            var name = $"{tourney.Name} Tournament";
+            var participants = await _repo.GetTournamentInstanceChaoCount(instance.Id);
+            var imageUrl = MiscUtils.GenerateThumbnailForTournament();
+
+            var eb = new EmbedBuilder()
+                .Title(new(name))
+                .Thumbnail(new(imageUrl))
+                .Description(tourney.Description)
+                .Footer(new(
+                    $"Instance ID: {instance.Id} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+
+            eb.Field(new("Status", instance.State.GetDescription()));
+            eb.Field(new("Participants", $"{participants} / {tourney.MaximumChao}"));
+
+            if (instance.WinnerChaoId.HasValue)
+            {
+                var timeElapsed = TimeSpan.FromSeconds(instance.TotalTimeElapsedSeconds).ToString("c");
+                var winner = await _repo.GetChao(instance.WinnerChaoId.GetValueOrDefault(0));
+                if (winner != null)
+                {
+                    var chaoImageUrl = MiscUtils.GenerateThumbnailForChao(winner);
+                    var winnerOwner = await ctx.GetCachedGardenOwner(winner.GardenId);
+                    eb.Field(new("Winner", $"{winner.Name} ({winnerOwner})"));
+                    eb.Field(new("Time", timeElapsed));
+                    eb.Image(new(chaoImageUrl));
+                }
+            }
+
+            return eb.Build();
+        }
+
+        public async Task<Embed> CreateTournamentRoundResultsEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance, int round)
+        {
+            var name = $"{tourney.Name} Tournament Progress: Round {round} Results";
+            var desc = $"**Round** {round} / {instance.Rounds}\r\n\r\n" +
+                $"{tourney.Description}";
+            //var imageUrl = MiscUtils.GenerateThumbnailForTournament(race);
+
+            var eb = new EmbedBuilder()
+                .Title(new(name))
+                //.Thumbnail(new(imageUrl))
+                .Description(desc)
+                .Footer(new(
+                    $"Instance ID: {instance.Id} | Round: {round} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+
+            var elapsed = TimeSpan.FromSeconds(instance.RoundElapsedTimeSeconds).ToString("c");
+            eb.Field(new("Time Elapsed", elapsed));
+
+            var combatants = (await _repo.GetChaoInTournament(instance)).OrderBy(x => x.Name);
+            var tourneyInstanceChao = (await _repo.GetTournamentInstanceChao(instance));
+            var advancingList = new StringBuilder();
+            var retiredList = new StringBuilder();
+            foreach (var combatant in combatants)
+            {
+                var chao = tourneyInstanceChao.FirstOrDefault(x => x.ChaoId == combatant.Id.Value);
+                if (chao == null)
+                    continue;
+
+                if (chao.State == TournamentInstance.TournamentStates.Canceled)
+                    retiredList.Append($"{combatant.Name} :x: (Retired)\r\n");
+                else
+                    advancingList.Append($"{combatant.Name}\r\n");
+            }
+
+            eb.Field(new("Remaining", advancingList.ToString()));
+            eb.Field(new("Retired", retiredList.ToString()));
+
+            return eb.Build();
+        }
+
+        public async Task<Embed> CreateTournamentMatchResultsEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance, TournamentInstanceMatch match, Core.Chao winner, Core.Chao loser)
+        {
+            var name = $"{tourney.Name} Tournament Progress: Match {match.RoundNumber}-{match.RoundOrder} Results";
+            var desc = $"**Round** {match.RoundNumber} / {instance.Rounds}\r\n" +
+                $"**Match** {match.RoundOrder} / {instance.Matches}\r\n\r\n" +
+                $"{tourney.Description}";
+            //var imageUrl = MiscUtils.GenerateThumbnailForTournament(race);
+
+            var eb = new EmbedBuilder()
+                .Title(new(name))
+                //.Thumbnail(new(imageUrl))
+                .Description(desc)
+                .Footer(new(
+                    $"Instance ID: {instance.Id} | Round: {match.RoundNumber} | Match: {match.RoundOrder} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+
+            var elapsed = TimeSpan.FromSeconds(match.ElapsedTimeSeconds).ToString("c");
+            eb.Field(new("Match Time", elapsed));
+
+            if (winner != null)
+            {
+                var winnerOwner = await ctx.GetCachedGardenOwner(winner.GardenId);
+                eb.Field(new("Winner", $"{winner.Name} ({winnerOwner})"));
+            }
+
+            if (loser != null)
+            {
+                var loserOwner = await ctx.GetCachedGardenOwner(loser.GardenId);
+                eb.Field(new("Loser", $"{loser.Name} ({loserOwner})"));
+            }
 
             return eb.Build();
         }

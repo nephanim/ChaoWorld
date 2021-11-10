@@ -58,6 +58,9 @@ namespace ChaoWorld.ScheduledTasks
             _logger.Information("Updating available race instances...");
             await _repo.InstantiateRaces();
 
+            _logger.Information("Updating available tournament instances...");
+            await _repo.InstantiateTournaments();
+
             _logger.Information("Checking for chao to evolve...");
             await RunFirstEvolutions();
 
