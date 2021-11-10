@@ -75,10 +75,6 @@ namespace ChaoWorld.Core
             SqlMapper.AddTypeHandler(new NumericIdHandler<ChaoId, long>(i => new ChaoId(i)));
             SqlMapper.AddTypeHandler(new NumericIdArrayHandler<GardenId, int>(i => new GardenId(i)));
             SqlMapper.AddTypeHandler(new NumericIdArrayHandler<ChaoId, long>(i => new ChaoId(i)));
-
-            // Register our custom types to Npgsql
-            // Without these it'll still *work* but break at the first launch + probably cause other small issues
-            NpgsqlConnection.GlobalTypeMapper.MapComposite<ProxyTag>("proxy_tag");
         }
 
         public async Task<IChaoWorldConnection> Obtain()
