@@ -85,12 +85,12 @@ values
     (53, 11, 'Though the straightaway is a long one, it''s all that remains. Pitfalls surprise some chao on their way, causing them to fall in or stumble.', 12, 0, 30, 30, 40, 1.0, 0, 0, 30),
     --River Run
     (54, 12, 'The chao all sprint toward the cliff ahead.', 0, 0, 150, 150, 10, 1.0, 0, 0, 0),
-    (55, 12, 'Flying out of Block Canyon, the river valley sparkles below. The course bends to the right toward a waterfall that spills over the ground below.', 1, 0, 150, 90, 10, 1.0, 0, 0, 0),
+    (55, 12, 'Flying out of Block Canyon, the river valley sparkles below. The course bends to the right toward a waterfall that spills over the ground.', 1, 0, 150, 90, 10, 1.0, 0, 0, 0),
     (56, 12, 'The chao plunge into the water, following the current toward the edge of the waterfall...', 2, 1, 90, 90, 10, 1.0, 20, 0, 0),
     (57, 12, 'The valley closes in around them as the chao glide down from the waterfall into the winding river.', 3, 1, 90, 40, 30, 1.0, 0, 0, 0),
-    (58, 12, 'The river current begins to pick up. Boulders ahead divide it into three sections, forcing the chao to choose which route to take.', 4, 1, 40, 40, 20, 1.0, 20, 0, 30),
-    (59, 12, 'After weaving between the rocks, there is another waterfall. Intense rapids lie below. The chao glide over the dangerous waters as far as they can.', 5, 1, 40, 10, 50, 2.0, 30, 0, 0),
-    (60, 12, 'The rapids continue. Some chao struggle to keep their heads above the surface, while others are finding the fastest current through to safer waters.', 6, 1, 10, 10, 30, 2.0, 30, 90, 0),
+    (58, 12, 'The river current begins to pick up. Boulders ahead divide it into three sections, forcing the chao to choose which route to take.', 4, 1, 40, 40, 20, 2.0, 20, 0, 30),
+    (59, 12, 'After weaving between the rocks, there is another waterfall. Intense rapids lie below. The chao glide over the dangerous waters as far as they can.', 5, 1, 40, 10, 50, 3.0, 30, 0, 0),
+    (60, 12, 'The rapids continue. Some chao struggle to keep their heads above the surface, while others are finding the fastest current through to safer waters.', 6, 1, 10, 10, 30, 3.0, 30, 90, 0),
     (61, 12, 'The river calms as it flows into a humid cave, then splits into multiple unmarked tunnels. The chao choose their routes carefully.', 7, 1, 10, 10, 20, 1.0, 0, 0, 40),
     (62, 12, 'The river tunnels come back together just before the flags of the finish line, arching over the river.', 8, 1, 10, 10, 10, 1.0, 0, 0, 0);
 
