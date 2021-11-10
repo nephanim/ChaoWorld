@@ -175,6 +175,14 @@ namespace ChaoWorld.Core
             }
         }
 
+        public int AverageStatValue
+        {
+            get
+            {
+                return (SwimValue + FlyValue + RunValue + PowerValue + StaminaValue + IntelligenceValue + LuckValue) / 7;
+            }
+        }
+
         public enum Colors
         {
             [Description("Normal")] Normal,

@@ -117,6 +117,36 @@ namespace ChaoWorld.Bot
             }
         }
 
+        public static async Task RenderChaoRankedList(this Context ctx, IDatabase db)
+        {
+            // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
+            // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            var chao = (await db.Execute(conn => conn.QueryChaoRankedList()))
+                .ToList();
+
+            var itemsPerPage = 20;
+            await ctx.Paginate(chao.ToAsyncEnumerable(), chao.Count, itemsPerPage, "Chao Ranking", "#ffffff", Renderer);
+
+            // Base renderer, dispatches based on type
+            Task Renderer(EmbedBuilder eb, IEnumerable<ListedChao> page)
+            {
+                eb.Footer(new($"{"result".ToQuantity(chao.Count)}"));
+                ShortRenderer(eb, page);
+                return Task.CompletedTask;
+            }
+
+            void ShortRenderer(EmbedBuilder eb, IEnumerable<ListedChao> page)
+            {
+                // We may end up over the description character limit
+                // so run it through a helper that "makes it work" :)
+                eb.WithSimpleLineContent(page.Select(m =>
+                {
+                    var ret = $"[`{m.Id}`] **{m.Name}** ({m.AverageStatValue:D4})";
+                    return ret;
+                }));
+            }
+        }
+
         public static async Task RenderRaceList(this Context ctx, IDatabase db, bool includeCompletedRaces, bool includeIncompleteRaces, string title, string search)
         {
             // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime

@@ -65,9 +65,9 @@ namespace ChaoWorld.Bot
             await ctx.Reply($"{Emojis.Heart} {target.Name} falls asleep in your arms.");
         }
 
-        /*private async Task<Affection> GiveChaoAffection(Context ctx, Core.Chao target)
+        public async Task ChaoRankings(Context ctx)
         {
-
-        }*/
+            await ctx.RenderChaoRankedList(_db);
+        }
     }
 }

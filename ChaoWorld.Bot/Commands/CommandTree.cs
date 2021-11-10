@@ -16,6 +16,7 @@ namespace ChaoWorld.Bot
         public static Command GardenFind = new Command("garden find", "garden {id} find [full] [search term]", "Searches a garden for chao given a search term");
         public static Command GardenRaise = new Command("garden raise", "garden raise {chao id/name}", "Selects a chao to use by default with certain commands");
         public static Command ChaoInfo = new Command("chao", "chao {id/name}", "Looks up information about a chao using either the name or ID");
+        public static Command ChaoRankings = new Command("chao rankings", "chao rankings", "Lists chao across all gardens in order by their overall ability");
         public static Command ChaoPet = new Command("chao pet", "chao {id/name} pet", "Pets the specified chao");
         public static Command ChaoRock = new Command("chao rock", "chao {id/name} rock", "Rocks the specified chao in your arms");
         public static Command ChaoCuddle = new Command("chao cuddle", "chao {id/name} cuddle", "Cuddles the specified chao");
@@ -47,7 +48,7 @@ namespace ChaoWorld.Bot
         };
 
         public static Command[] ChaoCommands = {
-            ChaoInfo, ChaoNew, ChaoRename, ChaoGoodbye, ChaoPet, ChaoRock, ChaoCuddle
+            ChaoInfo, ChaoNew, ChaoRename, ChaoGoodbye, ChaoPet, ChaoRock, ChaoCuddle, ChaoRankings
         };
 
         public static Command[] RaceCommands =
@@ -153,6 +154,8 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             else if (ctx.Match("commands", "help"))
                 await PrintCommandList(ctx, "chao", ChaoCommands);
+            else if (ctx.Match("rank", "ranking", "rankings", "top", "leaderboard"))
+                await ctx.Execute<Chao>(ChaoRankings, m => m.ChaoRankings(ctx));
             else if (await ctx.MatchChao() is Core.Chao target)
                 await HandleChaoCommandTargeted(ctx, target);
             else if (ctx.Match("pet"))

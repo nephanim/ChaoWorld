@@ -24,6 +24,14 @@ namespace ChaoWorld.Core
             return conn.QueryAsync<ListedChao>(query.ToString(), new { garden, filter = opts.Search });
         }
 
+        public static Task<IEnumerable<ListedChao>> QueryChaoRankedList(this IChaoWorldConnection conn)
+        {
+            StringBuilder query;
+            query = new StringBuilder("select * from chao order by swimvalue + flyvalue + runvalue + powervalue + staminavalue + intelligencevalue + luckvalue desc");
+
+            return conn.QueryAsync<ListedChao>(query.ToString());
+        }
+
         public struct ChaoListQueryOptions
         {
             public string? Search;
