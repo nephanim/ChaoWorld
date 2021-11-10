@@ -186,6 +186,12 @@ namespace ChaoWorld.Core
             [ItemCategory(ItemCategories.Seed)] [Description("Dark Seed")] [Price(40000)] DarkSeed,
             [ItemCategory(ItemCategories.Seed)] [Description("Tasty Seed")] [Price(20000)] TastySeed,
             [ItemCategory(ItemCategories.Seed)] [Description("Strong Seed")] [Price(50000)] StrongSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Swim Seed")] [Price(100000)] SwimSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Fly Seed")] [Price(100000)] FlySeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Run Seed")] [Price(100000)] RunSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Power Seed")] [Price(100000)] PowerSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Smart Seed")] [Price(100000)] SmartSeed,
+            [ItemCategory(ItemCategories.Seed)] [Description("Lucky Mushroom Spores")] [Price(100000)] LuckyMushroomSpores,
 
             // Special
             [ItemCategory(ItemCategories.Special)] [Description("Suspicious Potion")] [Price(30000)] SuspiciousPotion = 3000,
