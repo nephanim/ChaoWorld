@@ -84,6 +84,6 @@ namespace ChaoWorld.Core
         public int AttackDelay { get; set; }
         public int NextAttackIn { get; set; }
         public int EdgeDistance { get; set; }
-        public string Emoji { get; set; }
+        public string Emoji { get; set; } // Used in real-time combat messages to signify which chao is taking primary action
     }
 }

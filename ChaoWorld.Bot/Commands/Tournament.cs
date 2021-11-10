@@ -30,6 +30,18 @@ namespace ChaoWorld.Bot
             await ctx.Reply(embed: await _embeds.CreateTournamentEmbed(ctx, tournament, target));
         }
 
+        public async Task UpdatePingSettings(Context ctx)
+        {
+            var allowPings = false;
+            if (ctx.Match("enable", "on", "yes", "1", "true", "accept", "allow"))
+                allowPings = true;
+            await _repo.UpdateTournamentPingSetting(ctx.Author.Id, allowPings);
+            if (allowPings)
+                await ctx.Reply($"{Emojis.Success} Tournament pings are now enabled.");
+            else
+                await ctx.Reply($"{Emojis.Success} Tournament pings are now disabled.");
+        }
+
         public async Task JoinTournament(Context ctx, Core.Chao chao, TournamentInstance instance)
         {
             ctx.CheckOwnChao(chao); //You can only enter your own chao in a tournament...
@@ -214,8 +226,7 @@ namespace ChaoWorld.Bot
 
             // We'll use a counter to track time elapsed and manage match events
             var matchTime = 0;
-            var matchTimeLimit = 300;
-            
+
             // Initialize the left chao's parameters
             match.Left = new TournamentCombatant();
             match.Left.Emoji = Emojis.BlueDiamond;
@@ -251,7 +262,8 @@ namespace ChaoWorld.Bot
             var defenderRecovering = false;
             var attackLanded = false;
             var ringout = false;
-            while (!match.WinnerChaoId.HasValue && matchTime < matchTimeLimit) // Putting a hard cap at 5 minutes just in case
+            var matchTimeLimit = 300; // Putting a hard cap at 5 minutes just in case
+            while (!match.WinnerChaoId.HasValue && matchTime < matchTimeLimit)
             {
                 var cycleTime = 0;
                 if (match.Left.NextAttackIn < match.Right.NextAttackIn)
@@ -274,7 +286,7 @@ namespace ChaoWorld.Bot
 
                     // Left's next attack gets closer, right's next attack gets farther away
                     match.Left.NextAttackIn -= match.Right.NextAttackIn;
-                    match.Right.NextAttackIn = match.Right.AttackDelay; 
+                    match.Right.NextAttackIn = match.Right.AttackDelay;
                 }
                 await _repo.LogMessage($"{attacker.Chao.Id} is attacking {defender.Chao.Id.Value} in tournament match {match.Id} for tournament instance {match.TournamentInstanceId}");
 
@@ -296,7 +308,7 @@ namespace ChaoWorld.Bot
                     var knockback = GetKnockback(attacker.Chao, defender.Chao);
                     ringout = knockback >= defender.EdgeDistance;
                     defender.EdgeDistance -= knockback / 2;
-                    attacker.EdgeDistance += knockback / 2;                    
+                    attacker.EdgeDistance += knockback / 2;
                 }
                 else
                 {
@@ -306,7 +318,7 @@ namespace ChaoWorld.Bot
                     var zealLoss = GetZealLoss(attacker.Chao);
                     attacker.RemainingZeal -= zealLoss;
                 }
-                
+
                 // If either chao has run out of zeal, they will lose some time regaining their composure
                 // Their remaining HP is also reduced by any zeal they need to recover
                 attacker.RemainingZeal = GetNormalizedZeal(attacker.RemainingZeal);
@@ -338,22 +350,54 @@ namespace ChaoWorld.Bot
                 matchTime += cycleTime;
 
                 // Report back what happened for curious onlookers
-                if (attackLanded)
-                    if (defender.RemainingHealth <= 0)
-                        await ctx.Reply(GetFinalStrikeMessage(attacker, defender));
-                    else if (ringout)
-                        await ctx.Reply(GetRingoutMessage(attacker, defender));
-                    else if (defenderRecovering)
-                        await ctx.Reply(GetKnockdownMessage(attacker, defender));
-                    else
-                        await ctx.Reply(GetNormalHitMessage(attacker, defender));
-                else
-                    if (attackerRecovering)
-                        await ctx.Reply(GetCriticalDodgeMessage(attacker, defender));
-                    else
-                        await ctx.Reply(GetNormalDodgeMessage(attacker, defender));
+                await ReplyWithRaceEvents(ctx, attacker, defender, attackerRecovering, defenderRecovering, attackLanded, ringout);
             }
 
+            HandleMatchTimeout(match);
+
+            // Give chao some stamina for their exercise (all other stat increases are baked in already)
+            match.Left.Chao.RaiseStamina(matchTime / 10);
+            match.Right.Chao.RaiseStamina(matchTime / 10);
+            // Make sure all the stat increases are persisted
+            await _repo.UpdateChao(match.Left.Chao);
+            await _repo.UpdateChao(match.Right.Chao);
+
+            match.State = TournamentInstance.TournamentStates.Completed;
+            match.ElapsedTimeSeconds = Math.Min(matchTime, matchTimeLimit);
+            instance.RoundElapsedTimeSeconds += match.ElapsedTimeSeconds;
+            await _repo.UpdateMatch(match);
+
+            var winner = match.WinnerChaoId.GetValueOrDefault(match.LeftChaoId) == match.LeftChaoId
+                ? match.Left.Chao
+                : match.Right.Chao;
+            var loser = match.WinnerChaoId.GetValueOrDefault(match.LeftChaoId) == match.LeftChaoId
+                ? match.Right.Chao
+                : match.Left.Chao;
+            await _repo.FinalizeTournamentInstanceChaoForMatch(match.TournamentInstanceId, loser.Id.Value, match.RoundNumber);
+
+            await ctx.Reply(embed: await _embeds.CreateTournamentMatchResultsEmbed(ctx, tourney, instance, match, winner, loser));
+        }
+
+        private async Task ReplyWithRaceEvents(Context ctx, TournamentCombatant attacker, TournamentCombatant defender, bool attackerRecovering, bool defenderRecovering, bool attackLanded, bool ringout)
+        {
+            if (attackLanded)
+                if (defender.RemainingHealth <= 0)
+                    await ctx.Reply(GetFinalStrikeMessage(attacker, defender));
+                else if (ringout)
+                    await ctx.Reply(GetRingoutMessage(attacker, defender));
+                else if (defenderRecovering)
+                    await ctx.Reply(GetKnockdownMessage(attacker, defender));
+                else
+                    await ctx.Reply(GetNormalHitMessage(attacker, defender));
+            else
+                                if (attackerRecovering)
+                await ctx.Reply(GetCriticalDodgeMessage(attacker, defender));
+            else
+                await ctx.Reply(GetNormalDodgeMessage(attacker, defender));
+        }
+
+        private static void HandleMatchTimeout(TournamentInstanceMatch match)
+        {
             if (!match.WinnerChaoId.HasValue)
             {
                 // We aborted processing the match because  of a timeout (it's not getting anywhere)
@@ -374,21 +418,6 @@ namespace ChaoWorld.Bot
                 else
                     match.WinnerChaoId = match.Left.Chao.Id.Value; // This better not happen often...
             }
-
-            match.State = TournamentInstance.TournamentStates.Completed;
-            match.ElapsedTimeSeconds = Math.Min(matchTime, matchTimeLimit);
-            instance.RoundElapsedTimeSeconds += match.ElapsedTimeSeconds;
-            await _repo.UpdateMatch(match);
-
-            var winner = match.WinnerChaoId.GetValueOrDefault(match.LeftChaoId) == match.LeftChaoId
-                ? match.Left.Chao
-                : match.Right.Chao;
-            var loser = match.WinnerChaoId.GetValueOrDefault(match.LeftChaoId) == match.LeftChaoId
-                ? match.Right.Chao
-                : match.Left.Chao;
-            await _repo.FinalizeTournamentInstanceChaoForMatch(match.TournamentInstanceId, loser.Id.Value, match.RoundNumber);
-
-            await ctx.Reply(embed: await _embeds.CreateTournamentMatchResultsEmbed(ctx, tourney, instance, match, winner, loser));
         }
 
         public async Task FinalizeTournament(Context ctx, Core.Tournament tournament, TournamentInstance instance)
@@ -427,6 +456,7 @@ namespace ChaoWorld.Bot
             // Values range from 12s delay (no running) to a minimum of 5s delay (~9999 running)
             return (int)Math.Max(5.0, 12.0 - (attacker.RunValue / 1428.0));
         }
+
         private int GetDamage(Core.Chao attacker, Core.Chao defender)
         {
             // This definitely may need some tuning
@@ -435,11 +465,15 @@ namespace ChaoWorld.Bot
             // Strong attacker, weak defender -- ~1/2 of power as damage, capping at 1500
             // Additional variation of +/- 10%
             var randomFactor = new Random().Next(90, 110) / 100.0;
-            return (int)Math.Min(1500, (
+            var damage = (int)Math.Min(1500, (
                     100 + attacker.PowerValue /
                         (2.0 + (defender.SwimValue / (1.0 + attacker.PowerValue))) * randomFactor
                 ));
+            attacker.RaisePower(damage / 100); // Not sure whether to adjust the scale here further, will probably have to see in practice (right now this is like 10-20 max per fight?)
+            defender.RaiseSwim(damage / 100);
+            return damage;
         }
+
         private int GetKnockback(Core.Chao attacker, Core.Chao defender)
         {
             // This is probably more reasonable... Consider you start with 50 units of buffer
@@ -448,10 +482,13 @@ namespace ChaoWorld.Bot
             // Strong attacker, weak defender -- 100 (instant ringout if the hit lands)
             // Additional variation of +/- 10%
             var randomFactor = new Random().Next(90, 110) / 100.0;
-            return (int)Math.Min(100, (
+            var knockback = (int)Math.Min(100, (
                     5.0 + (attacker.PowerValue / (1.0 + defender.FlyValue)) * 10.0 * randomFactor
                 ));
-        } 
+            attacker.RaiseRun(knockback / 2); // Chao meet in the middle, so both travel the same distance
+            defender.RaiseRun(knockback / 2);
+            return knockback;
+        }
 
         private bool CheckDodge(Core.Chao attacker, Core.Chao defender)
         {
@@ -459,13 +496,19 @@ namespace ChaoWorld.Bot
             var attackingLuckRoll = new Random().Next(1, attacker.LuckValue + 30);
             var defendingLuckRoll = new Random().Next(1, defender.LuckValue + 30);
             if (defendingLuckRoll > attackingLuckRoll * 2)
+            {
+                defender.RaiseLuck(10); // Successful luck by dodge awards stat progress
                 return true;
+            }
 
             // Then see if our flying beats their running
             var attackingRunRoll = new Random().Next(1, attacker.RunValue + 30);
             var defendingFlyRoll = new Random().Next(1, defender.FlyValue + 30);
             if (defendingFlyRoll > attackingRunRoll * 2)
+            {
+                defender.RaiseFly(10); // Successful luck by flying awards stat progress
                 return true;
+            }
 
             // Couldn't dodge -- too bad
             return false;

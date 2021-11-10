@@ -78,7 +78,7 @@ namespace ChaoWorld.Bot
                 return HandleChaoCommand(ctx);
             if (ctx.Match("race", "r", "races"))
                 return HandleRaceCommand(ctx);
-            if (ctx.Match("tournament"))
+            if (ctx.Match("tournament", "t", "tourney", "tourneys", "karate", "k"))
                 return HandleTournamentCommand(ctx);
             if (ctx.Match("item", "i", "items"))
                 return HandleItemCommand(ctx);
@@ -205,7 +205,7 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<Race>(RacePings, m => m.UpdatePingSettings(ctx));
             else if (ctx.Match("commands", "help", "h"))
                 await PrintCommandList(ctx, "races", RaceCommands);
-            else if (ctx.Match("join", "j")) // !race join x x
+            else if (ctx.Match("enter", "join", "j")) // !race join x x
             {
                 if (await ctx.MatchRaceInstance() is { } raceInstanceTarget)
                     if (ctx.HasNext())
@@ -226,7 +226,7 @@ namespace ChaoWorld.Bot
             else if (await ctx.MatchRaceInstance() is { } raceInstanceTarget)
                 if (ctx.Match("info", "i")) // !race x info
                     await ctx.Execute<Race>(RaceInfo, m => m.ViewRaceInstance(ctx, raceInstanceTarget));
-                else if (ctx.Match("join", "j")) // !race x join x
+                else if (ctx.Match("enter", "join", "j")) // !race x join x
                 {
                     if (ctx.HasNext())
                         if (await ctx.MatchChao(ctx.Garden.Id) is { } chaoTarget)
@@ -243,72 +243,68 @@ namespace ChaoWorld.Bot
                 }
                 else
                     await ctx.Execute<Race>(RaceInfo, m => m.ViewRaceInstance(ctx, raceInstanceTarget));
-            else if (!ctx.HasNext())
-                await ctx.Execute<RaceList>(RaceInstanceList, m => m.RaceInstanceList(ctx));
+            //else if (!ctx.HasNext())
+            //    await ctx.Execute<RaceList>(RaceInstanceList, m => m.RaceInstanceList(ctx));
             else
                 await PrintCommandNotFoundError(ctx, RaceCommands);
         }
 
         private async Task HandleTournamentCommand(Context ctx)
         {
-            if (ctx.Match("simulate"))
+            if (ctx.Match("list", "l") || !ctx.HasNext())
+                await ctx.Execute<TournamentList>(TournamentInstanceList, m => m.TournamentInstanceList(ctx));
+            else if (ctx.Match("withdraw", "leave", "quit", "abandon", "cancel"))
+                await ctx.Execute<Tournament>(TournamentLeave, m => m.LeaveTournament(ctx));
+            else if (ctx.Match("ping", "pings", "notify"))
+                await ctx.Execute<Tournament>(TournamentPings, m => m.UpdatePingSettings(ctx));
+            else if (ctx.Match("commands", "help", "h"))
+                await PrintCommandList(ctx, "tournaments", TournamentCommands);
+            else if (ctx.Match("enter", "join", "j")) // !tournament x join x
             {
-                try
+                if (await ctx.MatchTournamentInstance() is { } tournamentTarget)
                 {
-                    if (ctx.Match("join", "j")) // !tournament x join x
-                    {
-                        if (await ctx.MatchTournamentInstance() is { } tournamentTarget)
-                        {
-                            if (ctx.HasNext())
-                                if (await ctx.MatchChao(ctx.Garden.Id) is { } chaoTarget)
-                                    await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
-                                else
-                                    await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
-                            else if (ctx.Garden.ActiveChao.HasValue)
-                                if (await ctx.Repository.GetActiveChaoForGarden(ctx.Garden.Id.Value) is { } chaoTarget)
-                                    await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
-                                else
-                                    await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
-                            else
-                                await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
-                        }
+                    if (ctx.HasNext())
+                        if (await ctx.MatchChao(ctx.Garden.Id) is { } chaoTarget)
+                            await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
                         else
-                            await PrintCommandNotFoundError(ctx, TournamentCommands);
-                    }
-                    else if (await ctx.MatchTournamentInstance() is { } tournamentTarget)
-                    {
-                        if (ctx.Match("join", "j")) // !tournament x join x
-                        {
-                            if (ctx.HasNext())
-                                if (await ctx.MatchChao(ctx.Garden.Id) is { } chaoTarget)
-                                    await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
-                                else
-                                    await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
-                            else if (ctx.Garden.ActiveChao.HasValue)
-                                if (await ctx.Repository.GetActiveChaoForGarden(ctx.Garden.Id.Value) is { } chaoTarget)
-                                    await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
-                                else
-                                    await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
-                            else
-                                await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
-                        }
+                            await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
+                    else if (ctx.Garden.ActiveChao.HasValue)
+                        if (await ctx.Repository.GetActiveChaoForGarden(ctx.Garden.Id.Value) is { } chaoTarget)
+                            await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
                         else
-                        {
-                            await ctx.Execute<Tournament>(TournamentInfo, m => m.ViewTournamentInstance(ctx, tournamentTarget));
-                        }
-                    }
-                    else if (!ctx.HasNext())
-                        await ctx.Execute<TournamentList>(TournamentInstanceList, m => m.TournamentInstanceList(ctx));
+                            await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
                     else
-                        await PrintCommandNotFoundError(ctx, TournamentCommands);
+                        await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
                 }
-                catch (Exception e)
+                else
+                    await PrintCommandNotFoundError(ctx, TournamentCommands);
+            }
+            else if (await ctx.MatchTournamentInstance() is { } tournamentTarget)
+            {
+                if (ctx.Match("join", "j")) // !tournament x join x
                 {
-                    await ctx.Reply($"{Emojis.Error} Couldn't simulate the match due to an error: {e.Message}");
+                    if (ctx.HasNext())
+                        if (await ctx.MatchChao(ctx.Garden.Id) is { } chaoTarget)
+                            await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
+                        else
+                            await ctx.Reply($"{Emojis.Error} Couldn't find a chao using identifier {ctx.RemainderOrNull()}");
+                    else if (ctx.Garden.ActiveChao.HasValue)
+                        if (await ctx.Repository.GetActiveChaoForGarden(ctx.Garden.Id.Value) is { } chaoTarget)
+                            await ctx.Execute<Tournament>(TournamentJoin, m => m.JoinTournament(ctx, chaoTarget, tournamentTarget));
+                        else
+                            await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
+                    else
+                        await ctx.Reply($"{Emojis.Error} Couldn't find an active chao for the garden. Please specify a chao (e.g. `!tournament {{tournament id/name}} join {{chao id/name}}` or use `!garden raise {{chao id/name}}` first to select a default chao.");
+                }
+                else
+                {
+                    await ctx.Execute<Tournament>(TournamentInfo, m => m.ViewTournamentInstance(ctx, tournamentTarget));
                 }
             }
+            else if (!ctx.HasNext())
+                await ctx.Execute<TournamentList>(TournamentInstanceList, m => m.TournamentInstanceList(ctx));
             else
-                await PrintCommandNotFoundError(ctx, RaceCommands);
+                await PrintCommandNotFoundError(ctx, TournamentCommands);
         }
 
         private async Task HandleItemCommand(Context ctx)
