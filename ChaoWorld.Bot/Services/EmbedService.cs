@@ -46,7 +46,7 @@ namespace ChaoWorld.Bot
 
             eb.Field(new("Rings", string.Format("{0:n0}", garden.RingBalance), true));
             eb.Field(new("Active Chao", activeChao != null ? activeChao.Name : "(not set)"));
-            eb.Field(new($"Chao ({chaoCount})", $"(see `!garden {garden.Id} list`", true));
+            eb.Field(new($"Chao ({chaoCount})", $"(see `!garden {garden.Id} list`)", true));
 
             return eb.Build();
         }
