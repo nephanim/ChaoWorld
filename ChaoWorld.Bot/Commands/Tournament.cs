@@ -1,5 +1,6 @@
 using ChaoWorld.Core;
 using Myriad.Rest.Types;
+using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -191,7 +192,8 @@ namespace ChaoWorld.Bot
                 // Announce the round is starting unless this is a practice tourney
                 if (instance.Rounds > 1)
                 {
-                    await ctx.Reply($"{Emojis.Megaphone} {tourney.Name} Tournament Round #{roundIndex} is starting!");
+                    var roundText = roundIndex == instance.Rounds ? "Final Round" : $"Round #{roundIndex}";
+                    await ctx.Reply($"{Emojis.Megaphone} {tourney.Name} Tournament {roundText} is starting!");
                     await Task.Delay(3000);
                 }
 
@@ -254,7 +256,13 @@ namespace ChaoWorld.Bot
             match.Right.AttackDelay = GetAttackDelay(match.Right.Chao);
             match.Right.NextAttackIn = match.Right.AttackDelay;
 
-            await ctx.Reply($"{Emojis.Megaphone} {tourney.Name} Tournament Match #{match.RoundOrder} between {match.Left.Emoji} {match.Left.Chao.Name} and {match.Right.Emoji} {match.Right.Chao.Name} has begun.");
+            var matchQualifier = string.Empty;
+            if (match.RoundNumber == instance.Rounds && instance.Rounds > 1)
+                matchQualifier = "finals";
+            else if (match.RoundNumber == instance.Rounds - 1 && instance.Rounds > 2)
+                matchQualifier = "semifinals";
+
+            await ctx.Reply($"{Emojis.Megaphone} {tourney.Name} Tournament match between {match.Left.Emoji} {match.Left.Chao.Name} and {match.Right.Emoji} {match.Right.Chao.Name} has begun.");
             await Task.Delay(3000);
 
             await _repo.LogMessage($"Combatant {match.Left.Chao.Id.Value}: {match.Left.RemainingHealth} HP / {match.Left.RemainingZeal} ZP / {match.Left.EdgeDistance}m / Attacking in {match.Left.NextAttackIn}s");
@@ -436,6 +444,7 @@ namespace ChaoWorld.Bot
             var winner = (await _repo.GetTournamentInstanceChao(instance)).Where(x => x.State != TournamentInstance.TournamentStates.Canceled).FirstOrDefault();
             instance.WinnerChaoId = winner.ChaoId;
             instance.State = TournamentInstance.TournamentStates.Completed;
+            instance.CompletedOn = SystemClock.Instance.GetCurrentInstant();
             await _repo.UpdateTournamentInstance(instance);
 
             await _repo.FinalizeTournamentInstanceChao(instance); // Set final results for each chao

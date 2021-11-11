@@ -219,6 +219,7 @@ namespace ChaoWorld.Bot
 
         public async Task<Embed> CreateTournamentRoundResultsEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance, int round)
         {
+            var roundText = round == instance.Rounds ? "Final Round" : $"Round #{round}";
             var name = $"{tourney.Name} Tournament Progress: Round {round} Results";
             var imageUrl = MiscUtils.GenerateThumbnailForTournament();
 
@@ -248,7 +249,7 @@ namespace ChaoWorld.Bot
                     advancingList.Append($"{combatant.Name}\r\n");
             }
 
-            eb.Field(new("Remaining", advancingList.ToString()));
+            eb.Field(new("Advancing", advancingList.ToString()));
             eb.Field(new("Retired", retiredList.ToString()));
 
             return eb.Build();
@@ -256,7 +257,8 @@ namespace ChaoWorld.Bot
 
         public async Task<Embed> CreateTournamentMatchResultsEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance, TournamentInstanceMatch match, Core.Chao winner, Core.Chao loser)
         {
-            var name = $"{tourney.Name} Tournament Progress: Match Results ({match.RoundNumber}-{match.RoundOrder})";
+            var matchText = match.RoundNumber == instance.Rounds ? "FINALS" : $"{match.RoundNumber}-{match.RoundOrder}";
+            var name = $"{tourney.Name} Tournament Progress: Match Results ({matchText})";
             var imageUrl = MiscUtils.GenerateThumbnailForTournament();
 
             var eb = new EmbedBuilder()
