@@ -140,7 +140,7 @@ namespace ChaoWorld.Bot
                 // Start the race!
                 instance.State = TournamentInstance.TournamentStates.InProgress;
                 await _repo.UpdateTournamentInstance(instance);
-                await ctx.Reply($"{Emojis.Megaphone} The {tourney.Name} tournament is starting! Good luck to all participants!");
+                //await ctx.Reply($"{Emojis.Megaphone} The {tourney.Name} tournament is starting! Good luck to all participants!");
 
                 try
                 {
@@ -188,6 +188,12 @@ namespace ChaoWorld.Bot
             // As long as we have more rounds to run, queue them up and process them
             instance.Rounds = (int)(Math.Log(combatants.Count()) / Math.Log(2));
             while (roundIndex <= instance.Rounds) {
+                // Announce the round is starting unless this is a practice tourney
+                if (instance.Rounds > 1)
+                {
+                    await ctx.Reply($"{Emojis.Megaphone} {tourney.Name} Tournament Round #{roundIndex} is starting!");
+                    await Task.Delay(3000);
+                }
 
                 // As long as we have more matches to run in this round, queue them up and process them
                 instance.Matches = (int)(Math.Pow(2, instance.Rounds - roundIndex));
@@ -247,6 +253,9 @@ namespace ChaoWorld.Bot
             match.Right.EdgeDistance = 50;
             match.Right.AttackDelay = GetAttackDelay(match.Right.Chao);
             match.Right.NextAttackIn = match.Right.AttackDelay;
+
+            await ctx.Reply($"{Emojis.Megaphone} {tourney.Name} Tournament Match #{match.RoundOrder} between {match.Left.Emoji} {match.Left.Chao.Name} and {match.Right.Emoji} {match.Right.Chao.Name} has begun.");
+            await Task.Delay(3000);
 
             await _repo.LogMessage($"Combatant {match.Left.Chao.Id.Value}: {match.Left.RemainingHealth} HP / {match.Left.RemainingZeal} ZP / {match.Left.EdgeDistance}m / Attacking in {match.Left.NextAttackIn}s");
             await _repo.LogMessage($"Combatant {match.Right.Chao.Id.Value}: {match.Right.RemainingHealth} HP / {match.Right.RemainingZeal} ZP / {match.Right.EdgeDistance}m / Attacking in {match.Right.NextAttackIn}s");
