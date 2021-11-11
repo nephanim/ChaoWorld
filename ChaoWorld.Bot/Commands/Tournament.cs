@@ -479,8 +479,8 @@ namespace ChaoWorld.Bot
                     100 + attacker.PowerValue /
                         (2.0 + (defender.SwimValue / (1.0 + attacker.PowerValue))) * randomFactor
                 ));
-            attacker.RaisePower(damage / 100); // Not sure whether to adjust the scale here further, will probably have to see in practice (right now this is like 10-20 max per fight?)
-            defender.RaiseSwim(damage / 100);
+            attacker.RaisePower(damage / 40); // Not sure whether to adjust the scale here further, will probably have to see in practice (right now this is like 30-50 per fight?)
+            defender.RaiseSwim(damage / 40);
             return damage;
         }
 
@@ -507,7 +507,7 @@ namespace ChaoWorld.Bot
             var defendingLuckRoll = new Random().Next(1, defender.LuckValue + 30);
             if (defendingLuckRoll > attackingLuckRoll * 2)
             {
-                defender.RaiseLuck(10); // Successful luck by dodge awards stat progress
+                defender.RaiseLuck(30); // Successful dodge by luck awards stat progress
                 return true;
             }
 
@@ -516,7 +516,7 @@ namespace ChaoWorld.Bot
             var defendingFlyRoll = new Random().Next(1, defender.FlyValue + 30);
             if (defendingFlyRoll > attackingRunRoll * 2)
             {
-                defender.RaiseFly(10); // Successful luck by flying awards stat progress
+                defender.RaiseFly(30); // Successful dodge by flying awards stat progress
                 return true;
             }
 
