@@ -15,11 +15,11 @@ create table if not exists tournaments
 insert into tournaments
 	(id, name, description, frequencyminutes, readydelayminutes, isenabled, minimumchao, maximumchao, prizerings)
 values
-	(1, 'Duel', 'Honorable duel between two chao for bragging rights', 1, 1, false, 2, 2, 30),
-	(2, 'Small Tournament', 'Small-scale tournament with two rounds', 1, 1, true, 1, 4, 100),
-	(3, 'Medium Tournament', 'Typical-scale tournament with three rounds', 3, 3, true, 1, 8, 200),
-	(4, 'Large Tournament', 'Large-scale tournament with four rounds', 5, 5, true, 1, 16, 300),
-	(5, 'World Championship', 'Massive-scale tournament open to everyone', 10, 10, false, 1, 32, 400);
+	(1, 'Practice', 'Honorable duel between two chao for bragging rights', 1, 1, false, 2, 2, 30),
+	(2, 'Sprout', 'Small-scale tournament with two rounds', 1, 1, true, 1, 4, 100),
+	(3, 'Disciple', 'Typical-scale tournament with three rounds', 3, 3, true, 1, 8, 200),
+	(4, 'Master', 'Large-scale tournament with four rounds', 5, 5, true, 1, 16, 300),
+	(5, 'Grandmaster', 'Massive-scale tournament with five rounds', 10, 10, true, 1, 32, 400);
 
 create table if not exists tournamentinstances
 (
@@ -29,6 +29,7 @@ create table if not exists tournamentinstances
     createdon timestamp without time zone not null default (current_timestamp),
     readyon timestamp without time zone,
     completedon timestamp without time zone,
+    totaltimeelapsedseconds int,
     winnerchaoid bigint
 );
 
