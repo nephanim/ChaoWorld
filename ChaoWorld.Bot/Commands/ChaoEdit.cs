@@ -38,7 +38,7 @@ namespace ChaoWorld.Bot
             var existingChao = await _repo.GetChaoByName(ctx.Garden.Id, newName);
             if (existingChao != null && existingChao.Id != target.Id)
             {
-                var msg = $"{Emojis.Warn} You already have a chao in your system with the name \"{existingChao.Name}\" (`{existingChao.Id}`). Do you want to rename this chao to that name too?";
+                var msg = $"{Emojis.Warn} You already have a chao in your garden with the name \"{existingChao.Name}\" (`{existingChao.Id}`). Do you want to rename this chao to that name too?";
                 if (!await ctx.PromptYesNo(msg, "Rename")) throw new CWError("Chao renaming cancelled.");
             }
 

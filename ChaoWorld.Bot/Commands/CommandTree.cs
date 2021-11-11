@@ -156,6 +156,11 @@ namespace ChaoWorld.Bot
                 await PrintCommandList(ctx, "chao", ChaoCommands);
             else if (ctx.Match("rank", "ranking", "rankings", "top", "leaderboard"))
                 await ctx.Execute<Chao>(ChaoRankings, m => m.ChaoRankings(ctx));
+            else if (ctx.Match("rename", "name", "changename", "setname"))
+                if (await ctx.MatchChao() is Core.Chao target)
+                    await ctx.Execute<ChaoEdit>(ChaoRename, m => m.Name(ctx, target));
+                else
+                    await PrintCommandExpectedError(ctx, ChaoRename);
             else if (await ctx.MatchChao() is Core.Chao target)
                 await HandleChaoCommandTargeted(ctx, target);
             else if (ctx.Match("pet"))
