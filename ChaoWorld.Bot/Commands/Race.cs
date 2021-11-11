@@ -56,18 +56,18 @@ namespace ChaoWorld.Bot
 
             var activeInRace = await _repo.GetActiveRaceByGarden(chao.GardenId.Value);
             var activeInTourney = await _repo.GetActiveTournamentByGarden(chao.GardenId.Value);
+            var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
 
             if (raceInstance.State == RaceInstance.RaceStates.InProgress
                 || raceInstance.State == RaceInstance.RaceStates.Completed
                 || raceInstance.State == RaceInstance.RaceStates.Canceled)
             {
                 // Race isn't joinable - sorry!
-                await ctx.Reply($"{Emojis.Error} This race is {Core.MiscUtils.GetDescription(raceInstance.State).ToLower()} and can no longer be joined.");
+                await ctx.Reply($"{Emojis.Error} The {race.Name} race is {Core.MiscUtils.GetDescription(raceInstance.State).ToLower()} and can no longer be joined. Please wait for the next race.");
             }
             else if (activeInRace != null)
             {
                 // There's a chao in this garden that's already participating in a race.
-                var race = await _repo.GetRaceById(activeInRace.RaceId);
                 await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {race.Name} race. Please support your chao in that race first!");
             }
             else if (activeInTourney != null)
@@ -80,7 +80,6 @@ namespace ChaoWorld.Bot
             {
                 // Race is in a joinable stat
                 // Check whether we've reached the minimum number of chao for the race
-                var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
                 var currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
                 if (race == null)
                 {
