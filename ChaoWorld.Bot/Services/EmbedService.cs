@@ -220,16 +220,14 @@ namespace ChaoWorld.Bot
         public async Task<Embed> CreateTournamentRoundResultsEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance, int round)
         {
             var name = $"{tourney.Name} Tournament Progress: Round {round} Results";
-            var desc = $"**Round** {round} / {instance.Rounds}\r\n\r\n" +
-                $"{tourney.Description}";
-            //var imageUrl = MiscUtils.GenerateThumbnailForTournament(race);
+            var imageUrl = MiscUtils.GenerateThumbnailForTournament();
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
-                //.Thumbnail(new(imageUrl))
-                .Description(desc)
+                .Thumbnail(new(imageUrl))
+                .Description(tourney.Description)
                 .Footer(new(
-                    $"Instance ID: {instance.Id} | Round: {round} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+                    $"Instance ID: {instance.Id} | Round: {round} of {instance.Rounds} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
 
             var elapsed = TimeSpan.FromSeconds(instance.RoundElapsedTimeSeconds).ToString("c");
             eb.Field(new("Time Elapsed", elapsed));
@@ -259,17 +257,14 @@ namespace ChaoWorld.Bot
         public async Task<Embed> CreateTournamentMatchResultsEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance, TournamentInstanceMatch match, Core.Chao winner, Core.Chao loser)
         {
             var name = $"{tourney.Name} Tournament Progress: Match {match.RoundNumber}-{match.RoundOrder} Results";
-            var desc = $"**Round** {match.RoundNumber} / {instance.Rounds}\r\n" +
-                $"**Match** {match.RoundOrder} / {instance.Matches}\r\n\r\n" +
-                $"{tourney.Description}";
-            //var imageUrl = MiscUtils.GenerateThumbnailForTournament(race);
+            var imageUrl = MiscUtils.GenerateThumbnailForTournament();
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
-                //.Thumbnail(new(imageUrl))
-                .Description(desc)
+                .Thumbnail(new(imageUrl))
+                .Description(tourney.Description)
                 .Footer(new(
-                    $"Instance ID: {instance.Id} | Round: {match.RoundNumber} | Match: {match.RoundOrder} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+                    $"Instance ID: {instance.Id} | Round: {match.RoundNumber} of {instance.Rounds} | Match: {match.RoundOrder} of {instance.Matches} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
 
             var elapsed = TimeSpan.FromSeconds(match.ElapsedTimeSeconds).ToString("c");
             eb.Field(new("Match Time", elapsed));

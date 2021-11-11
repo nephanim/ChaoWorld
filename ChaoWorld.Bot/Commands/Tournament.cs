@@ -88,7 +88,7 @@ namespace ChaoWorld.Bot
                     // The tournament is not full - join it
                     await _repo.JoinChaoToTournamentInstance(instance, chao);
                     currentChaoCount++;
-                    await ctx.Reply($"{Emojis.Success} {chao.Name} has joined the {tourney.Name}. Do your best!");
+                    await ctx.Reply($"{Emojis.Success} {chao.Name} has joined the {tourney.Name} tournament. Do your best!");
 
                     // See whether this chao joining puts us at the required threshold to start
                     if (currentChaoCount >= tourney.MinimumChao && instance.State == TournamentInstance.TournamentStates.New)
@@ -207,7 +207,8 @@ namespace ChaoWorld.Bot
                 }
 
                 // No more matches to run this round - report progress and go on to the next round
-                await ctx.Reply(embed: await _embeds.CreateTournamentRoundResultsEmbed(ctx, tourney, instance, roundIndex));
+                if (instance.Rounds > 1) // When there's only one round (i.e. practice tournament) just skip the round embed
+                    await ctx.Reply(embed: await _embeds.CreateTournamentRoundResultsEmbed(ctx, tourney, instance, roundIndex));
                 roundIndex++;
                 instance.TotalTimeElapsedSeconds += instance.RoundElapsedTimeSeconds;
                 instance.RoundElapsedTimeSeconds = 0;
@@ -537,16 +538,6 @@ namespace ChaoWorld.Bot
             return zeal;
         }
 
-        private int GetTourneyFillLimit(int currentNumber, int hardLimit)
-        {
-            var nextThreshold = 4;
-            while (nextThreshold < currentNumber && nextThreshold < hardLimit)
-            {
-                nextThreshold *= 2;
-            }
-            return Math.Min(hardLimit, nextThreshold);
-        }
-
         private int GetPrizeAmount(Core.Tournament tourney)
         {
             // This will reward anywhere from 50% to 150% of the listed prize amount for a race
@@ -562,48 +553,54 @@ namespace ChaoWorld.Bot
             switch(new Random().Next(1, 3))
             {
                 case 1:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} strikes the finishing blow. {defender.Chao.Name} is down for the count.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} strikes the finishing blow. {defender.Emoji} {defender.Chao.Name} is down for the count.";
                 case 2:
-                    return $"{defender.Emoji} {defender.Chao.Name} staggers from {attacker.Chao.Name}'s next hit, falling unconscious.";
+                    return $"{defender.Emoji} {defender.Chao.Name} staggers from {attacker.Emoji} {attacker.Chao.Name}'s next hit, falling unconscious.";
                 case 3:
                 default:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} gives it everything they've got! {defender.Chao.Name} buckles under the force and can no longer continue.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} gives it everything they've got! {defender.Emoji} {defender.Chao.Name} buckles under the force and can no longer continue.";
             }
         }
 
         private string GetRingoutMessage(TournamentCombatant attacker, TournamentCombatant defender)
         {
             if (GetKnockback(attacker.Chao, defender.Chao) >= 100)
-                return $"{attacker.Emoji} {attacker.Chao.Name} effortlessly flings {defender.Chao.Name} from the ring. They didn't stand a chance.";
+                return $"{attacker.Emoji} {attacker.Chao.Name} effortlessly flings {defender.Emoji} {defender.Chao.Name} from the ring. They didn't stand a chance.";
             if (GetKnockback(attacker.Chao, defender.Chao) <= 3)
-                return $"{attacker.Emoji} As {attacker.Chao.Name} and {defender.Chao.Name} exchange blows on the very edge of the ring, {defender.Chao.Name} accidentally dodges out of bounds.";
+                return $"{attacker.Emoji} {attacker.Chao.Name} and {defender.Emoji} {defender.Chao.Name} exchange blows on the very edge of the ring. {defender.Emoji} {defender.Chao.Name} accidentally dodges out of bounds.";
             switch (new Random().Next(1, 4))
             {
                 case 1:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} lands a powerful hit, launching {defender.Chao.Name} out of the ring.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} lands a powerful hit, launching {defender.Emoji} {defender.Chao.Name} out of the ring.";
                 case 2:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} catches {attacker.Chao.Name} off guard and throws them out of bounds.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} catches {defender.Emoji} {defender.Chao.Name} off guard and throws them out of bounds.";
                 case 3:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} knocks a weakened {defender.Chao.Name} onto their heels and shoves them out of bounds.";
-                case 4:
+                    return $"{attacker.Emoji} {attacker.Chao.Name} knocks a weakened {defender.Emoji} {defender.Chao.Name} onto their heels and shoves them out of bounds.";
+                case 4:                
                 default:
-                    return $"{defender.Emoji} {defender.Chao.Name} loses their footing trying to block {attacker.Chao.Name}'s attack. {defender.Chao.Name} falls out of the ring!";
+                    return $"{defender.Emoji} {defender.Chao.Name} loses their footing trying to block {attacker.Emoji} {attacker.Chao.Name}'s attack. {defender.Emoji} {defender.Chao.Name} falls out of the ring!";
             }
         }
 
         private string GetNormalHitMessage(TournamentCombatant attacker, TournamentCombatant defender)
         {
-            switch (new Random().Next(1, 4))
+            switch (new Random().Next(1, 7))
             {
                 case 1:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} throws a punch at {defender.Chao.Name}.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} throws a punch at {defender.Emoji} {defender.Chao.Name}.";
                 case 2:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} spins and kicks {attacker.Chao.Name}.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} spins and kicks {defender.Emoji} {defender.Chao.Name}.";
                 case 3:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} headbutts {defender.Chao.Name}.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} headbutts {defender.Emoji} {defender.Chao.Name}.";
                 case 4:
+                    return $"{attacker.Emoji} {attacker.Chao.Name} gives {defender.Emoji} {defender.Chao.Name} a shoulder tackle.";
+                case 5:
+                    return $"{attacker.Emoji} {attacker.Chao.Name} strikes twice in quick succession!";
+                case 6:
+                    return $"{attacker.Emoji} {attacker.Chao.Name} feints, then punches {defender.Emoji} {defender.Chao.Name} hard.";
+                case 7:
                 default:
-                    return $"{defender.Emoji} {defender.Chao.Name} crosses their arms to block {attacker.Chao.Name}'s attack.";
+                    return $"{defender.Emoji} {defender.Chao.Name} crosses their arms to block {attacker.Emoji} {attacker.Chao.Name}'s attack.";
             }
         }
 
@@ -612,11 +609,11 @@ namespace ChaoWorld.Bot
             switch (new Random().Next(1, 4))
             {
                 case 1:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} sent {defender.Chao.Name} to their knees. {defender.Chao.Name} is catching their breath.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} sent {defender.Emoji} {defender.Chao.Name} to their knees. {defender.Emoji} {defender.Chao.Name} is catching their breath.";
                 case 2:
-                    return $"{defender.Emoji} {defender.Chao.Name} is out of breath and can't defend themselves. {attacker.Chao.Name} gets a free hit in.";
+                    return $"{defender.Emoji} {defender.Chao.Name} is out of breath and can't defend themselves. {attacker.Emoji} {attacker.Chao.Name} gets a free hit in.";
                 case 3:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} sweeps {defender.Chao.Name}'s feet out from below, bringing them to the ground.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} sweeps {defender.Emoji} {defender.Chao.Name}'s feet out from below, bringing them to the ground.";
                 case 4:
                 default:
                     return $"{defender.Emoji} {defender.Chao.Name} takes a square hit and stumbles.";
@@ -628,11 +625,11 @@ namespace ChaoWorld.Bot
             switch (new Random().Next(1, 4))
             {
                 case 1:
-                    return $"{defender.Emoji} {defender.Chao.Name} expertly evades {attacker.Chao.Name}'s charge.";
+                    return $"{defender.Emoji} {defender.Chao.Name} expertly evades {attacker.Emoji} {attacker.Chao.Name}'s charge.";
                 case 2:
-                    return $"{defender.Emoji} {defender.Chao.Name} barely sidesteps {attacker.Chao.Name}'s sudden attack";
+                    return $"{defender.Emoji} {defender.Chao.Name} barely sidesteps {attacker.Emoji} {attacker.Chao.Name}'s sudden attack";
                 case 3:
-                    return $"{attacker.Emoji} {attacker.Chao.Name} grabs {defender.Chao.Name} by the arm and takes a swing, but {defender.Chao.Name} breaks away.";
+                    return $"{attacker.Emoji} {attacker.Chao.Name} grabs {defender.Emoji} {defender.Chao.Name} by the arm and takes a swing, but {defender.Emoji} {defender.Chao.Name} breaks away.";
                 case 4:
                 default:
                     return $"{defender.Emoji} {defender.Chao.Name} glides backward to avoid a spinning strike.";
@@ -642,15 +639,15 @@ namespace ChaoWorld.Bot
         private string GetCriticalDodgeMessage(TournamentCombatant attacker, TournamentCombatant defender)
         {
             if (defender.RemainingZeal >= 100)
-                return $"{defender.Emoji} {defender.Chao.Name} seems to have total control of the situation. {attacker.Chao.Name} is out of breath.";
+                return $"{defender.Emoji} {defender.Chao.Name} seems to have total control of the situation. {attacker.Emoji} {attacker.Chao.Name} is out of breath.";
             switch (new Random().Next(1, 4))
             {
                 case 1:
-                    return $"{defender.Emoji} {defender.Chao.Name} dodges {attacker.Chao.Name}'s attack, and {attacker.Chao.Name} loses their balance.";
+                    return $"{defender.Emoji} {defender.Chao.Name} dodges {attacker.Emoji} {attacker.Chao.Name}'s attack, and {attacker.Emoji} {attacker.Chao.Name} loses their balance.";
                 case 2:
-                    return $"{defender.Emoji} {defender.Chao.Name} trips {attacker.Chao.Name} while fluttering out of their path.";
+                    return $"{defender.Emoji} {defender.Chao.Name} trips {attacker.Emoji} {attacker.Chao.Name} while fluttering out of their path.";
                 case 3:
-                    return $"{defender.Emoji} {defender.Chao.Name} teases {attacker.Chao.Name} for missing. {attacker.Chao.Name} is discouraged.";
+                    return $"{defender.Emoji} {defender.Chao.Name} teases {attacker.Emoji} {attacker.Chao.Name} for missing. {attacker.Emoji} {attacker.Chao.Name} is discouraged.";
                 case 4:
                 default:
                     return $"{attacker.Emoji} {attacker.Chao.Name} is searching for an opening.";
