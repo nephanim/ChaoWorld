@@ -125,7 +125,7 @@ namespace ChaoWorld.Bot
                 .ToList();
 
             var itemsPerPage = 20;
-            await ctx.Paginate(chao.ToAsyncEnumerable(), chao.Count, itemsPerPage, "Chao Ranking", "#ffffff", Renderer);
+            await ctx.Paginate(chao.ToAsyncEnumerable(), chao.Count, itemsPerPage, "Chao Ranking", null, Renderer);
 
             // Base renderer, dispatches based on type
             Task Renderer(EmbedBuilder eb, IEnumerable<ListedChao> page)
