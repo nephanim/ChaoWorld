@@ -35,18 +35,24 @@ namespace ChaoWorld.Bot
                 throw Errors.StringTooLongError("Chao name", newName.Length, Limits.MaxChaoNameLength);
 
             // Warn if there's already a chao by this name
-            var existingChao = await _repo.GetChaoByName(ctx.Garden.Id, newName);
+            var existingChao = await _repo.GetChaoByName(newName);
             if (existingChao != null && existingChao.Id != target.Id)
             {
-                var msg = $"{Emojis.Warn} You already have a chao in your garden with the name \"{existingChao.Name}\" (`{existingChao.Id}`). Do you want to rename this chao to that name too?";
+                /*
+                var msg = $"{Emojis.Warn} There is already a chao with the name \"{existingChao.Name}\" (`{existingChao.Id}`). Are you sure?";
                 if (!await ctx.PromptYesNo(msg, "Rename")) throw new CWError("Chao renaming cancelled.");
+                */
+                // TODO: May need to remove this later if this thing gets big (people will complain)
+                await ctx.Reply($"{Emojis.Error} There is already a chao with the name {existingChao.Name} (`{existingChao.Id}`). Please use a different name.");
             }
+            else
+            {
+                // Rename the chao
+                var patch = new ChaoPatch { Name = Partial<string>.Present(newName) };
+                await _repo.UpdateChao(target.Id, patch);
 
-            // Rename the chao
-            var patch = new ChaoPatch { Name = Partial<string>.Present(newName) };
-            await _repo.UpdateChao(target.Id, patch);
-
-            await ctx.Reply($"{Emojis.Success} Chao renamed.");
+                await ctx.Reply($"{Emojis.Success} Chao renamed.");
+            }
         }
 
         public async Task Delete(Context ctx, Core.Chao target)
