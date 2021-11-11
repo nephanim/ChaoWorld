@@ -213,7 +213,7 @@ namespace ChaoWorld.Bot
                 }
 
                 // No more matches to run this round - report progress and go on to the next round
-                if (instance.Rounds > 1) // When there's only one round (i.e. practice tournament) just skip the round embed
+                if (roundIndex != instance.Rounds) // When this is the final round (or a practice match) just skip the round summary
                     await ctx.Reply(embed: await _embeds.CreateTournamentRoundResultsEmbed(ctx, tourney, instance, roundIndex));
                 roundIndex++;
                 instance.TotalTimeElapsedSeconds += instance.RoundElapsedTimeSeconds;

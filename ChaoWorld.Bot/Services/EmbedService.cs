@@ -256,7 +256,7 @@ namespace ChaoWorld.Bot
 
         public async Task<Embed> CreateTournamentMatchResultsEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance, TournamentInstanceMatch match, Core.Chao winner, Core.Chao loser)
         {
-            var name = $"{tourney.Name} Tournament Progress: Match {match.RoundNumber}-{match.RoundOrder} Results";
+            var name = $"{tourney.Name} Tournament Progress: Match Results ({match.RoundNumber}-{match.RoundOrder})";
             var imageUrl = MiscUtils.GenerateThumbnailForTournament();
 
             var eb = new EmbedBuilder()
