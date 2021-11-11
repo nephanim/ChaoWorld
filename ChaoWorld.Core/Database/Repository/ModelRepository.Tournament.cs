@@ -111,6 +111,7 @@ namespace ChaoWorld.Core
                 state = instance.State,
                 readyon = instance.ReadyOn,
                 completedon = instance.CompletedOn,
+                totaltimeelapsedseconds = instance.TotalTimeElapsedSeconds,
                 winnerchaoid = instance.WinnerChaoId
             });
             var updatedInstance = await _db.QueryFirst<TournamentInstance>(query, extraSql: "returning *");
