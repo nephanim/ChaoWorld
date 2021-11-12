@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SqlKata;
 using Dapper;
 using System.Collections.Generic;
+using NodaTime;
 
 namespace ChaoWorld.Core
 {
@@ -21,6 +22,20 @@ namespace ChaoWorld.Core
             var query = new Query("races").Join("raceinstances", "races.id", "raceinstances.raceid")
                 .Where("raceinstances.id", "=", id).Select("races.*");
             return await _db.QueryFirst<Race?>(query);
+        }
+
+        public async Task<Race> ResetRaceAvailableOn(Race race, IChaoWorldConnection? conn = null)
+        {
+            var now = SystemClock.Instance.GetCurrentInstant();
+            var availableDuration = Duration.FromMinutes(race.FrequencyMinutes);
+            var availableOn = now.Plus(availableDuration);
+            var query = new Query("races").Where("id", race.Id).AsUpdate(new
+            {
+                availableon = availableOn
+            });
+            var updatedRace = await _db.QueryFirst<Race>(query, extraSql: "returning *");
+            _logger.Information($"Updated tournament {race.Id} of tournament {race.Name}");
+            return updatedRace;
         }
 
         public async Task<RaceInstance?> GetRaceInstanceById(long id)
@@ -293,30 +308,27 @@ namespace ChaoWorld.Core
             _logger.Information(msg);
         }
 
-        public async Task InstantiateRaces()
+        public async Task<IEnumerable<Race>> GetAvailableRaces()
         {
+            var races = new List<Race>();
             try
             {
-                var instances = await _db.Execute(async conn => await conn.QueryAsync<RaceInstance>($@"
-                    insert into raceinstances (raceid, state)
-                    select r.id, {(int)RaceInstance.RaceStates.New}
+                races = (await _db.Execute(async conn => await conn.QueryAsync<Race>($@"
+                    select *
                     from races r
                     left join raceinstances i
                     on r.id = i.raceid
                     and i.state not in ({(int)RaceInstance.RaceStates.Completed}, {(int)RaceInstance.RaceStates.Canceled})
                     where r.isenabled = true
                     and i.id is null
-                    and r.availableon < current_timestamp
-                    returning *
-                "));
-                var instanceCount = instances.AsList().Count;
-                _logger.Information($"Created {instanceCount} new race instances");
+                    and r.availableon < (now() at time zone 'utc')
+                "))).AsList();
             }
             catch (Exception e)
             {
-                _logger.Error($"Failed to instantiate races: {e.Message}");
+                _logger.Error($"Failed to read races: {e.Message}");
             }
-            
+            return races;
         }
 
         public async Task<ChaoRaceStats> GetRaceStats(long chaoId)

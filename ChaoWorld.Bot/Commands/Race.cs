@@ -108,10 +108,26 @@ namespace ChaoWorld.Bot
 
                         await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race will start in {race.ReadyDelayMinutes} minutes. Use `!race {raceInstance.Id} join {{chao id/name}}` to participate.");
 
-                        var readyDelay = TimeSpan.FromMinutes(race.ReadyDelayMinutes);
-                        //Thread.Sleep(race.ReadyDelayMinutes * 60000);
-                        await Task.Delay(readyDelay);
-                        await StartRace(ctx, race, raceInstance);
+                        // Start polling to make sure the tournament is still ready when it's time to start
+                        var waitTime = 0;
+                        while (waitTime < race.ReadyDelayMinutes)
+                        {
+                            await Task.Delay(TimeSpan.FromMinutes(1));
+                            waitTime++;
+                            currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
+                            if (currentChaoCount < race.MinimumChao)
+                            {
+                                // We no longer meet the requirements to start, so set back to new
+                                raceInstance.State = RaceInstance.RaceStates.New;
+                                raceInstance.ReadyOn = null;
+                                await _repo.UpdateRaceInstance(raceInstance);
+                                await ctx.Reply($"{Emojis.Warn} The {race.Name} race has been delayed as it no longer has the minimum number of participants.");
+                                return;
+                            }
+                        }
+                        // We've waited long enough... if we're still in a preparing state, go ahead and start
+                        if (raceInstance.State == RaceInstance.RaceStates.Preparing)
+                            await StartRace(ctx, race, raceInstance);
                     }
                 }
             }

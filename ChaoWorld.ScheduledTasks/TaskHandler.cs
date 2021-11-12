@@ -56,10 +56,10 @@ namespace ChaoWorld.ScheduledTasks
             await _repo.UpdateStats();
 
             _logger.Information("Updating available race instances...");
-            await _repo.InstantiateRaces();
+            await InstantiateRaces();
 
             _logger.Information("Updating available tournament instances...");
-            await _repo.InstantiateTournaments();
+            await InstantiateTournaments();
 
             _logger.Information("Checking for chao to evolve...");
             await RunFirstEvolutions();
@@ -81,6 +81,28 @@ namespace ChaoWorld.ScheduledTasks
                 c.FlySwimAffinity = 0;
                 c.RunPowerAffinity = 0;
                 await _repo.UpdateChao(c);
+            }
+        }
+
+        private async Task InstantiateRaces()
+        {
+            var races = await _repo.GetAvailableRaces();
+            foreach (var r in races)
+            {
+                await _repo.ResetRaceAvailableOn(r);
+                var instance = await _repo.CreateRaceInstance(r);
+                _logger.Information($"Created new instance {instance.Id} of race {r.Id} ({r.Name})");
+            }
+        }
+
+        private async Task InstantiateTournaments()
+        {
+            var tournaments = await _repo.GetAvailableTournaments();
+            foreach (var t in tournaments)
+            {
+                await _repo.ResetTournamentAvailableOn(t);
+                var instance = await _repo.CreateTournamentInstance(t);
+                _logger.Information($"Created new instance {instance.Id} of tournament {t.Id} ({t.Name})");
             }
         }
 

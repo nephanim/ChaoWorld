@@ -123,7 +123,7 @@ namespace ChaoWorld.Bot
             catch (TimeoutException)
             {
                 // Got a complaint the old error was a bit too patronizing. Hopefully this is better?
-                await Reply($"{Emojis.Error} Operation timed out, sorry. Try again, perhaps?");
+                await Reply($"{Emojis.Error} Operation timed out.");
             }
         }
 

@@ -102,10 +102,26 @@ namespace ChaoWorld.Bot
 
                         await ctx.Reply($"{Emojis.Megaphone} The {tourney.Name} tournament will start in {tourney.ReadyDelayMinutes} minutes. Use `!tournament {instance.Id} join {{chao id/name}}` to participate.");
 
-                        var readyDelay = TimeSpan.FromMinutes(tourney.ReadyDelayMinutes);
-                        //Thread.Sleep(race.ReadyDelayMinutes * 60000);
-                        await Task.Delay(readyDelay);
-                        await StartTournament(ctx, tourney, instance);
+                        // Start polling to make sure the tournament is still ready when it's time to start
+                        var waitTime = 0;
+                        while (waitTime < tourney.ReadyDelayMinutes)
+                        {
+                            await Task.Delay(TimeSpan.FromMinutes(1));
+                            waitTime++;
+                            currentChaoCount = await _repo.GetTournamentInstanceChaoCount(instance.Id);
+                            if (currentChaoCount < tourney.MinimumChao)
+                            {
+                                // We no longer meet the requirements to start, so set back to new
+                                instance.State = TournamentInstance.TournamentStates.New;
+                                instance.ReadyOn = null;
+                                await _repo.UpdateTournamentInstance(instance);
+                                await ctx.Reply($"{Emojis.Warn} The {tourney.Name} tournament has been delayed as it no longer has the minimum number of participants.");
+                                return;
+                            }
+                        }
+                        // We've waited long enough... if we're still in a preparing state, go ahead and start
+                        if (instance.State == TournamentInstance.TournamentStates.Preparing)
+                            await StartTournament(ctx, tourney, instance);
                     }
                 }
             }

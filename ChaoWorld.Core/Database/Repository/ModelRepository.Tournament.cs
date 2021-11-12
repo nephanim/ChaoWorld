@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SqlKata;
 using Dapper;
 using System.Collections.Generic;
+using NodaTime;
 
 namespace ChaoWorld.Core
 {
@@ -21,6 +22,20 @@ namespace ChaoWorld.Core
             var query = new Query("tournaments").Join("tournamentinstances", "tournaments.id", "tournamentinstances.tournamentid")
                 .Where("tournamentinstances.id", "=", id).Select("tournaments.*");
             return await _db.QueryFirst<Tournament?>(query);
+        }
+
+        public async Task<Tournament> ResetTournamentAvailableOn(Tournament tourney, IChaoWorldConnection? conn = null)
+        {
+            var now = SystemClock.Instance.GetCurrentInstant();
+            var availableDuration = Duration.FromMinutes(tourney.FrequencyMinutes);
+            var availableOn = now.Plus(availableDuration);
+            var query = new Query("tournaments").Where("id", tourney.Id).AsUpdate(new
+            {
+                availableon = availableOn
+            });
+            var updatedTourney = await _db.QueryFirst<Tournament>(query, extraSql: "returning *");
+            _logger.Information($"Updated tournament {tourney.Id} of tournament {tourney.Name}");
+            return updatedTourney;
         }
 
         public async Task<TournamentInstance?> GetTournamentInstanceById(long id)
@@ -217,29 +232,27 @@ namespace ChaoWorld.Core
             _logger.Information($"Retired chao {loserChaoId} from tournament instance {instanceId}");
         }
 
-        public async Task InstantiateTournaments()
+        public async Task<IEnumerable<Tournament>> GetAvailableTournaments()
         {
+            var tournaments = new List<Tournament>();
             try
             {
-                var instances = await _db.Execute(async conn => await conn.QueryAsync<RaceInstance>($@"
-                    insert into tournamentinstances (tournamentid, state)
-                    select t.id, {(int)TournamentInstance.TournamentStates.New}
+                tournaments = (await _db.Execute(async conn => await conn.QueryAsync<Tournament>($@"
+                    select *
                     from tournaments t
                     left join tournamentinstances i
                     on t.id = i.tournamentid
                     and i.state not in ({(int)TournamentInstance.TournamentStates.Completed}, {(int)TournamentInstance.TournamentStates.Canceled})
                     where t.isenabled = true
                     and i.id is null
-                    and t.availableon < current_timestamp
-                    returning *
-                "));
-                var instanceCount = instances.AsList().Count;
-                _logger.Information($"Created {instanceCount} new tournament instances");
+                    and t.availableon < (now() at time zone 'utc')
+                "))).AsList();
             }
             catch (Exception e)
             {
-                _logger.Error($"Failed to instantiate tournaments: {e.Message}");
+                _logger.Error($"Failed to read tournaments: {e.Message}");
             }
+            return tournaments;
         }
 
         public async Task UpdateTournamentPingSetting(ulong accountId, bool allowPings)
