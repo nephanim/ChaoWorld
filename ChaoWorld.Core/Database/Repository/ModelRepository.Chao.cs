@@ -59,7 +59,7 @@ namespace ChaoWorld.Core
         {
             var query = new Query("chao")
                 .Where("evolutionstate", Chao.EvolutionStates.Child)
-                .WhereRaw("trunc(date_part('day', current_timestamp - rebirthon)) >= 7");
+                .WhereRaw("trunc(date_part('day', now() at time zone 'utc' - rebirthon)) >= 7");
             return await _db.Query<Chao>(query);
         }
 
