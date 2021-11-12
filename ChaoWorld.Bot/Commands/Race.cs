@@ -68,7 +68,8 @@ namespace ChaoWorld.Bot
             else if (activeInRace != null)
             {
                 // There's a chao in this garden that's already participating in a race.
-                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {race.Name} race. Please support your chao in that race first!");
+                var activeRace = await _repo.GetRaceByInstanceId(activeInRace.Id);
+                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {activeRace.Name} race. Please support your chao in that race first!");
             }
             else if (activeInTourney != null)
             {
