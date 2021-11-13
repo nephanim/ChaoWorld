@@ -51,9 +51,10 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
-        public async Task<Embed> CreateChaoEmbed(Core.Garden garden, Core.Chao chao)
+        public async Task<Embed> CreateChaoEmbed(Context ctx, Core.Garden garden, Core.Chao chao)
         {
             var name = chao.Name;
+            var gardenOwner = await ctx.GetCachedGardenOwner(garden.Id);
             var raceStats = await _repo.GetRaceStats(chao.Id.Value);
             var totalRaces = raceStats != null ? string.Format("{0:n0}", raceStats.TotalRaces) : "0";
             var totalWins = raceStats != null ? string.Format("{0:n0}", raceStats.TotalWins) : "0";
@@ -71,9 +72,11 @@ namespace ChaoWorld.Bot
                     $"Garden ID: {garden.Id} | Chao ID: {chao.Id} {$"| Created on {chao.CreatedOn.FormatZoned(DateTimeZone.Utc)}"}"));
 
             eb.Field(new("__General Info:__",
+                $"Owner: {gardenOwner}\r\n" +
                 $"Current Age: {chao.CurrentAge}\r\n" +
                 $"Total Age: {chao.TotalAge}\r\n" +
-                $"Reincarnations: {chao.Reincarnations}"
+                $"Reincarnations: {chao.Reincarnations}\r\n" +
+                $"Chaos Factor: {Math.Floor(chao.ReincarnationStatFactor*100)}%"
             ));
             eb.Field(new($"__Development:__",
                 $"Affinity: {chao.GetEffectiveAbilityType().GetDescription()}\r\n" +
