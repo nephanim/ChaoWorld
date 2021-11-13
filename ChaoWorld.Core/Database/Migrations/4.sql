@@ -7,13 +7,13 @@ values
     (3, 'Mushroom Forest', 'Beginner race. Running is key to victory.', 1, 1, true, 1, 8, 100, 1, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00),
     (4, 'Block Canyon', 'Beginner race. Power is key to victory.', 1, 1, true, 1, 8, 100, 1, 0.00, 0.00, 0.08, 0.92, 0.00, 0.00),
     (5, 'Kalaupapa Volcano', 'Beginner race. Stamina is key to victory.', 1, 1, true, 1, 8, 100, 1, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00),
-    (6, 'Aquamarine', 'Intermediate race. Swimming is key to victory.', 2, 2, true, 1, 8, 200, 2, 0.59, 0.04, 0.37, 0.00, 0.00, 0.00),
-    (7, 'Topaz', 'Intermediate race. Flying is key to victory.', 2, 2, true, 1, 8, 200, 2, 0.24, 0.33, 0.29, 0.14, 0.00, 0.00),
-    (8, 'Peridot', 'Intermediate race. Running is key to victory.', 2, 2, true, 1, 8, 200, 2, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00),
-    (9, 'Garnet', 'Intermediate race. Power is key to victory.', 2, 2, true, 1, 8, 200, 2, 0.05, 0.05, 0.45, 0.45, 0.00, 0.00),
-    (10, 'Onyx', 'Intermediate race. Intelligence and luck are key to victory.', 3, 3, true, 1, 8, 300, 3, 0.07, 0.02, 0.51, 0.00, 0.20, 0.20),
-    (11, 'Diamond', 'Intermediate race. General ability is key to victory.', 4, 4, true, 1, 8, 400, 4, 0.14, 0.04, 0.42, 0.08, 0.16, 0.16),
-    (12, 'River Run', 'Expert race. Swimming and flying are key to victory.', 5, 5, true, 1, 8, 500, 5, 0.35, 0.29, 0.04, 0, 0.18, 0.14);
+    (6, 'Aquamarine', 'Intermediate race. Swimming is key to victory.', 2, 2, true, 1, 8, 150, 2, 0.59, 0.04, 0.37, 0.00, 0.00, 0.00),
+    (7, 'Topaz', 'Intermediate race. Flying is key to victory.', 2, 2, true, 1, 8, 150, 2, 0.24, 0.33, 0.29, 0.14, 0.00, 0.00),
+    (8, 'Peridot', 'Intermediate race. Running is key to victory.', 2, 2, true, 1, 8, 150, 2, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00),
+    (9, 'Garnet', 'Intermediate race. Power is key to victory.', 2, 2, true, 1, 8, 150, 2, 0.05, 0.05, 0.45, 0.45, 0.00, 0.00),
+    (10, 'Onyx', 'Intermediate race. Intelligence and luck are key to victory.', 3, 3, true, 1, 8, 200, 3, 0.07, 0.02, 0.51, 0.00, 0.20, 0.20),
+    (11, 'Diamond', 'Intermediate race. General ability is key to victory.', 4, 4, true, 1, 8, 250, 4, 0.14, 0.04, 0.42, 0.08, 0.16, 0.16),
+    (12, 'River Run', 'Expert race. Swimming and flying are key to victory.', 5, 5, true, 1, 8, 300, 5, 0.35, 0.29, 0.04, 0, 0.18, 0.14);
 
 insert into racesegments
     (id, raceid, description, raceindex, terraintype, startelevation, endelevation, terraindistance, staminalossmultiplier,
