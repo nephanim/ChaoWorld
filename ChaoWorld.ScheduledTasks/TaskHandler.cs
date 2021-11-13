@@ -9,6 +9,7 @@ using NodaTime.Extensions;
 using Serilog;
 
 using ChaoWorld.Core;
+using System.Collections.Generic;
 
 namespace ChaoWorld.ScheduledTasks
 {
@@ -114,7 +115,7 @@ namespace ChaoWorld.ScheduledTasks
 
             _logger.Information("Updating Black Market...");
             await _repo.ClearMarketListings();
-            var listings = BlackMarket.MakeListings();
+            var listings = await MakeMarketListings();
             foreach (var item in listings)
             {
                 await _repo.AddMarketItem(item);
@@ -122,6 +123,56 @@ namespace ChaoWorld.ScheduledTasks
 
             stopwatch.Stop();
             _logger.Information("Ran hourly scheduled tasks in {Time}", stopwatch.ElapsedDuration());
+        }
+
+        private async Task<List<MarketItem>> MakeMarketListings()
+        {
+            var items = new List<MarketItem>();
+
+            // Common eggs (non-shiny monotone)
+            var commonEggLimit = new Random().Next(1, 5); // Always have at least one egg in the market
+            var commonEggs = await _repo.GetMarketEnabledEggs(commonEggLimit, false);
+            foreach (var egg in commonEggs)
+            {
+                egg.Quantity = 1;
+                items.Add(egg);
+            }
+
+            // Rare eggs (shiny monotone)
+            var uncommonEggLimit = new Random().Next(1, 8) == 1 ? 1 : 0; // Only have shiny eggs available a few times a day
+            var rareEggs = await _repo.GetMarketEnabledEggs(uncommonEggLimit, true);
+            foreach (var egg in rareEggs)
+            {
+                egg.Quantity = 1;
+                items.Add(egg);
+            }
+
+            // Common fruit (e.g. tasty, round, 
+            var commonFruitLimit = new Random().Next(3, 5); // Always have some fruit on the market
+            var commonFruit = await _repo.GetMarketEnabledFruit(commonFruitLimit, false);
+            foreach (var fruit in commonFruit)
+            {
+                fruit.Quantity = new Random().Next(3, 5);
+                items.Add(fruit);
+            }
+
+            var rareFruitLimit = new Random().Next(1, 24) == 1 ? 1 : 0; // Only have hyper fruit available roughly once per day
+            var rareFruit = await _repo.GetMarketEnabledFruit(rareFruitLimit, true);
+            foreach (var fruit in rareFruit)
+            {
+                fruit.Quantity = 1;
+                items.Add(fruit);
+            }
+
+            var specialLimit = new Random().Next(1, 6) == 1 ? 1 : 0; // Have special items available a few times per day
+            var specials = await _repo.GetMarketEnabledSpecials(specialLimit);
+            foreach (var special in specials)
+            {
+                special.Quantity = 1;
+                items.Add(special);
+            }
+
+            return items;
         }
 
         // we don't have access to ChaoWorld.Bot here, so this needs to be vendored

@@ -215,7 +215,7 @@ namespace ChaoWorld.Core
             [Description("Pearl")] Pearl,
             [Description("Glass")] Glass,
             [Description("Metal")] Metal,
-            [Description("Invisible")] Invisible,
+            [Description("Powder Blue")] PowderBlue,
             [Description("Dark Blue")] DeepDarkBlue,
             [Description("Dark Grey")] DarkerGrey
         }
@@ -250,13 +250,13 @@ namespace ChaoWorld.Core
             E, D, C, B, A, S, X
         }
 
-        public void Initialize(ItemBase.ItemTypes egg = ItemBase.ItemTypes.NormalTwoToneEgg)
+        public void Initialize(Colors primaryColor = Colors.Normal, Colors? secondaryColor = null, bool isShiny = false, bool isTwoTone = true)
         {
             Name = "Unnamed";
-            PrimaryColor = ItemBase.GetPrimaryColor(egg);
-            SecondaryColor = ItemBase.GetSecondaryColor(egg);
-            IsShiny = ItemBase.GetShininess(egg);
-            IsTwoTone = ItemBase.GetTwoToneness(egg);
+            PrimaryColor = primaryColor;
+            SecondaryColor = secondaryColor;
+            IsShiny = isShiny;
+            IsTwoTone = isTwoTone;
 
             SwimGrade = MiscUtils.GenerateStatGrade();
             FlyGrade = MiscUtils.GenerateStatGrade();

@@ -99,6 +99,26 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
+        public async Task<Embed> CreateItemEmbed(ItemBase item)
+        {
+            // TODO: Item thumbnail images for embeds!
+            //var imageUrl = MiscUtils.GenerateThumbnailForItem(item);
+
+            var eb = new EmbedBuilder()
+                .Title(new(item.Name))
+                //.Thumbnail(new(imageUrl))
+                .Description(item.Description)
+                .Footer(new(
+                    $"Item Type ID: {item.TypeId} | Item Category: {item.Category.GetDescription()}"));
+
+            var priceInfo = item.IsMarketEnabled && item.MarketPrice.HasValue
+                ? string.Format("{0:n0}", item.MarketPrice.Value)
+                : "N/A";
+            eb.Field(new("Market Price", priceInfo));
+
+            return eb.Build();
+        }
+
         public async Task<Embed> CreateRaceEmbed(Context ctx, Core.Race race, RaceInstance raceInstance)
         {
             var name = race.Name;

@@ -107,13 +107,15 @@ namespace ChaoWorld.Core
             return conn.QueryAsync<ListedTournament>(query.ToString(), new { filter = search });
         }
 
-        public static Task<IEnumerable<Item>> QueryItemList(this IChaoWorldConnection conn, long gardenId, Item.ItemCategories[] includeItemCategories, Item.ItemTypes[] includeItemTypes)
+        public static Task<IEnumerable<Item>> QueryItemList(this IChaoWorldConnection conn, long gardenId, Item.ItemCategories[] includeItemCategories, string search)
         {
             StringBuilder query;
             query = new StringBuilder(@$"
                 select *
-                from items
-                where items.gardenid = {gardenId}");
+                from items i
+                join itemtypes t
+                on i.typeid = t.typeid
+                where i.gardenid = {gardenId}");
 
             if (includeItemCategories.Length > 0)
             {
@@ -121,28 +123,27 @@ namespace ChaoWorld.Core
                 foreach (var category in includeItemCategories)
                     rawItemCategories.Add((int)category);
                 var includeCategories = string.Join(",", rawItemCategories);
-                query.Append($" and items.categoryid in ({includeCategories}) ");
+                query.Append($" and t.categoryid in ({includeCategories}) ");
             }
-            if (includeItemTypes.Length > 0)
+            if (!string.IsNullOrEmpty(search))
             {
-                var rawItemTypes = new List<int>();
-                foreach (var type in includeItemTypes)
-                    rawItemTypes.Add((int)type);
-                var includeTypes = string.Join(",", rawItemTypes);
-                query.Append($" and items.typeid in ({includeTypes}) ");
+                static string Filter(string column) => $"lower({column}) like concat('%', lower(@filter), '%')";
+                query.Append($" and ({Filter("t.name")})");
             }
-            query.Append(" order by items.categoryid asc, items.typeid asc ");
+            query.Append(" order by t.name asc ");
 
-            return conn.QueryAsync<Item>(query.ToString());
+            return conn.QueryAsync<Item>(query.ToString(), new { filter = search });
         }
 
         public static Task<IEnumerable<MarketItem>> QueryMarketList(this IChaoWorldConnection conn)
         {
             StringBuilder query;
             query = new StringBuilder(@$"
-                select *
-                from marketitems
-                order by categoryid asc, price asc");
+                select i.quantity, t.*
+                from marketitems i
+                join itemtypes t
+                on i.typeid = t.typeid
+                order by t.categoryid asc, t.marketprice asc");
 
             return conn.QueryAsync<MarketItem>(query.ToString());
         }

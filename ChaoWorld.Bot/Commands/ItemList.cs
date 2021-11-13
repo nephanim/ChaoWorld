@@ -19,7 +19,6 @@ namespace ChaoWorld.Bot
         {
             // Check what we should include
             var includeCategories = new List<Core.Item.ItemCategories>();
-            var includeTypes = new List<Core.Item.ItemTypes>();
             var title = "Inventory (All Items)";
 
             var filter = ctx.RemainderOrNull();
@@ -32,14 +31,13 @@ namespace ChaoWorld.Bot
                     includeCategories.Add(category);
                     title = $"Inventory (Category: {category.GetDescription()})";
                 }
-                else if (System.Enum.TryParse(filter, out Core.Item.ItemTypes type))
+                else
                 {
-                    includeTypes.Add(type);
-                    title = $"Inventory (Type: {type.GetDescription()})";
+                    title = $"Inventory (Type: {filter})";
                 }
             }
 
-            await ctx.RenderInventory(_db, includeCategories.ToArray(), includeTypes.ToArray(), title);
+            await ctx.RenderInventory(_db, includeCategories.ToArray(), filter, title);
         }
 
         public async Task MarketItemList(Context ctx)

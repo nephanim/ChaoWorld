@@ -14,9 +14,7 @@ namespace ChaoWorld.Core
 {
     public class MarketItem : ItemBase
     {
-        // TODO: Maybe just do this via the attributes, so we can remove the class altogether and simplify the DB...
-        //  Or on the other hand, we're doing a lot of nasty shit with attributes already, so maybe it should all go in the DB. 
-        public int Price { get; set; } 
+
     }
 
     public class Item : ItemBase
@@ -28,8 +26,11 @@ namespace ChaoWorld.Core
 
     public class ItemBase
     {
+        public int TypeId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
         public int CategoryId { get; set; }
-        public ItemCategories ItemCategory
+        public ItemCategories Category
         {
             get
             {
@@ -40,16 +41,48 @@ namespace ChaoWorld.Core
                 CategoryId = (int)value;
             }
         }
-        public int TypeId { get; set; }
-        public ItemTypes ItemType
+        public int EffectTypeId { get; set; }
+        public ItemEffects EffectType
         {
             get
             {
-                return (ItemTypes)TypeId;
+                return (ItemEffects)EffectTypeId;
             }
             set
             {
-                TypeId = (int)value;
+                EffectTypeId = (int)value;
+            }
+        }
+        public bool IsMarketEnabled { get; set; }
+        public int? MarketPrice { get; set; }
+        public bool? IsShiny { get; set; }
+        public bool? IsTwoTone { get; set; }
+        public int? PrimaryColorId { get; set; }
+        public Chao.Colors? PrimaryColor
+        {
+            get
+            {
+                return PrimaryColorId.HasValue
+                    ? (Chao.Colors)PrimaryColorId
+                    : null;
+            }
+            set
+            {
+                PrimaryColorId = (int)value;
+            }
+        }
+        public int? SecondaryColorId { get; set; }
+        public Chao.Colors? SecondaryColor
+        {
+            get
+            {
+                return SecondaryColorId.HasValue
+                    ? (Chao.Colors)SecondaryColorId
+                    : null;
+            }
+            set
+            {
+                SecondaryColorId = (int)value;
             }
         }
         public int Quantity { get; set; }
@@ -64,6 +97,38 @@ namespace ChaoWorld.Core
             [Description("Accessories")] Accessory,
             [Description("Clothing")] Clothing,
             [Description("Lenses")] Lens
+        }
+
+        public enum ItemEffects
+        {
+            None,
+            NewChao,
+            NewOmochao,
+            SwimProgressIncrease,
+            SwimGradeIncrease,
+            FlyProgressIncrease,
+            FlyGradeIncrease,
+            RunProgressIncrease,
+            RunGradeIncrease,
+            PowerProgressIncrease,
+            PowerGradeIncrease,
+            StaminaProgressIncrease,
+            StaminaGradeIncrease,
+            IntelligenceProgressIncrease,
+            IntelligenceGradeIncrease,
+            LuckProgressIncrease,
+            LuckGradeIncrease,
+            AllStatsProgressIncrease,
+            Mushroom,
+            HeroAlignment,
+            DarkAlignment,
+            AllowMating,
+            Reincarnation,
+            ReincarnationFactorIncrease,
+            Negativity,
+            NewTree,
+            Equipment,
+            ChangeEyeColor
         }
         
         public enum ItemTypes
@@ -123,7 +188,7 @@ namespace ChaoWorld.Core
             [ItemCategory(ItemCategories.Egg)] [Description("Weird Egg")] [PrimaryColor(Chao.Colors.Normal)] TextureEgg, // TODO: Decide how to handle texture chao - just make each their own eggs?
             [ItemCategory(ItemCategories.Egg)] [Description("Normal Two-Tone Egg")] [PrimaryColor(Chao.Colors.Normal)] [TwoTone] NormalTwoToneEgg,
             [ItemCategory(ItemCategories.Egg)] [Description("Strange White Egg")] [PrimaryColor(Chao.Colors.White)] [TwoTone] WhiteTwoToneEgg,
-            [ItemCategory(ItemCategories.Egg)] [Description("Strange Red Egg")] [PrimaryColor(Chao.Colors.Red)] [TwoTone] edTwoToneEgg,
+            [ItemCategory(ItemCategories.Egg)] [Description("Strange Red Egg")] [PrimaryColor(Chao.Colors.Red)] [TwoTone] RedTwoToneEgg,
             [ItemCategory(ItemCategories.Egg)] [Description("Strange Yellow Egg")] [PrimaryColor(Chao.Colors.Yellow)] [TwoTone] YellowTwoToneEgg,
             [ItemCategory(ItemCategories.Egg)] [Description("Strange Blue Egg")] [PrimaryColor(Chao.Colors.Blue)] [TwoTone] BlueTwoToneEgg,
             [ItemCategory(ItemCategories.Egg)] [Description("Strange Sky Blue Egg")] [PrimaryColor(Chao.Colors.SkyBlue)] [TwoTone] SkyBlueTwoToneEgg,
@@ -279,233 +344,6 @@ namespace ChaoWorld.Core
 
             // Placeholder
             [Description("???")] Placeholder = 1000000 // This is just for use as a boundary, nobody should have this in their inventory :^)
-        }
-
-        public static int GetPrice(ItemTypes value)
-        {
-            Type type = value.GetType();
-            string name = Enum.GetName(type, value);
-            if (name != null)
-            {
-                FieldInfo field = type.GetField(name);
-                if (field != null)
-                {
-                    PriceAttribute attr =
-                           Attribute.GetCustomAttribute(field,
-                             typeof(PriceAttribute)) as PriceAttribute;
-                    if (attr != null)
-                        return attr.Price;
-                }
-            }
-            return 5000000; // In case we mess up, make it stupid expensive so it's obvious and gets fixed
-        }
-
-        public static ItemCategories GetCategory(ItemTypes value)
-        {
-            Type type = value.GetType();
-            string name = Enum.GetName(type, value);
-            if (name != null)
-            {
-                FieldInfo field = type.GetField(name);
-                if (field != null)
-                {
-                    ItemCategoryAttribute attr =
-                           Attribute.GetCustomAttribute(field,
-                             typeof(ItemCategoryAttribute)) as ItemCategoryAttribute;
-                    if (attr != null)
-                        return attr.Category;
-                }
-            }
-            return ItemCategories.Special; // In case we mess up, make it special so it's obvious
-        }
-
-        public static Chao.Colors GetPrimaryColor(ItemTypes egg)
-        {
-            Type type = egg.GetType();
-            string name = Enum.GetName(type, egg);
-            if (name != null)
-            {
-                FieldInfo field = type.GetField(name);
-                if (field != null)
-                {
-                    PrimaryColorAttribute attr =
-                           Attribute.GetCustomAttribute(field,
-                             typeof(PrimaryColorAttribute)) as PrimaryColorAttribute;
-                    if (attr != null)
-                        return attr.Color;
-                }
-            }
-            return Chao.Colors.Normal; // In case we mess up, just produce a normal chao
-        }
-
-        public static Chao.Colors? GetSecondaryColor(ItemTypes egg)
-        {
-            Type type = egg.GetType();
-            string name = Enum.GetName(type, egg);
-            if (name != null)
-            {
-                FieldInfo field = type.GetField(name);
-                if (field != null)
-                {
-                    SecondaryColorAttribute attr =
-                           Attribute.GetCustomAttribute(field,
-                             typeof(SecondaryColorAttribute)) as SecondaryColorAttribute;
-                    if (attr != null)
-                        return attr.Color;
-                }
-            }
-            return null;
-        }
-
-        public static bool GetShininess(ItemTypes egg)
-        {
-            Type type = egg.GetType();
-            string name = Enum.GetName(type, egg);
-            if (name != null)
-            {
-                FieldInfo field = type.GetField(name);
-                if (field != null)
-                {
-                    ShinyAttribute attr =
-                           Attribute.GetCustomAttribute(field,
-                             typeof(ShinyAttribute)) as ShinyAttribute;
-                    if (attr != null)
-                        return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool GetTwoToneness(ItemTypes egg)
-        {
-            Type type = egg.GetType();
-            string name = Enum.GetName(type, egg);
-            if (name != null)
-            {
-                FieldInfo field = type.GetField(name);
-                if (field != null)
-                {
-                    TwoToneAttribute attr =
-                           Attribute.GetCustomAttribute(field,
-                             typeof(TwoToneAttribute)) as TwoToneAttribute;
-                    if (attr != null)
-                        return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    public static class BlackMarket
-    {
-        public static Instant GetNewRefreshTime()
-        {
-            var now = SystemClock.Instance.GetCurrentInstant();
-            return now.Plus(Duration.FromHours(1));
-        }
-
-        public static List<MarketItem> MakeListings()
-        {
-            var items = new List<MarketItem>();
-            var commonEggLimit = new Random().Next(1, 5); // Always have at least one egg in the market
-            var uncommonEggLimit = new Random().Next(1, 8) == 1 ? 1 : 0; // Only have shiny eggs available a few times a day
-            var commonFruitLimit = new Random().Next(3, 5); // Always have some fruit on the market
-            var rareFruitLimit = new Random().Next(1, 24) == 1 ? 1 : 0; // Only have hyper fruit available roughly once per day
-            var specialLimit = new Random().Next(1, 24) == 1 ? 1 : 0; // Only have special items available roughly once per day
-            
-            // Disabled for now (until properly implemented)
-            var seedLimit = 0;
-            var hatLimit = 0;
-            var lensLimit = 0;
-
-            ListItemsForType(ItemBase.ItemCategories.Egg, GetAllCommonEggTypes(), items, commonEggLimit, 1);
-            ListItemsForType(ItemBase.ItemCategories.Egg, GetAllUncommonEggTypes(), items, uncommonEggLimit, 1);
-            ListItemsForType(ItemBase.ItemCategories.Fruit, GetAllCommonFruitTypes(), items, commonFruitLimit, 5);
-            ListItemsForType(ItemBase.ItemCategories.Fruit, GetAllRareFruitTypes(), items, rareFruitLimit, 1);
-            ListItemsForType(ItemBase.ItemCategories.Seed, GetAllSeedTypes(), items, seedLimit, 1);
-            ListItemsForType(ItemBase.ItemCategories.Special, GetAllSpecialTypes(), items, specialLimit, 1);
-            ListItemsForType(ItemBase.ItemCategories.Hat, GetAllHatTypes(), items, hatLimit, 1);
-            ListItemsForType(ItemBase.ItemCategories.Lens, GetAllLensTypes(), items, lensLimit, 1);
-
-            return items;
-        }
-
-        private static void ListItemsForType(ItemBase.ItemCategories category, List<ItemBase.ItemTypes> availableItems, List<MarketItem> listedItems, int limit, int quantity)
-        {
-            // Keep adding until we reach the limit
-            while (limit > 0)
-            {
-                // Pick a random item from the pool
-                var random = new Random();
-                var index = random.Next(availableItems.Count);
-                var item = availableItems[index];
-
-                // Add it to the listings
-                listedItems.Add(new MarketItem()
-                {
-                    ItemCategory = category,
-                    ItemType = item,
-                    Price = ItemBase.GetPrice(item),
-                    Quantity = quantity
-                });
-
-                // Remove it from the pool and keep going
-                availableItems.RemoveAt(index);
-                limit--;
-            }
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllCommonEggTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.WhiteEgg, ItemBase.ItemTypes.ShinyWhiteEgg);
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllUncommonEggTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.ShinyWhiteEgg, ItemBase.ItemTypes.AmethystEgg);
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllRareEggTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.AmethystEgg, ItemBase.ItemTypes.NormalEgg);
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllCommonFruitTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.TastyFruit, ItemBase.ItemTypes.HyperSwimFruit);
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllRareFruitTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.HyperSwimFruit, ItemBase.ItemTypes.RoundSeed);
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllSeedTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.RoundSeed, ItemBase.ItemTypes.SuspiciousPotion);
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllSpecialTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.SuspiciousPotion, ItemBase.ItemTypes.NormalEggshell);
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllHatTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.Pumpkin, ItemBase.ItemTypes.NormalLens);
-        }
-
-        private static List<ItemBase.ItemTypes> GetAllLensTypes()
-        {
-            return GetItemTypesBetween(ItemBase.ItemTypes.NormalLens, ItemBase.ItemTypes.Placeholder);
-        }
-
-        private static List<ItemBase.ItemTypes> GetItemTypesBetween(ItemBase.ItemTypes itemStart, ItemBase.ItemTypes itemEnd)
-        {
-            return Enum.GetValues(typeof(ItemBase.ItemTypes)).Cast<ItemBase.ItemTypes>().ToList()
-                .Where(x => ((int)x) >= (int)itemStart)
-                .Where(x => ((int)x) < (int)itemEnd)
-                .ToList();
         }
     }
 }

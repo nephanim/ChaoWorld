@@ -184,35 +184,87 @@ namespace ChaoWorld.Bot
             // Finally, we return the chao value.
             return tournamentInstance;
         }
-        
-        public static async Task<Core.Item> PeekItem(this Context ctx)
+
+        public static async Task<Core.ItemBase> PeekItemType(this Context ctx)
         {
             var input = ctx.PeekArgument();
             if (!string.IsNullOrEmpty(input))
-                input = input.Replace("\"", string.Empty).Replace(" ", string.Empty);
+                input = input.Replace("\"", string.Empty).Replace(" ", string.Empty).Replace("#", string.Empty);
 
-            // Items might be referenced by their ID or by their name (i.e. item type)
+            // Items might be referenced by their type ID or by their type name
             // e.g. "!item 123" or "!item 'Red Egg'"
 
-            // Try finding the item by its ID first (most likely usage)
-            long.TryParse(input.Replace("#", string.Empty), out long id);
-            if (await ctx.Repository.GetItem(id) is Core.Item itemById)
-                return itemById;
+            // Try finding the item by its type ID first
+            if (int.TryParse(input, out int typeId))
+            {
+                if (await ctx.Repository.GetItemBaseByTypeId(typeId) is Core.ItemBase itemById)
+                    return itemById;
+            }
 
-            // Try looking it up by the name / type instead
-            ItemBase.ItemTypes type;
-            Enum.TryParse(input, ignoreCase: true, out type);
-            if (await ctx.Repository.GetItemByType(ctx.Garden.Id.Value, (int)type) is Core.Item itemByType)
-                return itemByType;
+            // Try interpreting the input as a type name
+            if (!string.IsNullOrEmpty(input))
+            {
+                // Try looking it up by exact match
+                if (await ctx.Repository.GetItemBaseByTypeName(input) is Core.ItemBase itemByType)
+                    return itemByType;
+
+                // Try fuzzy matching
+                if (await ctx.Repository.GetItemBaseByTypeNameWithFuzzyMatching(input) is Core.Item itemByFuzzyMatch)
+                    return itemByFuzzyMatch;
+            }
 
             // We didn't find anything, so we return null.
             return null;
         }
 
-        public static async Task<Core.Item> MatchItem(this Context ctx)
+        public static async Task<Core.ItemBase> MatchItemType(this Context ctx)
+        {
+            // First, peek an item type
+            var item = await ctx.PeekItemType();
+
+            // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
+            if (item != null) ctx.PopArgument();
+
+            // Finally, we return the item
+            return item;
+        }
+
+        public static async Task<Core.Item> PeekInventoryItem(this Context ctx)
+        {
+            var input = ctx.PeekArgument();
+            if (!string.IsNullOrEmpty(input))
+                input = input.Replace("\"", string.Empty).Replace(" ", string.Empty).Replace("#", string.Empty);
+
+            // Items might be referenced by their type ID or by their type name
+            // e.g. "!item 123" or "!item 'Red Egg'"
+
+            // Try finding the item by its type ID first
+            if (int.TryParse(input, out int typeId))
+            {
+                if (await ctx.Repository.GetInventoryItemByTypeId(ctx.Garden.Id.Value, typeId) is Core.Item itemById)
+                    return itemById;
+            }
+
+            // Try interpreting the input as a type name
+            if (!string.IsNullOrEmpty(input))
+            {
+                // Try looking it up by exact match
+                if (await ctx.Repository.GetInventoryItemByTypeName(ctx.Garden.Id.Value, input) is Core.Item itemByType)
+                    return itemByType;
+
+                // Try fuzzy matching
+                if (await ctx.Repository.GetInventoryItemByTypeNameWithFuzzyMatching(ctx.Garden.Id.Value, input) is Core.Item itemByFuzzyMatch)
+                    return itemByFuzzyMatch;
+            }
+
+            // We didn't find anything, so we return null.
+            return null;
+        }
+
+        public static async Task<Core.Item> MatchInventoryItem(this Context ctx)
         {
             // First, peek an item
-            var item = await ctx.PeekItem();
+            var item = await ctx.PeekInventoryItem();
 
             // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
             if (item != null) ctx.PopArgument();
@@ -225,24 +277,29 @@ namespace ChaoWorld.Bot
         {
             var input = ctx.PeekArgument();
             if (!string.IsNullOrEmpty(input))
-                input = input.Replace("\"", string.Empty).Replace(" ", string.Empty);
+                input = input.Replace("\"", string.Empty).Replace(" ", string.Empty).Replace("#", string.Empty);
 
             // Market items don't have a global ID, so they'll be referenced by their item type (which could be the type ID or name)
             // e.g. "!item 2" or "!item 'Red Egg'"
 
-            // Try looking the item up by its type
-            ItemBase.ItemTypes type;
-            if (Enum.TryParse(input, ignoreCase: true, out type))
+            // Try looking the item up by its type ID
+            if (int.TryParse(input, out int typeId))
             {
-                var marketItem = await ctx.Repository.GetMarketItemByType(type);
+                var marketItem = await ctx.Repository.GetMarketItemByTypeId(typeId);
                 if (marketItem != null)
                     return marketItem;
-                else
-                    return new MarketItem
-                    {
-                        Quantity = 0,
-                        ItemType = type
-                    };
+            }
+
+            // Try interpreting the input as a type name
+            if (!string.IsNullOrEmpty(input))
+            {
+                // Try looking it up by exact match
+                if (await ctx.Repository.GetMarketItemByTypeName(input) is Core.MarketItem itemByType)
+                    return itemByType;
+
+                // Try fuzzy matching
+                if (await ctx.Repository.GetMarketItemByTypeNameWithFuzzyMatching(input) is Core.MarketItem itemByFuzzyMatch)
+                    return itemByFuzzyMatch;
             }
 
             // We didn't find anything, so we return null.

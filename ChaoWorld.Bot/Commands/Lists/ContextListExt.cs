@@ -221,12 +221,12 @@ namespace ChaoWorld.Bot
             }
         }
 
-        public static async Task RenderInventory(this Context ctx, IDatabase db, Core.Item.ItemCategories[] includeItemCategories, Core.Item.ItemTypes[] includeItemTypes, string title)
+        public static async Task RenderInventory(this Context ctx, IDatabase db, Core.Item.ItemCategories[] includeItemCategories, string search, string title)
         {
             // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
             // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
-            var items = (await db.Execute(conn => conn.QueryItemList(ctx.Garden.Id.Value, includeItemCategories, includeItemTypes)))
-                .OrderBy(x => x.ItemType.GetDescription())
+            var items = (await db.Execute(conn => conn.QueryItemList(ctx.Garden.Id.Value, includeItemCategories, search)))
+                .OrderBy(x => x.Name)
                 .ToList();
 
             var itemsPerPage = 25; //Maybe do a long list in the future too
@@ -249,7 +249,7 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Id}`] {m.ItemType.GetDescription()} x{m.Quantity}";
+                    var ret = $"[`{m.Id}`] {m.Name} x{m.Quantity}";
                     return ret;
                 }));
             }
@@ -283,7 +283,7 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{(int)m.ItemType}`] {m.ItemType.GetDescription()} x{m.Quantity} ({string.Format("{0:n0}", m.Price)} rings ea.)";
+                    var ret = $"[`{(int)m.TypeId}`] {m.Name} x{m.Quantity} ({string.Format("{0:n0}", m.MarketPrice)} rings ea.)";
                     return ret;
                 }));
             }
