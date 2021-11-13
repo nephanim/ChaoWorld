@@ -178,13 +178,7 @@ namespace ChaoWorld.Core
 	                luckvalue = floor(luckvalue*reincarnationstatfactor),
 	                rebirthon = current_timestamp
                 where gardenid = 0
-                    and swimgrade < 6
-                    and flygrade < 6
-                    and rungrade < 6
-                    and powergrade < 6
-                    and staminagrade < 6
-                    and intelligencegrade < 6
-                    and luckgrade < 6
+                    and id != 1
                     and (
                         swimlevel = 99
                         or flylevel = 99
