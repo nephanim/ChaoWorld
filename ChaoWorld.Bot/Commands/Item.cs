@@ -366,5 +366,50 @@ namespace ChaoWorld.Bot
             else
                 await ctx.Reply($"{Emojis.Error} {item.Name} is out of stock. Check `!market list` for current listings.");
         }
+
+        public async Task GiveItem(Context ctx, Core.Item item)
+        {
+            ctx.CheckOwnItem(item);
+            if (await ctx.MatchUser() is { } targetAccount)
+            {
+                if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept the {item.Name} from {ctx.Author}?", "Accept", user: targetAccount, matchFlag: false))
+                    throw Errors.GiveItemCanceled();
+
+                var targetGarden = await _repo.GetGardenByAccount(targetAccount.Id);
+                if (targetGarden != null)
+                {
+                    // We know who to give it to, so should be safe to proceed
+                    await _repo.UseItem(item, 1); // The original item gets deleted first thing to eliminate risk of duping items
+                    await _repo.AddItem(targetGarden.Id.Value, item);
+
+                    // Now update the target inventory - increase quantity of existing item or add new item
+                    var existingInventoryItem = await _repo.GetInventoryItemByTypeId(targetGarden.Id.Value, item.TypeId);
+                    if (existingInventoryItem != null)
+                    {
+                        // We already have some of this item - just update the quantity appropriately
+                        existingInventoryItem.Quantity += 1;
+                        await _repo.UpdateItem(existingInventoryItem);
+                    }
+                    else
+                    {
+                        // We don't have any of this item - add it to our inventory
+                        var inventoryItem = new Core.Item()
+                        {
+                            TypeId = item.TypeId,
+                            CategoryId = item.CategoryId,
+                            Quantity = 1,
+                            GardenId = targetGarden.Id.Value
+                        };
+                        await _repo.AddItem(targetGarden.Id.Value, inventoryItem);
+                    }
+                }
+                else
+                    await ctx.Reply($"{Emojis.Error} Failed to deliver {item.Name} to {targetAccount.NameAndMention()}.");
+            }
+            else
+            {
+                await ctx.Reply($"{Emojis.Error} Please specify a user to give the {item.Name} to.");
+            }
+        }
     }
 }

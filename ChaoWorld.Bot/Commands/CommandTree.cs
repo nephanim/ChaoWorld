@@ -128,7 +128,7 @@ namespace ChaoWorld.Bot
         private async Task HandleGardenCommandTargeted(Context ctx)
         {
             // Commands that have a garden target (eg. !garden <id>)
-            var target = await ctx.MatchSystem();
+            var target = await ctx.MatchGarden();
             if (target == null)
             {
                 var list = CreatePotentialCommandList(GardenInfo, GardenNew, GardenList);
