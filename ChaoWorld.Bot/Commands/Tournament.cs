@@ -163,8 +163,8 @@ namespace ChaoWorld.Bot
                 {
                     // Determine how many slots to fill with NPC chao and select random chao to fill those
                     var currentChaoCount = await _repo.GetTournamentInstanceChaoCount(instance.Id);
-                    //var limit = GetTourneyFillLimit(currentChaoCount, tourney.MaximumChao);
-                    //await _repo.LogMessage($"Tournament instance {instance.Id} has {currentChaoCount} participants. Filling to {limit}.");
+                    var limit = GetTourneySize(currentChaoCount);
+                    await _repo.LogMessage($"Tournament instance {instance.Id} has {currentChaoCount} participants. Filling to {limit}.");
 
                     var joiningNPCs = new List<Core.Chao>();
                     while (currentChaoCount < tourney.MaximumChao)
@@ -296,7 +296,7 @@ namespace ChaoWorld.Bot
             var defenderRecovering = false;
             var attackLanded = false;
             var ringout = false;
-            var matchTimeLimit = 300; // Putting a hard cap at 5 minutes just in case
+            var matchTimeLimit = 90; // Putting a hard cap just in case (from data so far, only 10% of matches take longer than this anyway)
             while (!match.WinnerChaoId.HasValue && matchTime < matchTimeLimit)
             {
                 var cycleTime = 0;
@@ -477,6 +477,18 @@ namespace ChaoWorld.Bot
             };
 
             await ctx.Reply($"{Emojis.Megaphone} The {tournament.Name} Tournament has finished. Thanks for playing!{notifyString}", mentions: mentions);
+        }
+
+        private int GetTourneySize(int playerParticipants)
+        {
+            // We want to keep a minimum of 4 participants to avoid single-match "tournaments"
+            // So if there are 4 or less player chao, we don't need to scale out
+            if (playerParticipants <= 4)
+                return 4;
+            
+            // How big do we go?
+            var pos = Math.Ceiling(Math.Log2(playerParticipants));
+            return (int)Math.Pow(2, pos);
         }
 
         private int GetStartingHealthForChao(Core.Chao chao)
