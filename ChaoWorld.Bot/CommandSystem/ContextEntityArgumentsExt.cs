@@ -207,7 +207,7 @@ namespace ChaoWorld.Bot
                     return itemByType;
 
                 // Try fuzzy matching
-                if (await ctx.Repository.GetItemBaseByTypeNameWithFuzzyMatching(input) is Core.Item itemByFuzzyMatch)
+                if (await ctx.Repository.GetItemBaseByTypeNameWithFuzzyMatching(input) is Core.ItemBase itemByFuzzyMatch)
                     return itemByFuzzyMatch;
             }
 

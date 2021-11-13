@@ -34,7 +34,7 @@ namespace ChaoWorld.Bot
         public static Command TournamentLeave = new Command("tournament leave", "tournament leave", "Leaves a tournament your chao is currently waiting for (provided it hasn't started yet)");
         public static Command TournamentPings = new Command("tournament pings", "tournament pings {on/off}", "Updates account settings for pings on completion of tournament matches (e.g. `!tournament pings on` will notify you when your chao completes a match");
         public static Command ItemList = new Command("item list", "item list", "Lists all items in your inventory");
-        public static Command ItemInfo = new Command("item info", "item {id/name}", "Displays information about an item and its uses");
+        public static Command ItemInfo = new Command("item info", "item info {id/name}", "Displays information about an item and its uses");
         public static Command ItemUse = new Command("item use", "item use {item id/name} [chao id/name]", "Uses the specified item in your inventory (chao target is only used for certain items)");
         //public static Command ItemDiscard = new Command("item discard", "item {item id/name} discard", "Discards the specified item from your inventory");
         public static Command MarketList = new Command("market list", "market list", "Lists all items for sale at the Black Market");
@@ -327,6 +327,11 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<Item>(ItemUse, m => m.UseItem(ctx, itemTarget));
                 else
                     await ctx.Reply($"{Emojis.Error} Unable to find the specified item in your inventory.");
+            else if (ctx.Match("info"))
+                if (await ctx.MatchItemType() is { } infoTarget)
+                    await ctx.Execute<Item>(ItemInfo, m => m.ItemInfo(ctx, infoTarget));
+                else
+                    await PrintCommandExpectedError(ctx, ItemInfo);
             else if (await ctx.MatchInventoryItem() is { } itemTarget)
                 if (ctx.Match("use", "u"))
                     await ctx.Execute<Item>(ItemUse, m => m.UseItem(ctx, itemTarget));
@@ -344,6 +349,11 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<ItemList>(MarketList, m => m.MarketItemList(ctx));
             else if (ctx.Match("commands", "help", "h"))
                 await PrintCommandList(ctx, "market", MarketCommands);
+            else if (ctx.Match("info"))
+                if (await ctx.MatchItemType() is { } infoTarget)
+                    await ctx.Execute<Item>(ItemInfo, m => m.ItemInfo(ctx, infoTarget));
+                else
+                    await PrintCommandExpectedError(ctx, ItemInfo);
             else if (ctx.Match("buy", "b"))
                 if (await ctx.MatchMarketItem() is { } marketBuyTarget)
                     await ctx.Execute<Item>(MarketBuy, m => m.BuyItem(ctx, marketBuyTarget));

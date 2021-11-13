@@ -45,39 +45,31 @@ namespace ChaoWorld.Bot
                 //  * Seeds - I want to do more than just give them a bunch of fruits. Make them water their plants daily, and it will yield fruit that can be sold or used (until it dies).
                 //  * Special - suspicious potions for reincarnation, chaos juice for better stat yield when reincarnating, negative mirrors, toy parts for building omochao...
                 //  * Hats/Clothing/etc - Might hold off for a while on this so we can have proper images
-                try
+                var success = false;
+                var category = item.Category;
+                switch (category)
                 {
-                    var success = false;
-                    var category = item.Category;
-                    switch (category)
-                    {
-                        case ItemBase.ItemCategories.Egg:
-                            quantity = 1; // We're not going to hatch multiple eggs at once, just deal with it
-                            success = await TryHandleUseEgg(ctx, item);
-                            break;
-                        case ItemBase.ItemCategories.Fruit:
-                            success = await TryHandleUseFruit(ctx, item, chao, quantity);
-                            break;
-                        case ItemBase.ItemCategories.Special:
-                            success = await TryHandleUseSpecial(ctx, item, chao, quantity);
-                            break;
-                        default:
-                            if (chao != null)
-                                await ctx.Reply($"{Emojis.Error} {chao.Name} refused the {item.Name}. Maybe it can't be used right now.");
-                            else
-                                await ctx.Reply($"{Emojis.Error} {item.Name} didn't seem to do anything. Maybe it can't be used right now.");
-                            break;
-                    }
+                    case ItemBase.ItemCategories.Egg:
+                        quantity = 1; // We're not going to hatch multiple eggs at once, just deal with it
+                        success = await TryHandleUseEgg(ctx, item);
+                        break;
+                    case ItemBase.ItemCategories.Fruit:
+                        success = await TryHandleUseFruit(ctx, item, chao, quantity);
+                        break;
+                    case ItemBase.ItemCategories.Special:
+                        success = await TryHandleUseSpecial(ctx, item, chao, quantity);
+                        break;
+                    default:
+                        if (chao != null)
+                            await ctx.Reply($"{Emojis.Error} {chao.Name} refused the {item.Name}. Maybe it can't be used right now.");
+                        else
+                            await ctx.Reply($"{Emojis.Error} {item.Name} didn't seem to do anything. Maybe it can't be used right now.");
+                        break;
+                }
 
-                    // Only consume the item if we were actually able to handle it
-                    if (success)
-                        await _repo.UseItem(item, quantity);
-                }
-                catch (Exception e)
-                {
-                    await _repo.LogMessage($"Item handler failed for item {item.Id} ({item.Name}): {e.Message}");
-                    await ctx.Reply($"{Emojis.Error} {item.Name} cannot be used right now.");
-                }
+                // Only consume the item if we were actually able to handle it
+                if (success)
+                    await _repo.UseItem(item, quantity);
             }
             else
             {

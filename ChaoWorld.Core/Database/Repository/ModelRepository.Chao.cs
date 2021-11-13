@@ -87,7 +87,6 @@ namespace ChaoWorld.Core
             return chao;
         }
 
-        // TODO: Add other properties in here - just don't want to troubleshoot issues with types / evolution until I get there
         public async Task UpdateChao(Chao chao, IChaoWorldConnection? conn = null)
         {
             var firstEvolution = chao.FirstEvolutionType.HasValue
@@ -155,6 +154,51 @@ namespace ChaoWorld.Core
             _logger.Information("Deleted {ChaoId}", id);
             var query = new Query("chao").AsDelete().Where("id", id);
             return _db.ExecuteQuery(query);
+        }
+
+        public async Task<IEnumerable<Chao>> ReincarnateEligibleNpcChao(IChaoWorldConnection? conn = null)
+        {
+            var chao = (await _db.Execute(conn => conn.QueryAsync<Chao>($@"
+                update chao
+                set reincarnations = reincarnations + 1,
+	                reincarnationstatfactor = reincarnationstatfactor + 0.01,
+	                swimlevel = 1,
+	                swimvalue = floor(swimvalue*reincarnationstatfactor),
+	                flylevel = 1,
+	                flyvalue = floor(flyvalue*reincarnationstatfactor),
+	                runlevel = 1,
+	                runvalue = floor(runvalue*reincarnationstatfactor),
+	                powerlevel = 1,
+	                powervalue = floor(powervalue*reincarnationstatfactor),
+	                staminalevel = 1,
+	                staminavalue = floor(staminavalue*reincarnationstatfactor),
+	                intelligencelevel = 1,
+	                intelligencevalue = floor(intelligencevalue*reincarnationstatfactor),
+	                lucklevel = 1,
+	                luckvalue = floor(luckvalue*reincarnationstatfactor),
+	                rebirthon = current_timestamp
+                where gardenid = 0
+                    and swimgrade < 6
+                    and flygrade < 6
+                    and rungrade < 6
+                    and powergrade < 6
+                    and staminagrade < 6
+                    and intelligencegrade < 6
+                    and luckgrade < 6
+                    and (
+                        swimlevel = 99
+                        or flylevel = 99
+                        or runlevel = 99
+                        or powerlevel = 99
+                        or staminalevel = 99
+                        or intelligencelevel = 99
+                        or lucklevel = 99
+                    )
+                returning *
+            "))).AsList();
+            if (chao.Count > 0)
+                _logger.Information($"Reincarnated {chao.Count} eligible NPCs");
+            return chao;
         }
     }
 }

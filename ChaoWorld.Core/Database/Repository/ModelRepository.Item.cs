@@ -12,7 +12,7 @@ namespace ChaoWorld.Core
     {
         public async Task<Item?> GetInventoryItemByTypeId(int gardenId, int typeId)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<Item>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<Item>($@"
                     select i.id, i.gardenid, i.quantity, i.createdon, t.*
                     from items i
                     join itemtypes t
@@ -26,7 +26,7 @@ namespace ChaoWorld.Core
 
         public async Task<Item?> GetInventoryItemByTypeName(int gardenId, string typeName)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<Item>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<Item>($@"
                     select i.*, t.*
                     from items i
                     join itemtypes t
@@ -34,13 +34,13 @@ namespace ChaoWorld.Core
                     where i.gardenid = {gardenId}
                     and lower(t.name) = lower(@typeName)
                     limit 1
-            ", typeName));
+            ", new { typeName }));
             return item;
         }
 
         public async Task<Item?> GetInventoryItemByTypeNameWithFuzzyMatching(int gardenId, string typeName)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<Item>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<Item>($@"
                     select i.*, t.*
                     from items i
                     join itemtypes t
@@ -48,7 +48,7 @@ namespace ChaoWorld.Core
                     where i.gardenid = {gardenId}
                     order by similarity(lower(t.name), lower(@typeName)) desc
                     limit 1
-            ", typeName));
+            ", new { typeName }));
             return item;
         }
 
@@ -109,7 +109,7 @@ namespace ChaoWorld.Core
 
         public async Task<ItemBase?> GetItemBaseByTypeId(int typeId)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<ItemBase>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<ItemBase>($@"
                     select *
                     from itemtypes
                     where typeid = {typeId}
@@ -120,23 +120,23 @@ namespace ChaoWorld.Core
 
         public async Task<ItemBase?> GetItemBaseByTypeName(string name)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<ItemBase>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<ItemBase>($@"
                     select *
                     from itemtypes
                     where lower(name) like concat('%', lower(@name), '%')
                     limit 1
-            ", name));
+            ", new { name }));
             return item;
         }
 
         public async Task<ItemBase?> GetItemBaseByTypeNameWithFuzzyMatching(string name)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<ItemBase>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<ItemBase>($@"
                     select *
                     from itemtypes
                     order by similarity(lower(name), lower(@name)) desc
                     limit 1
-            ", name));
+            ", new { name }));
             return item;
         }
 
@@ -188,11 +188,11 @@ namespace ChaoWorld.Core
 
         public async Task<MarketItem?> GetMarketItemByTypeId(int typeId)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<MarketItem>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<MarketItem>($@"
                     select m.quantity, t.*
                     from marketitems m
                     join itemtypes t
-                    on m.typeid = t.id
+                    on m.typeid = t.typeid
                     where t.typeid = {typeId}
                     limit 1
             "));
@@ -201,27 +201,27 @@ namespace ChaoWorld.Core
 
         public async Task<MarketItem?> GetMarketItemByTypeName(string typeName)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<MarketItem>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<MarketItem>($@"
                     select m.quantity, t.*
                     from marketitems m
                     join itemtypes t
-                    on m.typeid = t.id
+                    on m.typeid = t.typeid
                     where t.name = @typeName
                     limit 1
-            ", typeName));
+            ", new { typeName }));
             return item;
         }
 
         public async Task<MarketItem?> GetMarketItemByTypeNameWithFuzzyMatching(string typeName)
         {
-            var item = await _db.Execute(conn => conn.QuerySingleAsync<MarketItem>($@"
+            var item = await _db.Execute(conn => conn.QuerySingleOrDefaultAsync<MarketItem>($@"
                     select m.quantity, t.*
                     from marketitems m
                     join itemtypes t
-                    on m.typeid = t.id
+                    on m.typeid = t.typeid
                     order by similarity(lower(t.name), lower(@typeName)) desc
                     limit 1
-            ", typeName));
+            ", new { typeName }));
             return item;
         }
 

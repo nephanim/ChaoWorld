@@ -47,7 +47,7 @@ namespace ChaoWorld.Bot
         public static CWError AvatarInvalid => new CWError($"Could not read image file - perhaps it's corrupted or the wrong format. Try a different image.");
         public static CWError InvalidUrl(string url) => new CWError($"The given URL is invalid.");
         public static CWError UrlTooLong(string url) => new CWError($"The given URL is too long ({url.Length}/{Limits.MaxUriLength} characters).");
-        public static CWError GenericCancelled() => new CWError("Operation cancelled.");
+        public static CWError GenericCancelled() => new CWError("Operation canceled.");
         public static CWError GiveItemCanceled() => new CWError("The item was rejected.");
         public static CWError AttachmentTooLarge => new CWError("ChaoWorld cannot proxy attachments over 8 megabytes (as webhooks aren't considered as having Discord Nitro) :(");
     }

@@ -62,9 +62,6 @@ namespace ChaoWorld.ScheduledTasks
             _logger.Information("Updating available tournament instances...");
             await InstantiateTournaments();
 
-            _logger.Information("Checking for chao to evolve...");
-            await RunFirstEvolutions();
-
             stopwatch.Stop();
             _logger.Information("Ran per-minute scheduled tasks in {Time}", stopwatch.ElapsedDuration());
         }
@@ -121,6 +118,12 @@ namespace ChaoWorld.ScheduledTasks
                 await _repo.AddMarketItem(item);
             }
 
+            _logger.Information("Checking for chao to evolve...");
+            await RunFirstEvolutions();
+
+            _logger.Information("Reincarnating eligible NPCs...");
+            await _repo.ReincarnateEligibleNpcChao();
+
             stopwatch.Stop();
             _logger.Information("Ran hourly scheduled tasks in {Time}", stopwatch.ElapsedDuration());
         }
@@ -139,7 +142,7 @@ namespace ChaoWorld.ScheduledTasks
             }
 
             // Rare eggs (shiny monotone)
-            var uncommonEggLimit = new Random().Next(1, 8) == 1 ? 1 : 0; // Only have shiny eggs available a few times a day
+            var uncommonEggLimit = new Random().Next(1, 4) == 1 ? 1 : 0; // Only have shiny eggs available every few hours
             var rareEggs = await _repo.GetMarketEnabledEggs(uncommonEggLimit, true);
             foreach (var egg in rareEggs)
             {

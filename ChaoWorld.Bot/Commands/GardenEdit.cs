@@ -40,7 +40,7 @@ namespace ChaoWorld.Bot
 
             await ctx.Reply($"{Emojis.Warn} Are you sure you want to delete your garden? If so, reply to this message with your garden's ID (`{ctx.Garden.Id}`).\n**Note: this action is permanent.**");
             if (!await ctx.ConfirmWithReply(ctx.Garden.Id.ToString()))
-                throw new CWError($"Garden deletion cancelled. Note that you must reply with your garden ID (`{ctx.Garden.Id}`) *verbatim*.");
+                throw new CWError($"Garden deletion canceled. Note that you must reply with your garden ID (`{ctx.Garden.Id}`) *verbatim*.");
 
             await _repo.DeleteGarden(ctx.Garden.Id);
 
