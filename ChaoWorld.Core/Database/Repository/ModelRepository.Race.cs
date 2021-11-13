@@ -34,7 +34,7 @@ namespace ChaoWorld.Core
                 availableon = availableOn
             });
             var updatedRace = await _db.QueryFirst<Race>(query, extraSql: "returning *");
-            _logger.Information($"Updated tournament {race.Id} of tournament {race.Name}");
+            _logger.Information($"Updated instance {race.Id} of race {race.Name}");
             return updatedRace;
         }
 

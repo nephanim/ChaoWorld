@@ -89,7 +89,6 @@ namespace ChaoWorld.ScheduledTasks
             {
                 await _repo.ResetRaceAvailableOn(r);
                 var instance = await _repo.CreateRaceInstance(r);
-                _logger.Information($"Created new instance {instance.Id} of race {r.Id} ({r.Name})");
             }
         }
 
@@ -100,7 +99,6 @@ namespace ChaoWorld.ScheduledTasks
             {
                 await _repo.ResetTournamentAvailableOn(t);
                 var instance = await _repo.CreateTournamentInstance(t);
-                _logger.Information($"Created new instance {instance.Id} of tournament {t.Id} ({t.Name})");
             }
         }
 
