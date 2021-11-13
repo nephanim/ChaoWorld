@@ -112,10 +112,17 @@ namespace ChaoWorld.ScheduledTasks
 
             _logger.Information("Updating Black Market...");
             await _repo.ClearMarketListings();
-            var listings = await MakeMarketListings();
-            foreach (var item in listings)
+            try
             {
-                await _repo.AddMarketItem(item);
+                var listings = await MakeMarketListings();
+                foreach (var item in listings)
+                {
+                    await _repo.AddMarketItem(item);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Failed to list items on the market: {e.Message} {e.StackTrace}");
             }
 
             _logger.Information("Checking for chao to evolve...");

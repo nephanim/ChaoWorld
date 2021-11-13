@@ -301,6 +301,16 @@ namespace ChaoWorld.Bot
                 throw Errors.GenericCancelled();
         }
 
+        public async Task ConfirmBuyItem(Context ctx, Core.MarketItem item, int quantity)
+        {
+            var friendlyPrice = string.Format("{0:n0}", item.MarketPrice.GetValueOrDefault(10000000));
+            var quantityText = quantity > 1 ? $" x{quantity}" : string.Empty;
+            var prompt = $"{Emojis.Warn} Are you sure you want to buy {item.Name}{quantityText} for {friendlyPrice} rings?";
+
+            if (!(await ctx.PromptYesNo(prompt, "Confirm")))
+                throw Errors.GenericCancelled();
+        }
+
         public async Task BuyItem(Context ctx, MarketItem item)
         {
             ctx.CheckGarden();
@@ -320,6 +330,9 @@ namespace ChaoWorld.Bot
                     var purchasePrice = marketItem.MarketPrice.GetValueOrDefault(10000000) * quantity; // Mostly just a safeguard in case of missing prices...
                     if (ctx.Garden.RingBalance >= purchasePrice)
                     {
+                        // Prompt to make sure they want to buy it (in case we matched on the wrong item name or something)
+                        await ConfirmBuyItem(ctx, marketItem, quantity);
+
                         // Take the item off the market (or reduce quantity as appropriate)
                         await _repo.BuyMarketItem(marketItem, quantity);
 
