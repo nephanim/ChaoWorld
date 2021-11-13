@@ -138,7 +138,7 @@ namespace ChaoWorld.Bot
                 .Field(new("Latency", $"API: {apiLatency.TotalMilliseconds:F0} ms, shard: {shardInfo.ShardLatency.Milliseconds} ms", true))
                 .Field(new("Total numbers", $"{counts.GardenCount:N0} gardens"
                     + $"\n{counts.ChaoCount:N0} chao"))
-                .Timestamp(Process.GetCurrentProcess().StartTime.ToString("O"))
+                .Timestamp(process.StartTime.ToString("O"))
                 .Footer(new($"Chao World {BuildInfoService.Version} • Last restarted: ")); ;
             await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
                 new MessageEditRequest { Content = "", Embed = embed.Build() });
