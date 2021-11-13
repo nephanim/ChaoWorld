@@ -249,7 +249,7 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Id}`] {m.Name} x{m.Quantity}";
+                    var ret = $"[`{m.TypeId}`] {m.Name} x{m.Quantity}";
                     return ret;
                 }));
             }
