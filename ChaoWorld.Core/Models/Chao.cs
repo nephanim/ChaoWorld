@@ -304,9 +304,12 @@ namespace ChaoWorld.Core
                 if (SwimProgress >= 100)
                 {
                     SwimProgress = SwimProgress % 100;
-                    SwimLevel += 1;
+                    SwimLevel += SwimProgress / 100;
                     if (SwimLevel >= 99)
+                    {
+                        SwimLevel = 99;
                         SwimProgress = 0;
+                    }
                     SwimValue += GetLevelUpIncrease(SwimGrade);
                 }
             }
@@ -320,9 +323,12 @@ namespace ChaoWorld.Core
                 if (FlyProgress >= 100)
                 {
                     FlyProgress = FlyProgress % 100;
-                    FlyLevel += 1;
+                    FlyLevel += FlyProgress / 100;
                     if (FlyLevel >= 99)
+                    {
+                        FlyLevel = 99;
                         FlyProgress = 0;
+                    }
                     FlyValue += GetLevelUpIncrease(FlyGrade);
                 }
             }
@@ -336,9 +342,12 @@ namespace ChaoWorld.Core
                 if (RunProgress >= 100)
                 {
                     RunProgress = RunProgress % 100;
-                    RunLevel += 1;
+                    RunLevel += RunProgress / 100;
                     if (RunLevel >= 99)
+                    {
+                        RunLevel = 99;
                         RunProgress = 0;
+                    }
                     RunValue += GetLevelUpIncrease(RunGrade);
                 }
             }
@@ -352,9 +361,12 @@ namespace ChaoWorld.Core
                 if (PowerProgress >= 100)
                 {
                     PowerProgress = PowerProgress % 100;
-                    PowerLevel += 1;
+                    PowerLevel += PowerProgress / 100;
                     if (PowerLevel >= 99)
+                    {
+                        PowerLevel = 99;
                         PowerProgress = 0;
+                    }
                     PowerValue += GetLevelUpIncrease(PowerGrade);
                 }
             }
@@ -368,9 +380,12 @@ namespace ChaoWorld.Core
                 if (StaminaProgress >= 100)
                 {
                     StaminaProgress = StaminaProgress % 100;
-                    StaminaLevel += 1;
+                    StaminaLevel += StaminaProgress / 100;
                     if (StaminaLevel >= 99)
+                    {
+                        StaminaLevel = 99;
                         StaminaProgress = 0;
+                    }
                     StaminaValue += GetLevelUpIncrease(StaminaGrade);
                 }
             }
@@ -384,9 +399,12 @@ namespace ChaoWorld.Core
                 if (IntelligenceProgress >= 100)
                 {
                     IntelligenceProgress = IntelligenceProgress % 100;
-                    IntelligenceLevel += 1;
+                    IntelligenceLevel += IntelligenceProgress / 100;
                     if (IntelligenceLevel >= 99)
+                    {
+                        IntelligenceLevel = 99;
                         IntelligenceProgress = 0;
+                    }
                     IntelligenceValue += GetLevelUpIncrease(IntelligenceGrade);
                 }
             }
@@ -400,9 +418,12 @@ namespace ChaoWorld.Core
                 if (LuckProgress >= 100)
                 {
                     LuckProgress = LuckProgress % 100;
-                    LuckLevel += 1;
+                    LuckLevel += LuckProgress / 100;
                     if (LuckLevel >= 99)
+                    {
+                        LuckLevel = 99;
                         LuckProgress = 0;
+                    }
                     LuckValue += GetLevelUpIncrease(LuckGrade);
                 }
             }
@@ -416,28 +437,6 @@ namespace ChaoWorld.Core
                 15 + baseModifier*3
             );
             return r;
-        }
-
-        public string GetEmojiGrade(StatGrades grade)
-        {
-            switch (grade)
-            {
-                case StatGrades.X:
-                    return ":regional_indicator_x:";
-                case StatGrades.S:
-                    return ":regional_indicator_s:";
-                case StatGrades.A:
-                    return ":regional_indicator_a:";
-                case StatGrades.B:
-                    return ":regional_indicator_b:";
-                case StatGrades.C:
-                    return ":regional_indicator_c:";
-                case StatGrades.D:
-                    return ":regional_indicator_d:";
-                case StatGrades.E:
-                default:
-                    return ":regional_indicator_e:";
-            }
         }
 
         public Alignments GetEffectiveAlignment()
