@@ -13,7 +13,8 @@ values
     (9, 'Garnet', 'Intermediate race. Power is key to victory.', 2, 2, true, 1, 8, 150, 2, 0.05, 0.05, 0.45, 0.45, 0.00, 0.00),
     (10, 'Onyx', 'Intermediate race. Intelligence and luck are key to victory.', 3, 3, true, 1, 8, 200, 3, 0.07, 0.02, 0.51, 0.00, 0.20, 0.20),
     (11, 'Diamond', 'Intermediate race. General ability is key to victory.', 4, 4, true, 1, 8, 250, 4, 0.14, 0.04, 0.42, 0.08, 0.16, 0.16),
-    (12, 'River Run', 'Expert race. Swimming and flying are key to victory.', 5, 5, true, 1, 8, 300, 5, 0.35, 0.29, 0.04, 0, 0.18, 0.14);
+    (12, 'River Run', 'Expert race. Swimming and flying are key to victory.', 5, 5, true, 1, 8, 300, 5, 0.35, 0.29, 0.04, 0, 0.18, 0.14),
+   	(13, 'Egg Tower', 'Expert race. Power is key to victory.', 1, 1, false, 1, 8, 300, 5, 0, 0.16, 0.04, 0.56, 0.06, 0.18);
 
 insert into racesegments
     (id, raceid, description, raceindex, terraintype, startelevation, endelevation, terraindistance, staminalossmultiplier,
@@ -92,6 +93,13 @@ values
     (59, 12, 'After weaving between the rocks, there is another waterfall. Intense rapids lie below. The chao glide over the dangerous waters as far as they can.', 5, 1, 40, 10, 50, 3.0, 30, 0, 0),
     (60, 12, 'The rapids continue. Some chao struggle to keep their heads above the surface, while others are finding the fastest current through to safer waters.', 6, 1, 10, 10, 30, 3.0, 30, 90, 0),
     (61, 12, 'The river calms as it flows into a humid cave, then splits into multiple unmarked tunnels. The chao choose their routes carefully.', 7, 1, 10, 10, 20, 1.0, 0, 0, 40),
-    (62, 12, 'The river tunnels come back together just before the flags of the finish line, arching over the river.', 8, 1, 10, 10, 10, 1.0, 0, 0, 0);
+    (62, 12, 'The river tunnels come back together just before the flags of the finish line, arching over the river.', 8, 1, 10, 10, 10, 1.0, 0, 0, 0),
+    --Egg Tower
+    (63, 13, 'The abandoned facility looms over the chao as they begin climbing the outer wall. A faint humming can be heard from within.', 0, 2, 0, 55, 0, 1.0, 0, 0, 0),
+	(64, 13, 'The chao climb onto a ledge of rusted plate metal. Graffiti paints the surrounding walls. As they approach a console ahead, floor hatches open beneath them, revealing a series of high-speed warp tubes that suck the chao in.', 1, 0, 55, 55, 20, 1.0, 0, 0, 15),
+	(65, 13, 'The chao flail as they are transported through the interior of the facility. They are dumped together at the base of a vertical shaft and begin climbing up.', 2, 2, 55, 135, 0, 1.0, 0, 0, 30),
+	(66, 13, 'As the chao reach the top of the interior column, they enter a large, steamy chamber that stinks of rotten eggs. The cage of an unknown device rotates slowly around them, and through gaps in its metal frame, they observe a sea of bubbling liquid.', 3, 2, 135, 195, 0, 2.0, 0, 0, 0),
+	(67, 13, 'The chao gradually realize the spinning metal arms are the only safe way up, but the moat of bubbling liquid stands in the way. They each start to glide across the gap. Those that miss their targets are momentarily trapped in the hot pool before grasping onto safety.', 4, 1, 195, 115, 50, 5.0, 0, 0, 45),
+	(68, 13, 'The device continues to spin at a dizzying speed as the chao scale its arms. Where they meet at the top, the chao enter another narrow vertical shaft filled with vile-smelling steam. The finish line waits at the top!', 5, 2, 115, 195, 0, 3.0, 0, 0, 0);
 
 update info set schema_version = 4;
