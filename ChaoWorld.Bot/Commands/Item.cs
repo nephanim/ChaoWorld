@@ -257,12 +257,14 @@ namespace ChaoWorld.Bot
                 {
                     case ItemBase.ItemEffects.Reincarnation:
                         if (quantity > 1)
-                            return false;
+                            return false; // Only one can be used at a time
+                        if (chao.EvolutionState == Core.Chao.EvolutionStates.Child)
+                            return false; // Don't let them use it before evolving (as a time gate, but also a safeguard for stat grade improvements)
                         chao.Reincarnate();
                         effect = " Your chao disappears into a cocoon, only to reemerge as a child.";
                         break;
                     case ItemBase.ItemEffects.ReincarnationFactorIncrease:
-                        // TODO: Make a conscious decision about what this threshold should be, stats can get up to 9797 at 70%
+                        // TODO: Make a conscious decision about what this threshold should be later, stats can get up to 9797 at 70%
                         if (chao.ReincarnationStatFactor + (0.01 * quantity) > 0.7)
                             return false;
                         chao.ReincarnationStatFactor += 0.01 * quantity;
