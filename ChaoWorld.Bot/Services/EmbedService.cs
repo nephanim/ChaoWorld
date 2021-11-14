@@ -221,7 +221,7 @@ namespace ChaoWorld.Bot
                     $"Instance ID: {instance.Id} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
 
             eb.Field(new("Status", instance.State.GetDescription()));
-            eb.Field(new("Participants", $"{participants} / {tourney.MaximumChao}"));
+            eb.Field(new("Participants", $"{participants}"));
 
             if (instance.WinnerChaoId.HasValue)
             {
