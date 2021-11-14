@@ -162,8 +162,6 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<ChaoEdit>(ChaoRename, m => m.Name(ctx, target));
                 else
                     await PrintCommandExpectedError(ctx, ChaoRename);
-            else if (await ctx.MatchChao() is Core.Chao target)
-                await HandleChaoCommandTargeted(ctx, target);
             else if (ctx.Match("pet"))
                 if (await ctx.MatchChao() is Core.Chao petTarget)
                     await ctx.Execute<Chao>(ChaoPet, m => m.PetChao(ctx, petTarget));
@@ -179,8 +177,8 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<Chao>(ChaoCuddle, m => m.CuddleChao(ctx, cuddleTarget));
                 else
                     await PrintCommandNotFoundError(ctx, ChaoCuddle);
-            else if (!ctx.HasNext())
-                await PrintCommandExpectedError(ctx, ChaoNew, ChaoInfo, ChaoRename, ChaoGoodbye);
+            else if (await ctx.MatchChao() is Core.Chao target)
+                await HandleChaoCommandTargeted(ctx, target);
             else
                 await ctx.Reply($"{Emojis.Error} {ctx.CreateChaoNotFoundError(ctx.PopArgument())}");
         }
