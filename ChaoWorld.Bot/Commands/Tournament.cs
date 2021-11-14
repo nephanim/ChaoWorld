@@ -388,7 +388,7 @@ namespace ChaoWorld.Bot
                 await ReplyWithRaceEvents(ctx, attacker, defender, attackerRecovering, defenderRecovering, attackLanded, ringout);
             }
 
-            HandleMatchTimeout(match);
+            await HandleMatchTimeout(ctx, match);
 
             // Give chao some stamina for their exercise (all other stat increases are baked in already)
             match.Left.Chao.RaiseStamina(matchTime / 10);
@@ -431,7 +431,7 @@ namespace ChaoWorld.Bot
                 await ctx.Reply(GetNormalDodgeMessage(attacker, defender));
         }
 
-        private static void HandleMatchTimeout(TournamentInstanceMatch match)
+        private static async Task HandleMatchTimeout(Context ctx, TournamentInstanceMatch match)
         {
             if (!match.WinnerChaoId.HasValue)
             {
@@ -452,6 +452,8 @@ namespace ChaoWorld.Bot
                     match.WinnerChaoId = match.Right.Chao.Id.Value;
                 else
                     match.WinnerChaoId = match.Left.Chao.Id.Value; // This better not happen often...
+
+                await ctx.Reply($"{Emojis.Megaphone} The match time limit has been reached.");
             }
         }
 
