@@ -143,6 +143,22 @@ namespace ChaoWorld.Core
             _logger.Information($"Completed instance {raceInstance.Id} of race {raceInstance.RaceId}");
         }
         
+        public async Task RecalculateRaceRewards()
+        {
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
+                update races r
+                set prizerings = (
+	                select floor(avg(timeelapsedseconds + r.readydelayminutes*60.0)/1.5)
+	                from raceinstances i
+	                join chao c
+	                on i.winnerchaoid = c.id
+	                where i.raceid = r.id
+	                and c.gardenid != 0
+                )
+            "));
+            _logger.Information($"Updated prize amounts for races");
+        }
+
         public async Task GiveRaceRewards(RaceInstance raceInstance, int prizeRings)
         {
             await _db.Execute(conn => conn.QueryAsync<int>($@"

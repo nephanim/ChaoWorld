@@ -147,7 +147,23 @@ namespace ChaoWorld.Core
             "));
             _logger.Information($"Finalized chao statistics for tournament instance {instance.Id} of tournament {instance.TournamentId}");
         }
-        
+
+        public async Task RecalculateTournamentRewards()
+        {
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
+                update tournaments t
+                set prizerings = (
+	                select floor(avg(totaltimeelapsedseconds + t.readydelayminutes*60.0)/1.5)
+	                from tournamentinstances i
+	                join chao c
+	                on i.winnerchaoid = c.id
+	                where i.tournamentid = t.id
+	                and c.gardenid != 0
+                )
+            "));
+            _logger.Information($"Updated prize amounts for tournaments");
+        }
+
         public async Task GiveTournamentRewards(TournamentInstance instance, int prizeRings)
         {
             await _db.Execute(conn => conn.QueryAsync<int>($@"
