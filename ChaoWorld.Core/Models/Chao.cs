@@ -257,6 +257,7 @@ namespace ChaoWorld.Core
             SecondaryColor = secondaryColor;
             IsShiny = isShiny;
             IsTwoTone = isTwoTone;
+            RebirthOn = SystemClock.Instance.GetCurrentInstant();
 
             SwimGrade = MiscUtils.GenerateStatGrade();
             FlyGrade = MiscUtils.GenerateStatGrade();

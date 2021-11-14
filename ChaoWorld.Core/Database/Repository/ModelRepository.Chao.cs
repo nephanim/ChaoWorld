@@ -99,7 +99,7 @@ namespace ChaoWorld.Core
              await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update chao
                 set
-                    rebirthon = {chao.RebirthOn},
+                    rebirthon = '{chao.RebirthOn}',
                     reincarnations = {chao.Reincarnations},
                     reincarnationstatfactor = {chao.ReincarnationStatFactor},
                     evolutionstate = {(int)chao.EvolutionState},
