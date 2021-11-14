@@ -79,6 +79,7 @@ namespace ChaoWorld.Bot
 
             // Clean up orphaned race instances
             PurgeOrphanedRaceInstances();
+            PurgeOrphanedTournamentInstances();
             _logger.Information("Reset incomplete (pending, in progress) race instances");
         }
 
@@ -325,6 +326,17 @@ namespace ChaoWorld.Bot
                 await _db.Execute(conn => conn.QueryAsync(@$"
                       delete from raceinstances
                       where raceinstances.state in ({(int)RaceInstance.RaceStates.Preparing}, {(int)RaceInstance.RaceStates.InProgress})"
+                ));
+            }
+        }
+
+        private async Task PurgeOrphanedTournamentInstances()
+        {
+            using (var conn = await _db.Obtain())
+            {
+                await _db.Execute(conn => conn.QueryAsync($@"
+                    delete from tournamentinstances
+                    where tournamentinstances.state in ({(int)TournamentInstance.TournamentStates.Preparing}, {(int)TournamentInstance.TournamentStates.InProgress})"
                 ));
             }
         }
