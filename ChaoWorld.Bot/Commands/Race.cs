@@ -253,7 +253,15 @@ namespace ChaoWorld.Bot
                 // Race isn't done, but all chao already retired...
                 await _repo.FinalizeRaceInstanceChao(raceInstance); // Set final results for each chao
                 await _repo.CompleteRaceInstance(raceInstance); // Set final results for the race
-                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has been canceled because the chao can no longer continue.");
+
+                var notifyList = await _repo.GetAccountsToPingForRace(raceInstance.Id);
+                var notifyString = notifyList.Any() ? " " + string.Join(" ", notifyList.Select(x => $"<@{x}>").ToArray()) : "";
+                var mentions = new AllowedMentions
+                {
+                    Users = notifyList.ToArray()
+                };
+
+                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has been canceled because the chao can no longer continue.{notifyString}", mentions: mentions);
                 result.Complete = true;
             }
             else
