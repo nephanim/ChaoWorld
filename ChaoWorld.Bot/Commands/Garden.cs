@@ -56,5 +56,44 @@ namespace ChaoWorld.Bot
                 await ctx.Reply($"{Emojis.Error} Chao not found.");
             }
         }
+
+        public async Task GiveRings(Context ctx)
+        {
+            ctx.CheckGarden();
+            var input = ctx.RemainderOrNull();
+            if (int.TryParse(input, out int rings))
+            {
+                if (ctx.Garden.RingBalance >= rings)
+                {
+                    if (await ctx.MatchUser() is { } targetAccount)
+                    {
+                        // Make sure the target wants it (not everybody likes charity)
+                        if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept {rings} rings from {ctx.Author}?", "Accept", user: targetAccount, matchFlag: false))
+                            throw Errors.GiveItemCanceled();
+
+                        var targetGarden = await _repo.GetGardenByAccount(targetAccount.Id); // Make sure the target has a garden too and we can read it...
+                        if (targetGarden != null)
+                        {
+                            // We know who to give it to, so should be safe to proceed
+                            ctx.Garden.RingBalance -= rings; // The sender garden gets updated first to prevent potential for ring duplication
+                            await _repo.UpdateGarden(ctx.Garden);
+
+                            targetGarden.RingBalance += rings;
+                            await _repo.UpdateGarden(targetGarden);
+
+                            await ctx.Reply($"{Emojis.Success} Delivered {rings} rings to {targetAccount.Username}.");
+                        }
+                        else
+                            await ctx.Reply($"{Emojis.Error} Failed to deliver rings to {targetAccount.Username}.");
+                    }
+                    else
+                        await ctx.Reply($"{Emojis.Error} Please specify a user to give the rings to. (e.g. `!give rings 1000 @User`)");
+                }
+                else
+                    await ctx.Reply($"{Emojis.Error} You only have {ctx.Garden.RingBalance:n0} rings. You're {(ctx.Garden.RingBalance - rings):n0} short!");
+            }
+            else
+                await ctx.Reply($"{Emojis.Error} Please specify how many rings you want to give. (e.g. `!give rings 1000 @User`)");
+        }
     }
 }

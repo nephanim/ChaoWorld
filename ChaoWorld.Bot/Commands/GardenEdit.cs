@@ -27,13 +27,6 @@ namespace ChaoWorld.Bot
             _client = client;
         }
 
-        public async Task SetActiveChao(Context ctx, Core.Chao chao)
-        {
-            ctx.CheckOwnChao(chao);
-
-
-        }
-
         public async Task Delete(Context ctx)
         {
             ctx.CheckGarden();

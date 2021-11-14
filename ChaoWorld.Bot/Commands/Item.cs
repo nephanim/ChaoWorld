@@ -379,6 +379,7 @@ namespace ChaoWorld.Bot
             ctx.CheckOwnItem(item);
             if (await ctx.MatchUser() is { } targetAccount)
             {
+                // Make sure the target wants it (not everybody likes charity)
                 if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept the {item.Name} from {ctx.Author}?", "Accept", user: targetAccount, matchFlag: false))
                     throw Errors.GiveItemCanceled();
 
@@ -409,9 +410,10 @@ namespace ChaoWorld.Bot
                         };
                         await _repo.AddItem(targetGarden.Id.Value, inventoryItem);
                     }
+                    await ctx.Reply($"{Emojis.Success} Transferred {item.Name} to {targetAccount.Username}.");
                 }
                 else
-                    await ctx.Reply($"{Emojis.Error} Failed to deliver {item.Name} to {targetAccount.NameAndMention()}.");
+                    await ctx.Reply($"{Emojis.Error} Failed to deliver {item.Name} to {targetAccount.Username}.");
             }
             else
             {

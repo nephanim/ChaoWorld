@@ -36,10 +36,13 @@ namespace ChaoWorld.Bot
         public static Command ItemList = new Command("item list", "item list", "Lists all items in your inventory");
         public static Command ItemInfo = new Command("item info", "item info {id/name}", "Displays information about an item and its uses");
         public static Command ItemUse = new Command("item use", "item use {item id/name} [chao id/name]", "Uses the specified item in your inventory (chao target is only used for certain items)");
+        public static Command ItemGive = new Command("item give", "item give {item id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
         //public static Command ItemDiscard = new Command("item discard", "item {item id/name} discard", "Discards the specified item from your inventory");
         public static Command MarketList = new Command("market list", "market list", "Lists all items for sale at the Black Market");
         public static Command MarketBuy = new Command("market buy", "market buy {id/name} [qty]", "Purchases the specified item from the Black Market (quantity of 1 is assumed if not provided)");
         //public static Command MarketSell = new Command("market sell", "market {id/name} sell [qty]", "Sells the specified item from your inventory on the Black Market (quantity of 1 is assumed if not provided)");
+        public static Command GiveItem = new Command("give item", "give item {id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
+        public static Command GiveRings = new Command("give rings", "give rings {qty} {@user}", "Offers the specified amount of rings to another player (target can accept or reject the offer)");
         public static Command Collect = new Command("collect", "collect", "Can be used every 24 hours to collect rings for use in the market");
         public static Command Help = new Command("help", "help", "Shows help information about Chao World");
         public static Command Admin = new Command("admin", "admin", "What? Nothing to see here...");
@@ -64,12 +67,17 @@ namespace ChaoWorld.Bot
 
         public static Command[] ItemCommands =
         {
-            ItemList, ItemUse, ItemInfo
+            ItemList, ItemUse, ItemInfo, ItemGive
         };
 
         public static Command[] MarketCommands =
         {
             MarketList, MarketBuy //, MarketSell
+        };
+
+        public static Command[] GiveCommands =
+        {
+            GiveItem, GiveRings
         };
 
         public Task ExecuteCommand(Context ctx)
@@ -86,6 +94,8 @@ namespace ChaoWorld.Bot
                 return HandleItemCommand(ctx);
             if (ctx.Match("market", "m"))
                 return HandleMarketCommand(ctx);
+            if (ctx.Match("give"))
+                return HandleGiveCommand(ctx);
             if (ctx.Match("commands", "cmd", "command"))
                 return CommandHelpRoot(ctx);
             if (ctx.Match("list", "find", "chao", "search", "query", "l", "f", "fd"))
@@ -325,14 +335,21 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<Item>(ItemUse, m => m.UseItem(ctx, itemTarget));
                 else
                     await ctx.Reply($"{Emojis.Error} Unable to find the specified item in your inventory.");
-            else if (ctx.Match("info"))
+            else if (ctx.Match("info", "i"))
                 if (await ctx.MatchItemType() is { } infoTarget)
                     await ctx.Execute<Item>(ItemInfo, m => m.ItemInfo(ctx, infoTarget));
                 else
                     await PrintCommandExpectedError(ctx, ItemInfo);
+            else if (ctx.Match("give", "g"))
+                if (await ctx.MatchInventoryItem() is { } giveItemTarget)
+                    await ctx.Execute<Item>(ItemGive, m => m.GiveItem(ctx, giveItemTarget));
+                else
+                    await PrintCommandExpectedError(ctx, ItemGive);
             else if (await ctx.MatchInventoryItem() is { } itemTarget)
                 if (ctx.Match("use", "u"))
                     await ctx.Execute<Item>(ItemUse, m => m.UseItem(ctx, itemTarget));
+                else if (ctx.Match("give", "g"))
+                    await ctx.Execute<Item>(ItemGive, m => m.GiveItem(ctx, itemTarget));
                 else
                     await ctx.Execute<Item>(ItemInfo, m => m.ItemInfo(ctx, itemTarget));
             else if (await ctx.MatchItemType() is { } itemType)
@@ -366,6 +383,19 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<Item>(ItemInfo, m => m.ItemInfo(ctx, itemTarget));
             else
                 await PrintCommandNotFoundError(ctx, MarketCommands);
+        }
+
+        private async Task HandleGiveCommand(Context ctx)
+        {
+            if (ctx.Match("item", "i"))
+                if (await ctx.MatchInventoryItem() is { } giveItemTarget)
+                    await ctx.Execute<Item>(GiveItem, m => m.GiveItem(ctx, giveItemTarget));
+                else
+                    await PrintCommandExpectedError(ctx, GiveItem);
+            else if (ctx.Match("rings", "r"))
+                await ctx.Execute<Garden>(GiveRings, m => m.GiveRings(ctx));
+            else
+                PrintCommandNotFoundError(ctx, GiveCommands);
         }
 
         private async Task CommandHelpRoot(Context ctx)
