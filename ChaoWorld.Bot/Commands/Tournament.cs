@@ -164,10 +164,11 @@ namespace ChaoWorld.Bot
                     // Determine how many slots to fill with NPC chao and select random chao to fill those
                     var currentChaoCount = await _repo.GetTournamentInstanceChaoCount(instance.Id);
                     var limit = GetTourneySize(currentChaoCount);
+                    tourney.PrizeRings = tourney.PrizeRings * (limit / 4);
                     await _repo.LogMessage($"Tournament instance {instance.Id} has {currentChaoCount} participants. Filling to {limit}.");
 
                     var joiningNPCs = new List<Core.Chao>();
-                    while (currentChaoCount < tourney.MaximumChao)
+                    while (currentChaoCount < limit)
                     {
                         var npc = await _repo.GetRandomChao(0); // Garden 0 is a special holding place reserved for NPCs
                         if (joiningNPCs.All(x => x.Id != npc.Id))
@@ -373,7 +374,7 @@ namespace ChaoWorld.Bot
                 }
 
                 await _repo.LogMessage($"Combatant {attacker.Chao.Id.Value}: {attacker.RemainingHealth} HP / {attacker.RemainingZeal} ZP / {attacker.EdgeDistance}m / Attacking in {attacker.NextAttackIn}s");
-                await _repo.LogMessage($"Combatant {attacker.Chao.Id.Value}: {attacker.RemainingHealth} HP / {attacker.RemainingZeal} ZP / {attacker.EdgeDistance}m / Attacking in {attacker.NextAttackIn}s");
+                await _repo.LogMessage($"Combatant {defender.Chao.Id.Value}: {defender.RemainingHealth} HP / {defender.RemainingZeal} ZP / {defender.EdgeDistance}m / Attacking in {defender.NextAttackIn}s");
 
                 // Check whether the match is over
                 if (defender.RemainingHealth < 0 || ringout)
