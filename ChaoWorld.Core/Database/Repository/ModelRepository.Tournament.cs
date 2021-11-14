@@ -64,10 +64,10 @@ namespace ChaoWorld.Core
         public async Task<TournamentInstance?> GetTournamentInstanceByNameWithFuzzyMatching(string name)
         {
             var query = new Query("tournamentinstances").Join("tournaments", "tournaments.id", "tournamentinstances.tournamentid", "=")
-                .Where("tournamentinstances.state", "!=", (int)TournamentInstance.TournamentStates.Completed)
-                .Where("tournamentinstances.state", "!=", (int)TournamentInstance.TournamentStates.Canceled)
+                //.Where("tournamentinstances.state", "!=", (int)TournamentInstance.TournamentStates.Completed)
+                //.Where("tournamentinstances.state", "!=", (int)TournamentInstance.TournamentStates.Canceled)
                 .Select("tournamentinstances.*")
-                .OrderByRaw("similarity(tournaments.name, lower(?)) desc", name.ToLower().Replace("\"", string.Empty))
+                .OrderByRaw("similarity(tournaments.name, lower(?)) desc, tournamentinstances.id desc", name.ToLower().Replace("\"", string.Empty))
                 .Limit(1);
             return await _db.QueryFirst<TournamentInstance?>(query);
         }
