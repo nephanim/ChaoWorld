@@ -168,6 +168,13 @@ namespace ChaoWorld.Core
         }
     }
 
+    public class RaceInstanceBan
+    {
+        public long RaceInstanceId { get; set; }
+        public int GardenId { get; set; }
+        public Instant ExpiresOn { get; set; }
+    }
+
     public class ChaoRaceStats
     {
         public long ChaoId { get; set; }

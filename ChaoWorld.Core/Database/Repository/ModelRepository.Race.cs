@@ -195,6 +195,33 @@ namespace ChaoWorld.Core
             _logger.Information($"Chao {chao.Id} left instance {raceInstance.Id} of race {raceInstance.RaceId}");
         }
 
+        public async Task<IEnumerable<RaceInstanceBan>> GetRaceInstanceBans(Garden garden)
+        {
+            var query = new Query("raceinstancebans")
+                .Where("gardenid", garden.Id.Value);
+            return await _db.Query<RaceInstanceBan>(query);
+        }
+
+        public async Task BanFromRaceInstance(RaceInstance instance, Garden garden, IChaoWorldConnection? conn = null)
+        {
+            var query = new Query("raceinstancebans").AsInsert(new
+            {
+                raceinstanceid = instance.Id,
+                gardenid = garden.Id.Value
+            });
+            await _db.QueryFirst<RaceInstanceBan>(conn, query, "returning *");
+            _logger.Information($"Garden {garden.Id} was banned from race instance {instance.Id} of race {instance.RaceId} for leaving the queue");
+        }
+
+        public async Task ClearExpiredRaceInstanceBans()
+        {
+            await _db.Execute(conn => conn.QueryAsync($@"
+                delete from raceinstancebans
+                where expireson < current_timestamp
+            "));
+            _logger.Information($"Cleared expired race instance bans");
+        }
+
         public async Task AddSegmentsToRaceInstance(RaceInstance raceInstance, IChaoWorldConnection? conn = null)
         {
             // This does the following:

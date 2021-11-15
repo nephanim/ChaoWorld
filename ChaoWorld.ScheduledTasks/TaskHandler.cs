@@ -133,6 +133,9 @@ namespace ChaoWorld.ScheduledTasks
             await _repo.RecalculateRaceRewards();
             await _repo.RecalculateTournamentRewards();
 
+            _logger.Information("Clearing expired instance bans...");
+            await _repo.ClearExpiredRaceInstanceBans();
+
             stopwatch.Stop();
             _logger.Information("Ran hourly scheduled tasks in {Time}", stopwatch.ElapsedDuration());
         }

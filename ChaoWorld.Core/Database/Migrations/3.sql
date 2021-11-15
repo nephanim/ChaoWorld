@@ -47,6 +47,13 @@ create table if not exists raceinstances
     timeelapsedseconds integer
 );
 
+create table if not exists raceinstancebans
+(
+	raceinstanceid serial not null references raceinstances (id) on delete cascade,
+	gardenid serial not null references gardens (id) on delete cascade,
+	expireson timestamp without time zone not null default (current_timestamp + interval '10 minutes')
+);
+
 create table if not exists raceinstancechao
 (
     raceinstanceid bigserial not null references raceinstances (id) on delete cascade,

@@ -15,6 +15,7 @@ using ChaoWorld.Core;
 using System.Threading;
 using System.Collections.Generic;
 using Myriad.Rest.Types;
+using NodaTime;
 
 namespace ChaoWorld.Bot
 {
@@ -57,6 +58,10 @@ namespace ChaoWorld.Bot
             var activeInRace = await _repo.GetActiveRaceByGarden(chao.GardenId.Value);
             var activeInTourney = await _repo.GetActiveTournamentByGarden(chao.GardenId.Value);
             var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
+            var now = SystemClock.Instance.GetCurrentInstant();
+            var instanceBans = (await _repo.GetRaceInstanceBans(ctx.Garden))
+                .Where(x => x.RaceInstanceId == raceInstance.Id)
+                .ToList();
 
             if (raceInstance.State == RaceInstance.RaceStates.InProgress
                 || raceInstance.State == RaceInstance.RaceStates.Completed
@@ -76,6 +81,11 @@ namespace ChaoWorld.Bot
                 // There's a chao in this garden that's already participating in a tournament.
                 var tourney = await _repo.GetTournamentById(activeInTourney.TournamentId);
                 await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} tournament. Please support your chao's tournament first!");
+            }
+            else if (instanceBans.Any())
+            {
+                // This garden is banned from the instance - need to wait it out or find a different race to join
+                await ctx.Reply($"{Emojis.Error} You are banned from this {race.Name} instance ({raceInstance.Id}) because you left it previously. Please wait or choose another race.");
             }
             else
             {
@@ -146,7 +156,10 @@ namespace ChaoWorld.Bot
                     var raceChao = await _repo.GetRaceInstanceChao(activeRace);
                     var chao = raceChao.FirstOrDefault(x => x.GardenId == ctx.Garden.Id);
                     if (chao != null)
+                    {
                         await _repo.RemoveChaoFromRaceInstance(activeRace, chao);
+                        await _repo.BanFromRaceInstance(activeRace, ctx.Garden);
+                    }
                     await ctx.Reply($"{Emojis.Success} You are no longer waiting for the race to start.");
                 } else
                     await ctx.Reply($"{Emojis.Error} You can no longer withdraw from the race. Please wait for it to finish.");
