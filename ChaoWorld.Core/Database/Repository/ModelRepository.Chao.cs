@@ -180,14 +180,13 @@ namespace ChaoWorld.Core
 	                rebirthon = current_timestamp
                 where gardenid = 0
                     and id != 1
-                    and (
-                        swimlevel = 99
-                        or flylevel = 99
-                        or runlevel = 99
-                        or powerlevel = 99
-                        or staminalevel = 99
-                        or intelligencelevel = 99
-                        or lucklevel = 99
+                    and swimlevel = 99
+                    and flylevel = 99
+                    and runlevel = 99
+                    and powerlevel = 99
+                    and staminalevel = 99
+                    and intelligencelevel = 99
+                    and lucklevel = 99
                     )
                 returning *
             "))).AsList();
