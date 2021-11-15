@@ -303,8 +303,8 @@ namespace ChaoWorld.Core
                 SwimProgress += amount;
                 if (SwimProgress >= 100)
                 {
-                    SwimProgress = SwimProgress % 100;
                     SwimLevel += SwimProgress / 100;
+                    SwimProgress = SwimProgress % 100;
                     if (SwimLevel >= 99)
                     {
                         SwimLevel = 99;
@@ -322,8 +322,8 @@ namespace ChaoWorld.Core
                 FlyProgress += amount;
                 if (FlyProgress >= 100)
                 {
-                    FlyProgress = FlyProgress % 100;
                     FlyLevel += FlyProgress / 100;
+                    FlyProgress = FlyProgress % 100;
                     if (FlyLevel >= 99)
                     {
                         FlyLevel = 99;
@@ -341,8 +341,8 @@ namespace ChaoWorld.Core
                 RunProgress += amount;
                 if (RunProgress >= 100)
                 {
-                    RunProgress = RunProgress % 100;
                     RunLevel += RunProgress / 100;
+                    RunProgress = RunProgress % 100;
                     if (RunLevel >= 99)
                     {
                         RunLevel = 99;
@@ -360,8 +360,8 @@ namespace ChaoWorld.Core
                 PowerProgress += amount;
                 if (PowerProgress >= 100)
                 {
-                    PowerProgress = PowerProgress % 100;
                     PowerLevel += PowerProgress / 100;
+                    PowerProgress = PowerProgress % 100;
                     if (PowerLevel >= 99)
                     {
                         PowerLevel = 99;
@@ -379,8 +379,8 @@ namespace ChaoWorld.Core
                 StaminaProgress += amount;
                 if (StaminaProgress >= 100)
                 {
-                    StaminaProgress = StaminaProgress % 100;
                     StaminaLevel += StaminaProgress / 100;
+                    StaminaProgress = StaminaProgress % 100;
                     if (StaminaLevel >= 99)
                     {
                         StaminaLevel = 99;
@@ -398,8 +398,8 @@ namespace ChaoWorld.Core
                 IntelligenceProgress += amount;
                 if (IntelligenceProgress >= 100)
                 {
-                    IntelligenceProgress = IntelligenceProgress % 100;
                     IntelligenceLevel += IntelligenceProgress / 100;
+                    IntelligenceProgress = IntelligenceProgress % 100;
                     if (IntelligenceLevel >= 99)
                     {
                         IntelligenceLevel = 99;
@@ -417,8 +417,8 @@ namespace ChaoWorld.Core
                 LuckProgress += amount;
                 if (LuckProgress >= 100)
                 {
-                    LuckProgress = LuckProgress % 100;
                     LuckLevel += LuckProgress / 100;
+                    LuckProgress = LuckProgress % 100;
                     if (LuckLevel >= 99)
                     {
                         LuckLevel = 99;
