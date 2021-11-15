@@ -377,10 +377,12 @@ namespace ChaoWorld.Bot
         public async Task GiveItem(Context ctx, Core.Item item)
         {
             ctx.CheckOwnItem(item);
+            await ConfirmGiveItem(ctx, item);
+
             if (await ctx.MatchUser() is { } targetAccount)
             {
                 // Make sure the target wants it (not everybody likes charity)
-                if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept the {item.Name} from {ctx.Author}?", "Accept", user: targetAccount, matchFlag: false))
+                if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept the {item.Name} from {ctx.Author.Username}?", "Accept", user: targetAccount, matchFlag: false))
                     throw Errors.GiveItemCanceled();
 
                 var targetGarden = await _repo.GetGardenByAccount(targetAccount.Id);
@@ -419,6 +421,13 @@ namespace ChaoWorld.Bot
             {
                 await ctx.Reply($"{Emojis.Error} Please specify a user to give the {item.Name} to.");
             }
+        }
+
+        public async Task ConfirmGiveItem(Context ctx, Core.Item item)
+        {
+            var prompt = $"{Emojis.Warn} Are you sure you want to give away {item.Name}?";
+            if (!(await ctx.PromptYesNo(prompt, "Confirm")))
+                throw Errors.GenericCancelled();
         }
     }
 }
