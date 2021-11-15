@@ -179,7 +179,7 @@ namespace ChaoWorld.ScheduledTasks
                 items.Add(fruit);
             }
 
-            var specialLimit = new Random().Next(1, 6) == 1 ? 1 : 0; // Have special items available a few times per day
+            var specialLimit = new Random().Next(1, 8) == 1 ? 1 : 0; // Have special items available a few times per day
             var specials = await _repo.GetMarketEnabledSpecials(specialLimit);
             foreach (var special in specials)
             {
