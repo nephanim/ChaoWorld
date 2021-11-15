@@ -14,7 +14,8 @@ values
     (10, 'Onyx', 'Intermediate race. Intelligence and luck are key to victory.', 3, 3, true, 1, 8, 200, 3, 0.07, 0.02, 0.51, 0.00, 0.20, 0.20),
     (11, 'Diamond', 'Intermediate race. General ability is key to victory.', 4, 4, true, 1, 8, 250, 4, 0.14, 0.04, 0.42, 0.08, 0.16, 0.16),
     (12, 'River Run', 'Expert race. Swimming and flying are key to victory.', 5, 5, true, 1, 8, 300, 5, 0.35, 0.29, 0.04, 0, 0.18, 0.14),
-   	(13, 'Egg Tower', 'Expert race. Power is key to victory.', 1, 1, false, 1, 8, 300, 5, 0, 0.16, 0.04, 0.56, 0.06, 0.18);
+   	(13, 'Egg Tower', 'Expert race. Power is key to victory.', 1, 1, false, 1, 8, 300, 5, 0, 0.16, 0.04, 0.56, 0.06, 0.18),
+    (14, 'Windy Valley', 'Expert race. Flying and intelligence are key to victory.', 5, 5, false, 1, 8, 0, 5, 0, 0.63, 0, 0, 0.38, 0);
 
 insert into racesegments
     (id, raceid, description, raceindex, terraintype, startelevation, endelevation, terraindistance, staminalossmultiplier,
@@ -100,6 +101,13 @@ values
 	(65, 13, 'The chao flail as they are transported through the interior of the facility. They are dumped together at the base of a vertical shaft and begin climbing up.', 2, 2, 55, 135, 0, 1.0, 0, 0, 30),
 	(66, 13, 'As the chao reach the top of the interior column, they enter a large, steamy chamber that stinks of rotten eggs. The cage of an unknown device rotates slowly around them, and through gaps in its metal frame, they observe a sea of bubbling liquid.', 3, 2, 135, 195, 0, 2.0, 0, 0, 0),
 	(67, 13, 'The chao gradually realize the spinning metal arms are the only safe way up, but the moat of bubbling liquid stands in the way. They each start to glide across the gap. Those that miss their targets are momentarily trapped in the hot pool before grasping onto safety.', 4, 1, 195, 115, 50, 5.0, 0, 0, 45),
-	(68, 13, 'The device continues to spin at a dizzying speed as the chao scale its arms. Where they meet at the top, the chao enter another narrow vertical shaft filled with vile-smelling steam. The finish line waits at the top!', 5, 2, 115, 195, 0, 3.0, 0, 0, 0);
+	(68, 13, 'The device continues to spin at a dizzying speed as the chao scale its arms. Where they meet at the top, the chao enter another narrow vertical shaft filled with vile-smelling steam. The finish line waits at the top!', 5, 2, 115, 195, 0, 3.0, 0, 0, 0),
+    --Windy Valley
+    (69, 14, 'Surrounded by the whistle of strong winds, the chao are gathered atop a grassy plateau. The ground far below it is hidden by mist and raging winds that carry debris with it. They get a running start toward the edge of the plateau.', 0, 0, 500, 500, 10, 1.0, 0, 0, 0),
+	(70, 14, 'Taking flight, the chao glide over and between other rocky spires nearby as they make their way toward the goal banner far ahead in the distance.', 1, 0, 500, 0, 60, 10.0, 0, 0, 0),
+	(71, 14, 'A tornado rolls through their path, its mighty winds causing some chao to fly astray. They adjust their course amidst the peril and realign with their destination.', 2, 0, 0, 0, 60, 10.0, 0, 60, 0),
+	(72, 14, 'The winds seem calm up in the air, but they continue to rage down below. From glimpses through the mist, the terrain is nearly impassable.', 3, 0, 0, 0, 60, 10.0, 0, 0, 0),
+	(73, 14, 'A powerful gust swirls from beneath the chao and then shoots skyward. While the wind in their sails may be welcome, the sheer force causes the chao to spiral out of control for a moment as they study the winds.', 4, 0, 0, 0, 60, 10.0, 0, 60, 0),
+	(74, 14, 'Just a short distance remains to the finish line located in a grassy clearing surrounded by thick forest. The racing chao ride one another''s slipstreams as they vie for first place.', 5, 0, 0, 0, 60, 10.0, 0, 0, 0);
 
 update info set schema_version = 4;
