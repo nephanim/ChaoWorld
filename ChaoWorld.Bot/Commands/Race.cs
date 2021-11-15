@@ -464,7 +464,7 @@ namespace ChaoWorld.Bot
                 puzzleTime = Math.Max(1, // No matter how smart you are, you need a second to think about it
                     (int)((template.IntelligenceRating / 6) // How hard is the puzzle? e.g. rating of 30 -> 5s base time
                     * (1 - Math.Sqrt(chao.IntelligenceValue*10)/600)) // Reduce this by 0-50% depending on the chao's intelligence
-                ));
+                );
                 chao.RaiseIntelligence(template.IntelligenceRating);
             }
             segment.SegmentTimeSeconds += puzzleTime;
