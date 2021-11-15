@@ -20,7 +20,6 @@ namespace ChaoWorld.Bot
         public static Command ChaoPet = new Command("chao pet", "chao {id/name} pet", "Pets the specified chao");
         public static Command ChaoRock = new Command("chao rock", "chao {id/name} rock", "Rocks the specified chao in your arms");
         public static Command ChaoCuddle = new Command("chao cuddle", "chao {id/name} cuddle", "Cuddles the specified chao");
-        public static Command ChaoNew = new Command("chao new", "chao new", "Creates a new chao"); //TODO: Remove this when the market is done
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
         public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order, with optional filters");
@@ -37,10 +36,11 @@ namespace ChaoWorld.Bot
         public static Command ItemInfo = new Command("item info", "item info {id/name}", "Displays information about an item and its uses");
         public static Command ItemUse = new Command("item use", "item use {item id/name} [chao id/name]", "Uses the specified item in your inventory (chao target is only used for certain items)");
         public static Command ItemGive = new Command("item give", "item give {item id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
+        public static Command ItemSell = new Command("item sell", "item sell {item id/name} [qty]", "Sells the specified item from your inventory on the Black Market (quantity of 1 is assumed if not provided)");
         //public static Command ItemDiscard = new Command("item discard", "item {item id/name} discard", "Discards the specified item from your inventory");
         public static Command MarketList = new Command("market list", "market list", "Lists all items for sale at the Black Market");
         public static Command MarketBuy = new Command("market buy", "market buy {id/name} [qty]", "Purchases the specified item from the Black Market (quantity of 1 is assumed if not provided)");
-        //public static Command MarketSell = new Command("market sell", "market {id/name} sell [qty]", "Sells the specified item from your inventory on the Black Market (quantity of 1 is assumed if not provided)");
+        public static Command MarketSell = new Command("market sell", "market sell {id/name} [qty]", "Sells the specified item from your inventory on the Black Market (quantity of 1 is assumed if not provided)");
         public static Command GiveItem = new Command("give item", "give item {id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
         public static Command GiveRings = new Command("give rings", "give rings {qty} {@user}", "Offers the specified amount of rings to another player (target can accept or reject the offer)");
         public static Command Collect = new Command("collect", "collect", "Can be used every 24 hours to collect rings for use in the market");
@@ -52,7 +52,7 @@ namespace ChaoWorld.Bot
         };
 
         public static Command[] ChaoCommands = {
-            ChaoInfo, ChaoNew, ChaoRename, ChaoGoodbye, ChaoPet, ChaoRock, ChaoCuddle, ChaoRankings
+            ChaoInfo, ChaoRename, ChaoGoodbye, ChaoPet, ChaoRock, ChaoCuddle, ChaoRankings
         };
 
         public static Command[] RaceCommands =
@@ -67,12 +67,12 @@ namespace ChaoWorld.Bot
 
         public static Command[] ItemCommands =
         {
-            ItemList, ItemUse, ItemInfo, ItemGive
+            ItemList, ItemUse, ItemInfo, ItemGive, ItemSell
         };
 
         public static Command[] MarketCommands =
         {
-            MarketList, MarketBuy //, MarketSell
+            MarketList, MarketBuy, MarketSell
         };
 
         public static Command[] GiveCommands =
@@ -345,11 +345,18 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<Item>(ItemGive, m => m.GiveItem(ctx, giveItemTarget));
                 else
                     await PrintCommandExpectedError(ctx, ItemGive);
+            else if (ctx.Match("sell", "s"))
+                if (await ctx.MatchInventoryItem() is { } sellItemTarget)
+                    await ctx.Execute<Item>(ItemSell, m => m.SellItem(ctx, sellItemTarget));
+                else
+                    await PrintCommandExpectedError(ctx, ItemSell);
             else if (await ctx.MatchInventoryItem() is { } itemTarget)
                 if (ctx.Match("use", "u"))
                     await ctx.Execute<Item>(ItemUse, m => m.UseItem(ctx, itemTarget));
                 else if (ctx.Match("give", "g"))
                     await ctx.Execute<Item>(ItemGive, m => m.GiveItem(ctx, itemTarget));
+                else if (ctx.Match("sell", "s"))
+                    await ctx.Execute<Item>(ItemSell, m => m.SellItem(ctx, itemTarget));
                 else
                     await ctx.Execute<Item>(ItemInfo, m => m.ItemInfo(ctx, itemTarget));
             else if (await ctx.MatchItemType() is { } itemType)
@@ -373,7 +380,12 @@ namespace ChaoWorld.Bot
                 if (await ctx.MatchMarketItem() is { } marketBuyTarget)
                     await ctx.Execute<Item>(MarketBuy, m => m.BuyItem(ctx, marketBuyTarget));
                 else
-                    await PrintCommandNotFoundError(ctx, MarketBuy);
+                    await PrintCommandExpectedError(ctx, MarketBuy);
+            else if (ctx.Match("sell", "s"))
+                if (await ctx.MatchInventoryItem() is { } marketSellTarget)
+                    await ctx.Execute<Item>(MarketSell, m => m.SellItem(ctx, marketSellTarget));
+                else
+                    await PrintCommandExpectedError(ctx, MarketSell);
             else if (await ctx.MatchMarketItem() is { } marketTargetBuy)
                 if (ctx.Match("buy", "b"))
                     await ctx.Execute<Item>(MarketBuy, m => m.BuyItem(ctx, marketTargetBuy));

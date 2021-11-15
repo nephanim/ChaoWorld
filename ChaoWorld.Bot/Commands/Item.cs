@@ -305,11 +305,21 @@ namespace ChaoWorld.Bot
                 throw Errors.GenericCancelled();
         }
 
-        public async Task ConfirmBuyItem(Context ctx, Core.MarketItem item, int quantity)
+        public async Task ConfirmBuyItem(Context ctx, Core.MarketItem item, int quantity, int purchasePrice)
         {
-            var friendlyPrice = string.Format("{0:n0}", item.MarketPrice.GetValueOrDefault(10000000));
+            var friendlyPrice = string.Format("{0:n0}", purchasePrice);
             var quantityText = quantity > 1 ? $" x{quantity}" : string.Empty;
             var prompt = $"{Emojis.Warn} Are you sure you want to buy {item.Name}{quantityText} for {friendlyPrice} rings?";
+
+            if (!(await ctx.PromptYesNo(prompt, "Confirm")))
+                throw Errors.GenericCancelled();
+        }
+
+        public async Task ConfirmSellItem(Context ctx, Core.Item item, int quantity, int salePrice)
+        {
+            var friendlyPrice = string.Format("{0:n0}", salePrice);
+            var quantityText = quantity > 1 ? $" x{quantity}" : string.Empty;
+            var prompt = $"{Emojis.Warn} Are you sure you want to sell {item.Name}{quantityText} for {friendlyPrice} rings?";
 
             if (!(await ctx.PromptYesNo(prompt, "Confirm")))
                 throw Errors.GenericCancelled();
@@ -322,6 +332,8 @@ namespace ChaoWorld.Bot
             int quantity = 1;
             if (int.TryParse(remainingInput, out int parsedQuantity))
                 quantity = parsedQuantity;
+            if (quantity < 1)
+                quantity = 1;
 
             // Make sure the item is actually available for purchase
             var marketItem = await _repo.GetMarketItemByTypeId(item.TypeId);
@@ -331,11 +343,11 @@ namespace ChaoWorld.Bot
                 if (marketItem.Quantity >= quantity)
                 {
                     // Make sure the garden can afford the transaction
-                    var purchasePrice = marketItem.MarketPrice.GetValueOrDefault(10000000) * quantity; // Mostly just a safeguard in case of missing prices...
+                    var purchasePrice = marketItem.MarketPrice.GetValueOrDefault(10000000) * quantity; // Default here is just a safeguard in case of missing prices...
                     if (ctx.Garden.RingBalance >= purchasePrice)
                     {
                         // Prompt to make sure they want to buy it (in case we matched on the wrong item name or something)
-                        await ConfirmBuyItem(ctx, marketItem, quantity);
+                        await ConfirmBuyItem(ctx, marketItem, quantity, purchasePrice);
 
                         // Take the item off the market (or reduce quantity as appropriate)
                         await _repo.BuyMarketItem(marketItem, quantity);
@@ -374,6 +386,34 @@ namespace ChaoWorld.Bot
             }
             else
                 await ctx.Reply($"{Emojis.Error} {item.Name} is out of stock. Check `!market list` for current listings.");
+        }
+
+        public async Task SellItem(Context ctx, Core.Item item)
+        {
+            ctx.CheckOwnItem(item);
+            var remainingInput = ctx.RemainderOrNull();
+            int quantity = 1;
+            if (int.TryParse(remainingInput, out int parsedQuantity))
+                quantity = parsedQuantity;
+            if (quantity < 1)
+                quantity = 1;
+
+            // Make sure the quantity of the item is sufficient for sale
+            if (item.Quantity >= quantity)
+            {
+                // Determine the sale price - 1/6 of the normal market price
+                var salePrice = (item.MarketPrice.GetValueOrDefault(0) / 6) * quantity; // Default here is just a safeguard in case of missing prices...
+
+                // Prompt to make sure they want to sell it (in case we matched on the wrong item name or something)
+                await ConfirmSellItem(ctx, item, quantity, salePrice);
+                await _repo.UseItem(item, quantity); // Update inventory to remove this quantity - doing this before adding rings to prevent any exploits
+                ctx.Garden.RingBalance += salePrice;
+                await _repo.UpdateGarden(ctx.Garden);
+
+                await ctx.Reply($"{Emojis.Success} Sold {item.Name} x{quantity}. Your current balance is {ctx.Garden.RingBalance} rings.");
+            }
+            else
+                await ctx.Reply($"{Emojis.Error} You only have {item.Quantity} of {item.Name}. Check `!item list` to see your inventory.");
         }
 
         public async Task GiveItem(Context ctx, Core.Item item)
