@@ -70,6 +70,8 @@ namespace ChaoWorld.Bot
                 // Only consume the item if we were actually able to handle it
                 if (success)
                     await _repo.UseItem(item, quantity);
+                else
+                    await ctx.Reply($"{Emojis.Error} {chao.Name} refused the {item.Name}. Maybe it can't be used right now.");
             }
             else
             {
