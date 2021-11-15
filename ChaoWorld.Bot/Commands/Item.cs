@@ -376,10 +376,10 @@ namespace ChaoWorld.Bot
                             };
                             await _repo.AddItem(ctx.Garden.Id.Value, inventoryItem);
                         }
-                        await ctx.Reply($"{Emojis.Success} Purchased {item.Name} x{quantity}. Your current balance is {ctx.Garden.RingBalance} rings.");
+                        await ctx.Reply($"{Emojis.Success} Purchased {item.Name} x{quantity}. Your current balance is {ctx.Garden.RingBalance:n0} rings.");
                     }
                     else
-                        await ctx.Reply($"{Emojis.Error} Purchase would require {purchasePrice} rings, but you only have {ctx.Garden.RingBalance}.");
+                        await ctx.Reply($"{Emojis.Error} Purchase would require {purchasePrice:n0} rings, but you only have {ctx.Garden.RingBalance:n0}.");
                 }
                 else
                     await ctx.Reply($"{Emojis.Error} Current stock of {item.Name} is only {marketItem.Quantity}. Check `!market list` for current listings.");
@@ -410,7 +410,7 @@ namespace ChaoWorld.Bot
                 ctx.Garden.RingBalance += salePrice;
                 await _repo.UpdateGarden(ctx.Garden);
 
-                await ctx.Reply($"{Emojis.Success} Sold {item.Name} x{quantity}. Your current balance is {ctx.Garden.RingBalance} rings.");
+                await ctx.Reply($"{Emojis.Success} Sold {item.Name} x{quantity}. Your current balance is {ctx.Garden.RingBalance:n0} rings.");
             }
             else
                 await ctx.Reply($"{Emojis.Error} You only have {item.Quantity} of {item.Name}. Check `!item list` to see your inventory.");

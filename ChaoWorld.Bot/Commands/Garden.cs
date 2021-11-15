@@ -68,7 +68,7 @@ namespace ChaoWorld.Bot
                     if (await ctx.MatchUser() is { } targetAccount)
                     {
                         // Make sure the target wants it (not everybody likes charity)
-                        if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept {rings} rings from {ctx.Author.Username}?", "Accept", user: targetAccount, matchFlag: false))
+                        if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept {rings:n0} rings from {ctx.Author.Username}?", "Accept", user: targetAccount, matchFlag: false))
                             throw Errors.GiveItemCanceled();
 
                         var targetGarden = await _repo.GetGardenByAccount(targetAccount.Id); // Make sure the target has a garden too and we can read it...
@@ -81,7 +81,7 @@ namespace ChaoWorld.Bot
                             targetGarden.RingBalance += rings;
                             await _repo.UpdateGarden(targetGarden);
 
-                            await ctx.Reply($"{Emojis.Success} Delivered {rings} rings to {targetAccount.Username}.");
+                            await ctx.Reply($"{Emojis.Success} Delivered {rings:n0} rings to {targetAccount.Username}.");
                         }
                         else
                             await ctx.Reply($"{Emojis.Error} Failed to deliver rings to {targetAccount.Username}.");

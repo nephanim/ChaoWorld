@@ -83,7 +83,7 @@ namespace ChaoWorld.Bot
                 var duration = Duration.FromDays(1);
                 ctx.Garden.NextCollectOn = now.Plus(duration);
                 await _repo.UpdateGarden(ctx.Garden);
-                await ctx.Reply($"{Emojis.Success} You found {ringsFound} rings! Your current balance is {ctx.Garden.RingBalance}.");
+                await ctx.Reply($"{Emojis.Success} You found {ringsFound:n0} rings! Your current balance is {ctx.Garden.RingBalance:n0}.");
             } else {
                 var duration = ctx.Garden.NextCollectOn - now;
                 var timeRemaining = "24 hours";
