@@ -60,15 +60,15 @@ namespace ChaoWorld.Bot
         public async Task GiveRings(Context ctx)
         {
             ctx.CheckGarden();
-            var input = ctx.RemainderOrNull();
-            if (int.TryParse(input, out int rings))
+            var input = ctx.PopArgument();
+            if (int.TryParse(input, out int rings) && rings > 0)
             {
                 if (ctx.Garden.RingBalance >= rings)
                 {
                     if (await ctx.MatchUser() is { } targetAccount)
                     {
                         // Make sure the target wants it (not everybody likes charity)
-                        if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept {rings} rings from {ctx.Author}?", "Accept", user: targetAccount, matchFlag: false))
+                        if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept {rings} rings from {ctx.Author.Username}?", "Accept", user: targetAccount, matchFlag: false))
                             throw Errors.GiveItemCanceled();
 
                         var targetGarden = await _repo.GetGardenByAccount(targetAccount.Id); // Make sure the target has a garden too and we can read it...
@@ -90,7 +90,7 @@ namespace ChaoWorld.Bot
                         await ctx.Reply($"{Emojis.Error} Please specify a user to give the rings to. (e.g. `!give rings 1000 @User`)");
                 }
                 else
-                    await ctx.Reply($"{Emojis.Error} You only have {ctx.Garden.RingBalance:n0} rings. You're {(ctx.Garden.RingBalance - rings):n0} short!");
+                    await ctx.Reply($"{Emojis.Error} You only have {ctx.Garden.RingBalance:n0} rings. You're {(rings - ctx.Garden.RingBalance):n0} short!");
             }
             else
                 await ctx.Reply($"{Emojis.Error} Please specify how many rings you want to give. (e.g. `!give rings 1000 @User`)");
