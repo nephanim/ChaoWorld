@@ -126,15 +126,15 @@ namespace ChaoWorld.ScheduledTasks
             _logger.Information("Checking for chao to evolve...");
             await RunFirstEvolutions();
 
+            _logger.Information("Clearing expired instance bans...");
+            await _repo.ClearExpiredRaceInstanceBans();
+
             _logger.Information("Reincarnating eligible NPCs...");
             await _repo.ReincarnateEligibleNpcChao();
 
             _logger.Information("Recalculating instance prize amounts...");
             await _repo.RecalculateRaceRewards();
             await _repo.RecalculateTournamentRewards();
-
-            _logger.Information("Clearing expired instance bans...");
-            await _repo.ClearExpiredRaceInstanceBans();
 
             stopwatch.Stop();
             _logger.Information("Ran hourly scheduled tasks in {Time}", stopwatch.ElapsedDuration());
