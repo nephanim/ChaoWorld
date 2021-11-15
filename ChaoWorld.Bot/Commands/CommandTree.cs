@@ -21,6 +21,7 @@ namespace ChaoWorld.Bot
         public static Command ChaoRock = new Command("chao rock", "chao {id/name} rock", "Rocks the specified chao in your arms");
         public static Command ChaoCuddle = new Command("chao cuddle", "chao {id/name} cuddle", "Cuddles the specified chao");
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
+        public static Command ChaoTag = new Command("chao tag", "chao {id/name} tag {emoji}", "Changes a chao's tag");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
         public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order, with optional filters");
         public static Command RaceInfo = new Command("race", "race {id/name}", "Looks up information about a race using either the name or ID");
@@ -172,6 +173,11 @@ namespace ChaoWorld.Bot
                     await ctx.Execute<ChaoEdit>(ChaoRename, m => m.Name(ctx, target));
                 else
                     await PrintCommandExpectedError(ctx, ChaoRename);
+            else if (ctx.Match("tag", "settag", "emoji", "setemoji"))
+                if (await ctx.MatchChao() is Core.Chao target)
+                    await ctx.Execute<ChaoEdit>(ChaoTag, m => m.Tag(ctx, target));
+                else
+                    await PrintCommandExpectedError(ctx, ChaoTag);
             else if (ctx.Match("pet"))
                 if (await ctx.MatchChao() is Core.Chao petTarget)
                     await ctx.Execute<Chao>(ChaoPet, m => m.PetChao(ctx, petTarget));
@@ -198,6 +204,8 @@ namespace ChaoWorld.Bot
             // Commands that have a chao target (eg. !chao <chao> delete)
             if (ctx.Match("rename", "name", "changename", "setname"))
                 await ctx.Execute<ChaoEdit>(ChaoRename, m => m.Name(ctx, target));
+            if (ctx.Match("tag", "settag", "emoji", "setemoji"))
+                await ctx.Execute<ChaoEdit>(ChaoTag, m => m.Tag(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet", "depart", "goodbye", "farewell"))
                 await ctx.Execute<ChaoEdit>(ChaoGoodbye, m => m.Delete(ctx, target));
             else if (ctx.Match("pet"))

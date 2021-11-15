@@ -53,7 +53,7 @@ namespace ChaoWorld.Bot
 
         public async Task<Embed> CreateChaoEmbed(Context ctx, Core.Garden garden, Core.Chao chao)
         {
-            var name = chao.Name;
+            var name = chao.DisplayName;
             var gardenOwner = await ctx.GetCachedGardenOwner(garden.Id);
             var raceStats = await _repo.GetRaceStats(chao.Id.Value);
             var totalRaces = raceStats != null ? string.Format("{0:n0}", raceStats.TotalRaces) : "0";
@@ -148,7 +148,7 @@ namespace ChaoWorld.Bot
                 {
                     var chaoImageUrl = MiscUtils.GenerateThumbnailForChao(winner);
                     var winnerOwner = await ctx.GetCachedGardenOwner(winner.GardenId);
-                    eb.Field(new("Winner", $"{winner.Name} ({winnerOwner})"));
+                    eb.Field(new("Winner", $"{winner.DisplayName} ({winnerOwner})"));
                     eb.Field(new("Time", timeElapsed));
                     eb.Image(new(chaoImageUrl));
                 }

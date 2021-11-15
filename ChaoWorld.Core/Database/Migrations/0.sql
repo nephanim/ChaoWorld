@@ -21,6 +21,7 @@ create table if not exists chao
 	id bigserial primary key,
     gardenid serial not null references gardens (id) on delete cascade,
     name text not null,
+    tag text,
     createdon timestamp without time zone not null default (current_timestamp),
     primarycolor integer not null default 0,
     secondarycolor integer,

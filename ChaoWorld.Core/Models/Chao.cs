@@ -41,6 +41,16 @@ namespace ChaoWorld.Core
         public long DatabaseId { get { return Id.Value; } }
         public GardenId GardenId { get; private set; }
         public string Name { get; private set; }
+        public string Tag { get; set; }
+        public string DisplayName
+        {
+            get
+            {
+                return string.IsNullOrEmpty(Tag)
+                    ? Name
+                    : $"{Name} {Tag}";
+            }
+        }
         public Instant CreatedOn { get; private set; }
         public Instant RebirthOn { get; set; }
 

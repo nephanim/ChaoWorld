@@ -55,6 +55,22 @@ namespace ChaoWorld.Bot
             }
         }
 
+        public async Task Tag(Context ctx, Core.Chao target)
+        {
+            ctx.CheckGarden().CheckOwnChao(target);
+            var tag = ctx.RemainderOrNull() ?? throw new CWSyntaxError("You must pass an emoji to use as this chao's tag.");
+
+            // TODO: Some kind of validation once we know what these actually look like
+            if (!string.IsNullOrEmpty(tag))
+            {
+                target.Tag = tag;
+                await _repo.UpdateChao(target);
+                await ctx.Reply($"{Emojis.Success} Your chao's tag has been set to {tag}.");
+            }
+            else
+                await ctx.Reply($"{Emojis.Error} You must pass an emoji to use as this chao's tag.");
+        }
+
         public async Task Delete(Context ctx, Core.Chao target)
         {
             ctx.CheckGarden().CheckOwnChao(target);
