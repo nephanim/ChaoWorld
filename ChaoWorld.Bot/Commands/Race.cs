@@ -463,7 +463,7 @@ namespace ChaoWorld.Bot
             {
                 puzzleTime = Math.Max(1, // No matter how smart you are, you need a second to think about it
                     (int)((template.IntelligenceRating / 6) // How hard is the puzzle? e.g. rating of 30 -> 5s base time
-                    - (Math.Log10(chao.IntelligenceValue + 1)) // Reduce this by 0-4s depending on the chao's intelligence
+                    * (1 - Math.Sqrt(chao.IntelligenceValue*10)/600)) // Reduce this by 0-50% depending on the chao's intelligence
                 ));
                 chao.RaiseIntelligence(template.IntelligenceRating);
             }
@@ -477,10 +477,11 @@ namespace ChaoWorld.Bot
                 if (rand <= template.LuckRating)
                 {
                     // Failed to evade the trap
-                    misfortuneTime = 5; // TODO: Should there be any variability in this? Maybe just keep it constant regardless of the type of trap
+                    misfortuneTime = template.LuckRating / 6;
                 }
                 chao.RaiseLuck(template.LuckRating);
             }
+
             segment.SegmentTimeSeconds += misfortuneTime;
         }
 
@@ -540,12 +541,14 @@ namespace ChaoWorld.Bot
             switch (terrainType)
             {
                 case RaceSegment.RaceTerrains.Power:
-                    return CalculateClimbingTime(chao, distance);
+                    return CalculateClimbingTime(chao, distance)
+                        + CalculateTripAndSlipTime(chao);
                 case RaceSegment.RaceTerrains.Swim:
                     return CalculateSwimmingTime(chao, distance);
                 case RaceSegment.RaceTerrains.Run:
                 default:
-                    return CalculateRunningTime(chao, distance);
+                    return CalculateRunningTime(chao, distance)
+                        + CalculateTripAndSlipTime(chao);
             }
         }
 
@@ -563,6 +566,16 @@ namespace ChaoWorld.Bot
         private int CalculateRunningTime(Core.Chao chao, int distance)
         {
             return (int)((distance * Math.Exp(-0.000114 * chao.RunValue) / CalculatePathEfficiency(chao))/2.0);
+        }
+
+        private int CalculateTripAndSlipTime(Core.Chao chao)
+        {
+            // Check delays due to tripping / falling on a cliff
+            var tripRoll = new Random().Next(0, 100 + chao.LuckValue / 20); // This is the chao's dice roll to avoid tripping
+            if (tripRoll == 1) // Likelihood of tripping ranges from 1% per segment (newborn) -> 0.4% (3000 luck) -> 0.16% (9999 luck)
+                return 5; // Static recovery time for tripping
+            else
+                return 0;
         }
     }
 
