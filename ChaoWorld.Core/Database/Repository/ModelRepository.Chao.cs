@@ -140,7 +140,7 @@ namespace ChaoWorld.Core
                     luckvalue = {chao.LuckValue},
                     luckprogress = {chao.LuckProgress}
                 where id = {chao.Id.Value};
-            "), new { tag = chao.Tag });
+            ", new { tag = chao.Tag }));
             _logger.Information($"Updated chao {chao.Id.Value} ({chao.Name}) for garden {chao.GardenId}");
         }
 

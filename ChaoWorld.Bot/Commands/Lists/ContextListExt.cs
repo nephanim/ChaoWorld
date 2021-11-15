@@ -79,7 +79,7 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Id}`] **{m.Name}** - {m.Appearance} ({m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade})";
+                    var ret = $"[`{m.Id}`] **{m.DisplayName}** - {m.Appearance} ({m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade})";
 
                     switch (opts.SortProperty)
                     {
@@ -112,7 +112,7 @@ namespace ChaoWorld.Bot
                     if (opts.IncludeCreated || opts.SortProperty == SortProperty.CreationDate)
                         profile.Append($"\n**Created on**: {m.CreatedOn.FormatZoned(zone)}");
 
-                    eb.Field(new(m.Name, profile.ToString().Truncate(1024)));
+                    eb.Field(new(m.DisplayName, profile.ToString().Truncate(1024)));
                 }
             }
         }
@@ -141,7 +141,7 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Id}`] **{m.Name}** ({m.AverageStatValue:D4})";
+                    var ret = $"[`{m.Id}`] **{m.DisplayName}** ({m.AverageStatValue:D4})";
                     return ret;
                 }));
             }

@@ -45,7 +45,7 @@ namespace ChaoWorld.Bot
                 .Footer(new($"Garden ID: {garden.Id} | Created on {garden.CreatedOn}"));
 
             eb.Field(new("Rings", string.Format("{0:n0}", garden.RingBalance), true));
-            eb.Field(new("Active Chao", activeChao != null ? activeChao.Name : "(not set)"));
+            eb.Field(new("Active Chao", activeChao != null ? activeChao.DisplayName : "(not set)"));
             eb.Field(new($"Chao ({chaoCount})", $"(see `!garden {garden.Id} list`)", true));
 
             return eb.Build();
@@ -231,7 +231,7 @@ namespace ChaoWorld.Bot
                 {
                     var chaoImageUrl = MiscUtils.GenerateThumbnailForChao(winner);
                     var winnerOwner = await ctx.GetCachedGardenOwner(winner.GardenId);
-                    eb.Field(new("Winner", $"{winner.Name} ({winnerOwner})"));
+                    eb.Field(new("Winner", $"{winner.DisplayName} ({winnerOwner})"));
                     eb.Field(new("Time", timeElapsed));
                     eb.Image(new(chaoImageUrl));
                 }
@@ -267,9 +267,9 @@ namespace ChaoWorld.Bot
                     continue;
 
                 if (chao.State == TournamentInstance.TournamentStates.Canceled)
-                    retiredList.Append($"{combatant.Name} :x:\r\n");
+                    retiredList.Append($"{combatant.DisplayName} :x:\r\n");
                 else
-                    advancingList.Append($"{combatant.Name}\r\n");
+                    advancingList.Append($"{combatant.DisplayName}\r\n");
             }
 
             eb.Field(new("Advancing", advancingList.ToString()));
@@ -297,13 +297,13 @@ namespace ChaoWorld.Bot
             if (winner != null)
             {
                 var winnerOwner = await ctx.GetCachedGardenOwner(winner.GardenId);
-                eb.Field(new("Winner", $"{winner.Name} ({winnerOwner})"));
+                eb.Field(new("Winner", $"{winner.DisplayName} ({winnerOwner})"));
             }
 
             if (loser != null)
             {
                 var loserOwner = await ctx.GetCachedGardenOwner(loser.GardenId);
-                eb.Field(new("Loser", $"{loser.Name} ({loserOwner})"));
+                eb.Field(new("Loser", $"{loser.DisplayName} ({loserOwner})"));
             }
 
             return eb.Build();

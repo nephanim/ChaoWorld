@@ -312,7 +312,7 @@ namespace ChaoWorld.Bot
                     orderedChao.Add(new RaceProgressListItem
                     {
                         ChaoId = s.ChaoId,
-                        ChaoName = allChao.FirstOrDefault(x => x.Id.Value == s.ChaoId).Name,
+                        ChaoName = allChao.FirstOrDefault(x => x.Id.Value == s.ChaoId).DisplayName,
                         Status = s.State,
                         Position = i,
                         TotalTimeSeconds = s.TotalTimeSeconds.GetValueOrDefault(0)
