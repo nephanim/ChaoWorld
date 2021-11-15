@@ -34,7 +34,7 @@ namespace ChaoWorld.Core
                 availableon = availableOn
             });
             var updatedRace = await _db.QueryFirst<Race>(query, extraSql: "returning *");
-            _logger.Information($"Updated instance {race.Id} of race {race.Name}");
+            _logger.Information($"Updated next available time for race {race.Id} ({race.Name})");
             return updatedRace;
         }
 
@@ -147,14 +147,14 @@ namespace ChaoWorld.Core
         {
             await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update races r
-                set prizerings = (
+                set prizerings = coalesce((
 	                select floor(avg(timeelapsedseconds + r.readydelayminutes*60.0)/1.5)
 	                from raceinstances i
 	                join chao c
 	                on i.winnerchaoid = c.id
 	                where i.raceid = r.id
 	                and c.gardenid != 0
-                )
+                ), 100)
             "));
             _logger.Information($"Updated prize amounts for races");
         }
@@ -204,10 +204,14 @@ namespace ChaoWorld.Core
 
         public async Task BanFromRaceInstance(RaceInstance instance, Garden garden, IChaoWorldConnection? conn = null)
         {
+            var now = SystemClock.Instance.GetCurrentInstant();
+            var expireDuration = Duration.FromMinutes(10);
+            var expiresOn = now.Plus(expireDuration);
             var query = new Query("raceinstancebans").AsInsert(new
             {
                 raceinstanceid = instance.Id,
-                gardenid = garden.Id.Value
+                gardenid = garden.Id.Value,
+                expireson = expiresOn
             });
             await _db.QueryFirst<RaceInstanceBan>(conn, query, "returning *");
             _logger.Information($"Garden {garden.Id} was banned from race instance {instance.Id} of race {instance.RaceId} for leaving the queue");

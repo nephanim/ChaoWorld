@@ -152,14 +152,14 @@ namespace ChaoWorld.Core
         {
             await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update tournaments t
-                set prizerings = (
+                set prizerings = coalesce((
 	                select floor(avg(totaltimeelapsedseconds + t.readydelayminutes*60.0)/1.5)
 	                from tournamentinstances i
 	                join chao c
 	                on i.winnerchaoid = c.id
 	                where i.tournamentid = t.id
 	                and c.gardenid != 0
-                )
+                ), 100)
             "));
             _logger.Information($"Updated prize amounts for tournaments");
         }
