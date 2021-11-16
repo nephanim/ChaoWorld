@@ -78,7 +78,7 @@ namespace ChaoWorld.Bot
                             if (targetAccount != null)
                             {
                                 // Make sure the target wants to mate (not everybody wants kids)
-                                if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to mate {father.Name} with {ctx.Author.Username}'s {mother.Name}? {ctx.Author.Username} will receive the offspring.", "Accept", user: targetAccount, matchFlag: false))
+                                if (!await ctx.PromptYesNo($"{targetAccount.Mention()} Would you like to mate {father.Name} with {ctx.Author.Username}'s {mother.Name}? {ctx.Author.Username} will receive the offspring.", "Accept", user: targetAccount, matchFlag: false))
                                     throw Errors.MatingCanceled();
                             }
                             else

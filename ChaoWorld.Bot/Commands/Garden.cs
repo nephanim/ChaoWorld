@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 
 using ChaoWorld.Core;
+using Myriad.Extensions;
 
 namespace ChaoWorld.Bot
 {
@@ -76,7 +77,7 @@ namespace ChaoWorld.Bot
                     if (await ctx.MatchUser() is { } targetAccount)
                     {
                         // Make sure the target wants it (not everybody likes charity)
-                        if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to accept {rings:n0} rings from {ctx.Author.Username}?", "Accept", user: targetAccount, matchFlag: false))
+                        if (!await ctx.PromptYesNo($"{targetAccount.Mention()} Would you like to accept {rings:n0} rings from {ctx.Author.Username}?", "Accept", user: targetAccount, matchFlag: false))
                             throw Errors.GiveItemCanceled();
 
                         var targetGarden = await _repo.GetGardenByAccount(targetAccount.Id); // Make sure the target has a garden too and we can read it...
