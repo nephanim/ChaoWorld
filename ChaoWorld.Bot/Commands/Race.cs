@@ -447,9 +447,16 @@ namespace ChaoWorld.Bot
                     {
                         // Check where our elevation ends so we keep flying in the next segment (or skip some climbing)
                         var endElevation = CalculateFlightEndElevation(fallDistance, template.TerrainDistance, flyDistance);
+                        
                         segment.EndElevation = endElevation >= template.EndElevation
                             ? endElevation
                             : template.EndElevation;
+                        await _repo.LogMessage($"FLIGHT CALCULATION for {chao.Id.Value} ({chao.Name}): " +
+                            $"Fall Distance {fallDistance} / " +
+                            $"Terrain Distance: {template.TerrainDistance} / " +
+                            $"Fly Distance: {flyDistance} / " +
+                            $"End Elevation: {endElevation} / " +
+                            $"Segment End Elevation: {segment.EndElevation}");
                         flyDistance = template.TerrainDistance; // Set the actual distance flown based on the size of the segment 
                         segment.State = RaceInstanceChaoSegment.SegmentStates.Completed; // We already know we finished the segment since there's no stamina consumption while flying
                         segment.EndStamina = segment.StartStamina;
