@@ -605,16 +605,16 @@ namespace ChaoWorld.Core
                 if (firstParent.FirstColor == Chao.Colors.Normal && firstParent.SecondColor == Chao.Colors.Normal)
                     FirstColor = Chao.Colors.Normal;
                 else
-                    FirstColor = new Random().Next(0, 1) == 0 ? firstParent.FirstColor : firstParent.SecondColor;
+                    FirstColor = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(),0)).Next(0, 1) == 0 ? firstParent.FirstColor : firstParent.SecondColor;
                 if (secondParent.FirstColor == Chao.Colors.Normal && secondParent.SecondColor == Chao.Colors.Normal)
                     SecondColor = Chao.Colors.Normal;
                 else
-                    SecondColor = new Random().Next(0, 1) == 0 ? secondParent.FirstColor : secondParent.SecondColor;
+                    SecondColor = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstColor : secondParent.SecondColor;
 
                 if (FirstColor == Chao.Colors.Normal && SecondColor == Chao.Colors.Normal)
                     chao.PrimaryColor = Chao.Colors.Normal;
                 else
-                    chao.PrimaryColor = new Random().Next(0, 1) == 0 ? FirstColor : SecondColor;
+                    chao.PrimaryColor = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstColor : SecondColor;
 
                 // If either gene is shiny, that's what the parent passes on
                 // Likewise, if either inherited gene is shiny, the chao will be too
@@ -624,34 +624,34 @@ namespace ChaoWorld.Core
                 chao.IsShiny = FirstShiny || SecondShiny;
 
                 // Tone alleles are equally dominant, so we can take either
-                FirstTwoTone = new Random().Next(0, 1) == 0 ? firstParent.FirstTwoTone : firstParent.SecondTwoTone;
-                SecondTwoTone = new Random().Next(0, 1) == 0 ? secondParent.FirstTwoTone : secondParent.SecondTwoTone;
+                FirstTwoTone = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? firstParent.FirstTwoTone : firstParent.SecondTwoTone;
+                SecondTwoTone = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstTwoTone : secondParent.SecondTwoTone;
 
-                chao.IsTwoTone = new Random().Next(0, 1) == 0 ? FirstTwoTone : SecondTwoTone;
+                chao.IsTwoTone = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstTwoTone : SecondTwoTone;
 
                 // Stat grades are also equally dominant
-                FirstSwimGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstSwimGrade : firstParent.SecondSwimGrade;
-                SecondSwimGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstSwimGrade : secondParent.SecondSwimGrade;
-                FirstFlyGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstFlyGrade : firstParent.SecondFlyGrade;
-                SecondFlyGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstFlyGrade : secondParent.SecondFlyGrade;
-                FirstRunGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstRunGrade : firstParent.SecondRunGrade;
-                SecondRunGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstRunGrade : secondParent.SecondRunGrade;
-                FirstPowerGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstPowerGrade : firstParent.SecondPowerGrade;
-                SecondPowerGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstPowerGrade : secondParent.SecondPowerGrade;
-                FirstStaminaGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstStaminaGrade : firstParent.SecondStaminaGrade;
-                SecondStaminaGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstStaminaGrade : secondParent.SecondStaminaGrade;
-                FirstIntelligenceGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstIntelligenceGrade : firstParent.SecondIntelligenceGrade;
-                SecondIntelligenceGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstIntelligenceGrade : secondParent.SecondIntelligenceGrade;
-                FirstLuckGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstLuckGrade : firstParent.SecondLuckGrade;
-                SecondLuckGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstLuckGrade : secondParent.SecondLuckGrade;
+                FirstSwimGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? firstParent.FirstSwimGrade : firstParent.SecondSwimGrade;
+                SecondSwimGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstSwimGrade : secondParent.SecondSwimGrade;
+                FirstFlyGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? firstParent.FirstFlyGrade : firstParent.SecondFlyGrade;
+                SecondFlyGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstFlyGrade : secondParent.SecondFlyGrade;
+                FirstRunGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? firstParent.FirstRunGrade : firstParent.SecondRunGrade;
+                SecondRunGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstRunGrade : secondParent.SecondRunGrade;
+                FirstPowerGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? firstParent.FirstPowerGrade : firstParent.SecondPowerGrade;
+                SecondPowerGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstPowerGrade : secondParent.SecondPowerGrade;
+                FirstStaminaGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? firstParent.FirstStaminaGrade : firstParent.SecondStaminaGrade;
+                SecondStaminaGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstStaminaGrade : secondParent.SecondStaminaGrade;
+                FirstIntelligenceGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? firstParent.FirstIntelligenceGrade : firstParent.SecondIntelligenceGrade;
+                SecondIntelligenceGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstIntelligenceGrade : secondParent.SecondIntelligenceGrade;
+                FirstLuckGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? firstParent.FirstLuckGrade : firstParent.SecondLuckGrade;
+                SecondLuckGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? secondParent.FirstLuckGrade : secondParent.SecondLuckGrade;
 
-                chao.SwimGrade = new Random().Next(0, 1) == 0 ? FirstSwimGrade : SecondSwimGrade;
-                chao.FlyGrade = new Random().Next(0, 1) == 0 ? FirstFlyGrade : SecondFlyGrade;
-                chao.RunGrade = new Random().Next(0, 1) == 0 ? FirstRunGrade : SecondRunGrade;
-                chao.PowerGrade = new Random().Next(0, 1) == 0 ? FirstPowerGrade : SecondPowerGrade;
-                chao.StaminaGrade = new Random().Next(0, 1) == 0 ? FirstStaminaGrade : SecondStaminaGrade;
-                chao.IntelligenceGrade = new Random().Next(0, 1) == 0 ? FirstIntelligenceGrade : SecondIntelligenceGrade;
-                chao.LuckGrade = new Random().Next(0, 1) == 0 ? FirstLuckGrade : SecondLuckGrade;
+                chao.SwimGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstSwimGrade : SecondSwimGrade;
+                chao.FlyGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstFlyGrade : SecondFlyGrade;
+                chao.RunGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstRunGrade : SecondRunGrade;
+                chao.PowerGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstPowerGrade : SecondPowerGrade;
+                chao.StaminaGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstStaminaGrade : SecondStaminaGrade;
+                chao.IntelligenceGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstIntelligenceGrade : SecondIntelligenceGrade;
+                chao.LuckGrade = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0)).Next(0, 1) == 0 ? FirstLuckGrade : SecondLuckGrade;
             }
             return chao;
         }
