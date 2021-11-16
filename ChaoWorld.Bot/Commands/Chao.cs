@@ -12,6 +12,7 @@ using Myriad.Builders;
 using Newtonsoft.Json.Linq;
 
 using ChaoWorld.Core;
+using Myriad.Extensions;
 
 namespace ChaoWorld.Bot
 {
@@ -72,11 +73,18 @@ namespace ChaoWorld.Bot
                             // This is someone else's chao, so we need to get their permission first
                             var fatherGarden = await _repo.GetGarden(father.GardenId.Value);
                             var accounts = await _repo.GetGardenAccounts(fatherGarden.Id);
-                            ctx.Cache.TryGetUser(accounts.FirstOrDefault(), out Myriad.Types.User targetAccount);
+                            var targetAccount = await ctx.Cache.GetOrFetchUser(ctx.Rest, accounts.FirstOrDefault());
 
-                            // Make sure the target wants to mate (not everybody wants kids)
-                            if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to mate {father.Name} with {ctx.Author.Username}'s {mother.Name}? {ctx.Author.Username} will receive the offspring.", "Accept", user: targetAccount, matchFlag: false))
-                                throw Errors.GiveItemCanceled();
+                            if (targetAccount != null)
+                            {
+                                // Make sure the target wants to mate (not everybody wants kids)
+                                if (!await ctx.PromptYesNo($"{targetAccount.NameAndMention()} Would you like to mate {father.Name} with {ctx.Author.Username}'s {mother.Name}? {ctx.Author.Username} will receive the offspring.", "Accept", user: targetAccount, matchFlag: false))
+                                    throw Errors.MatingCanceled();
+                            }
+                            else
+                            {
+                                throw Errors.MatingCannotFindUser();
+                            }
                         }
 
                         // At this point we're breeding within our own garden or at least have permission from the owner of the other chao

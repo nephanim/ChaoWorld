@@ -210,7 +210,7 @@ namespace ChaoWorld.Bot
             // Commands that have a chao target (eg. !chao <chao> delete)
             if (ctx.Match("rename", "name", "changename", "setname"))
                 await ctx.Execute<ChaoEdit>(ChaoRename, m => m.Name(ctx, target));
-            if (ctx.Match("tag", "settag", "emoji", "setemoji"))
+            else if (ctx.Match("tag", "settag", "emoji", "setemoji"))
                 await ctx.Execute<ChaoEdit>(ChaoTag, m => m.Tag(ctx, target));
             else if (ctx.Match("delete", "remove", "destroy", "erase", "yeet", "depart", "goodbye", "farewell"))
                 await ctx.Execute<ChaoEdit>(ChaoGoodbye, m => m.Delete(ctx, target));
