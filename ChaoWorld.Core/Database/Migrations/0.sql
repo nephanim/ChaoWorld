@@ -67,3 +67,30 @@ create table if not exists chao
     luckprogress integer not null default 0,
     luckvalue integer not null default 0
 );
+
+create table if not exists genes
+(
+	chaoid bigserial not null references chao (id) on delete cascade,
+	firstparentid bigint,
+	secondparentid bigint,
+	firstcolor int not null,
+	secondcolor int not null,
+	firstshiny bool not null,
+	secondshiny bool not null,
+	firsttwotone bool not null,
+	secondtwotone bool not null,
+	firstswimgrade int not null,
+	secondswimgrade int not null,
+	firstflygrade int not null,
+	secondflygrade int not null,
+	firstrungrade int not null,
+	secondrungrade int not null,
+	firstpowergrade int not null,
+	secondpowergrade int not null,
+	firststaminagrade int not null,
+	secondstaminagrade int not null,
+	firstintelligencegrade int not null,
+	secondintelligencegrade int not null,
+	firstluckgrade int not null,
+	secondluckgrade int not null
+);

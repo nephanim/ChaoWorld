@@ -525,6 +525,153 @@ namespace ChaoWorld.Core
         }
     }
 
+    public class ChaoGenes
+    {
+        public long ChaoId { get; set; }
+        public long? FirstParentId { get; set; }
+        public long? SecondParentId { get; set; }
+        public int FirstColorId { get; set; }
+        public Chao.Colors FirstColor
+        {
+            get
+            {
+                return (Chao.Colors)FirstColorId;
+            }
+            set
+            {
+                FirstColorId = (int)value;
+            }
+        }
+        public int SecondColorId { get; set; }
+        public Chao.Colors SecondColor
+        {
+            get
+            {
+                return (Chao.Colors)SecondColorId;
+            }
+            set
+            {
+                SecondColorId = (int)value;
+            }
+        }
+        public bool FirstShiny { get; set; }
+        public bool SecondShiny { get; set; }
+        public bool FirstTwoTone { get; set; }
+        public bool SecondTwoTone { get; set; }
+        public Chao.StatGrades FirstSwimGrade { get; set; }
+        public Chao.StatGrades SecondSwimGrade { get; set; }
+        public Chao.StatGrades FirstFlyGrade { get; set; }
+        public Chao.StatGrades SecondFlyGrade { get; set; }
+        public Chao.StatGrades FirstRunGrade { get; set; }
+        public Chao.StatGrades SecondRunGrade { get; set; }
+        public Chao.StatGrades FirstPowerGrade { get; set; }
+        public Chao.StatGrades SecondPowerGrade { get; set; }
+        public Chao.StatGrades FirstStaminaGrade { get; set; }
+        public Chao.StatGrades SecondStaminaGrade { get; set; }
+        public Chao.StatGrades FirstIntelligenceGrade { get; set; }
+        public Chao.StatGrades SecondIntelligenceGrade { get; set; }
+        public Chao.StatGrades FirstLuckGrade { get; set; }
+        public Chao.StatGrades SecondLuckGrade { get; set; }
+
+        public Chao InitializeFromParents(ChaoGenes firstParent, ChaoGenes secondParent)
+        {
+            // We will modify the genes, but also generate a chao for the caller based on those genes
+            var chao = new Chao();
+            if (firstParent == null || secondParent == null)
+            {
+                // Treat this as a default normal chao since we don't know anything
+                chao.Initialize();
+                FirstColor = SecondColor = chao.PrimaryColor;
+                FirstShiny = SecondShiny = chao.IsShiny;
+                FirstTwoTone = SecondTwoTone = chao.IsTwoTone;
+                FirstSwimGrade = SecondSwimGrade = chao.SwimGrade;
+                FirstFlyGrade = SecondFlyGrade = chao.FlyGrade;
+                FirstRunGrade = SecondRunGrade = chao.RunGrade;
+                FirstPowerGrade = SecondPowerGrade = chao.PowerGrade;
+                FirstStaminaGrade = SecondStaminaGrade = chao.StaminaGrade;
+                FirstIntelligenceGrade = SecondIntelligenceGrade = chao.IntelligenceGrade;
+                FirstLuckGrade = SecondLuckGrade = chao.LuckGrade;
+            }
+            else
+            {
+                // Copy over the parents' IDs
+                FirstParentId = firstParent.ChaoId;
+                SecondParentId = secondParent.ChaoId;
+
+                // TODO: When we start allowing color mixes, implement that here (chance to set a SecondaryColor)
+                // Colors except normal have equal dominance. The normal color gene is recessive.
+                if (firstParent.FirstColor == Chao.Colors.Normal && firstParent.SecondColor == Chao.Colors.Normal)
+                    FirstColor = Chao.Colors.Normal;
+                else
+                    FirstColor = new Random().Next(0, 1) == 0 ? firstParent.FirstColor : firstParent.SecondColor;
+                if (secondParent.FirstColor == Chao.Colors.Normal && secondParent.SecondColor == Chao.Colors.Normal)
+                    SecondColor = Chao.Colors.Normal;
+                else
+                    SecondColor = new Random().Next(0, 1) == 0 ? secondParent.FirstColor : secondParent.SecondColor;
+
+                if (FirstColor == Chao.Colors.Normal && SecondColor == Chao.Colors.Normal)
+                    chao.PrimaryColor = Chao.Colors.Normal;
+                else
+                    chao.PrimaryColor = new Random().Next(0, 1) == 0 ? FirstColor : SecondColor;
+
+                // If either gene is shiny, that's what the parent passes on
+                // Likewise, if either inherited gene is shiny, the chao will be too
+                FirstShiny = firstParent.FirstShiny || firstParent.SecondShiny;
+                SecondShiny = secondParent.FirstShiny || secondParent.SecondShiny;
+
+                chao.IsShiny = FirstShiny || SecondShiny;
+
+                // Tone alleles are equally dominant, so we can take either
+                FirstTwoTone = new Random().Next(0, 1) == 0 ? firstParent.FirstTwoTone : firstParent.SecondTwoTone;
+                SecondTwoTone = new Random().Next(0, 1) == 0 ? secondParent.FirstTwoTone : secondParent.SecondTwoTone;
+
+                chao.IsTwoTone = new Random().Next(0, 1) == 0 ? FirstTwoTone : SecondTwoTone;
+
+                // Stat grades are also equally dominant
+                FirstSwimGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstSwimGrade : firstParent.SecondSwimGrade;
+                SecondSwimGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstSwimGrade : secondParent.SecondSwimGrade;
+                FirstFlyGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstFlyGrade : firstParent.SecondFlyGrade;
+                SecondFlyGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstFlyGrade : secondParent.SecondFlyGrade;
+                FirstRunGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstRunGrade : firstParent.SecondRunGrade;
+                SecondRunGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstRunGrade : secondParent.SecondRunGrade;
+                FirstPowerGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstPowerGrade : firstParent.SecondPowerGrade;
+                SecondPowerGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstPowerGrade : secondParent.SecondPowerGrade;
+                FirstStaminaGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstStaminaGrade : firstParent.SecondStaminaGrade;
+                SecondStaminaGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstStaminaGrade : secondParent.SecondStaminaGrade;
+                FirstIntelligenceGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstIntelligenceGrade : firstParent.SecondIntelligenceGrade;
+                SecondIntelligenceGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstIntelligenceGrade : secondParent.SecondIntelligenceGrade;
+                FirstLuckGrade = new Random().Next(0, 1) == 0 ? firstParent.FirstLuckGrade : firstParent.SecondLuckGrade;
+                SecondLuckGrade = new Random().Next(0, 1) == 0 ? secondParent.FirstLuckGrade : secondParent.SecondLuckGrade;
+
+                chao.SwimGrade = new Random().Next(0, 1) == 0 ? FirstSwimGrade : SecondSwimGrade;
+                chao.FlyGrade = new Random().Next(0, 1) == 0 ? FirstFlyGrade : SecondFlyGrade;
+                chao.RunGrade = new Random().Next(0, 1) == 0 ? FirstRunGrade : SecondRunGrade;
+                chao.PowerGrade = new Random().Next(0, 1) == 0 ? FirstPowerGrade : SecondPowerGrade;
+                chao.StaminaGrade = new Random().Next(0, 1) == 0 ? FirstStaminaGrade : SecondStaminaGrade;
+                chao.IntelligenceGrade = new Random().Next(0, 1) == 0 ? FirstIntelligenceGrade : SecondIntelligenceGrade;
+                chao.LuckGrade = new Random().Next(0, 1) == 0 ? FirstLuckGrade : SecondLuckGrade;
+            }
+            return chao;
+        }
+
+        public void InitializeFromChao(Chao chao)
+        {
+            // In cases where a chao doesn't have parents (e.g. default, hatched from a market egg) we can just set their genes this way
+            ChaoId = chao.Id.Value;
+            FirstColor = chao.PrimaryColor;
+            SecondColor = chao.SecondaryColor.GetValueOrDefault(chao.PrimaryColor);
+            FirstShiny = SecondShiny = chao.IsShiny;
+            FirstTwoTone = SecondTwoTone = chao.IsTwoTone;
+            FirstSwimGrade = SecondSwimGrade = chao.SwimGrade;
+            FirstFlyGrade = SecondFlyGrade = chao.FlyGrade;
+            FirstRunGrade = SecondRunGrade = chao.RunGrade;
+            FirstPowerGrade = SecondPowerGrade = chao.PowerGrade;
+            FirstStaminaGrade = SecondStaminaGrade = chao.StaminaGrade;
+            FirstIntelligenceGrade = SecondIntelligenceGrade = chao.IntelligenceGrade;
+            FirstLuckGrade = SecondLuckGrade = chao.LuckGrade;
+        }
+    }
+
     public class Affection
     {
         public long ChaoId { get; set; }

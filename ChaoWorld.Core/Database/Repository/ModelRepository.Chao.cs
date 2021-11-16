@@ -87,6 +87,39 @@ namespace ChaoWorld.Core
             return chao;
         }
 
+        public async Task<ChaoGenes> CreateChaoGenes(ChaoGenes genes, IChaoWorldConnection? conn = null)
+        {
+            var query = new Query("genes").AsInsert(new
+            {
+                chaoid = genes.ChaoId,
+                firstparentid = genes.FirstParentId,
+                secondparentid = genes.SecondParentId,
+                firstcolorid = genes.FirstColorId,
+                secondcolorid = genes.SecondColorId,
+                firstshiny = genes.FirstShiny,
+                secondshiny = genes.SecondShiny,
+                firsttwotone = genes.FirstTwoTone,
+                secondtwotone = genes.SecondTwoTone,
+                firstswimgrade = genes.FirstSwimGrade,
+                secondswimgrade = genes.SecondSwimGrade,
+                firstflygrade = genes.FirstFlyGrade,
+                secondflygrade = genes.SecondFlyGrade,
+                firstrungrade = genes.FirstRunGrade,
+                secondrungrade = genes.SecondRunGrade,
+                firstpowergrade = genes.FirstPowerGrade,
+                secondpowergrade = genes.SecondPowerGrade,
+                firststaminagrade = genes.FirstStaminaGrade,
+                secondstaminagrade = genes.SecondStaminaGrade,
+                firstintelligencegrade = genes.FirstIntelligenceGrade,
+                secondintelligencegrade = genes.SecondIntelligenceGrade,
+                firstluckgrade = genes.FirstLuckGrade,
+                secondluckgrade = genes.SecondLuckGrade
+            });
+            genes = await _db.QueryFirst<ChaoGenes>(conn, query, "returning *");
+            _logger.Information($"Recorded genes for {genes.ChaoId}");
+            return genes;
+        }
+
         public async Task UpdateChao(Chao chao, IChaoWorldConnection? conn = null)
         {
             var firstEvolution = chao.FirstEvolutionType.HasValue

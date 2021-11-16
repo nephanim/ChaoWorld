@@ -28,12 +28,20 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckNoGarden();
 
+            // Set up the garden and account
             var garden = await _repo.CreateGarden();
             await _repo.AddAccount(garden.Id, ctx.Author.Id);
 
+            // Give them a starter chao
             var chao = new Core.Chao();
             chao.Initialize();
-            await _repo.CreateChao(garden.Id, chao);
+            chao = await _repo.CreateChao(garden.Id, chao);
+
+            // Record the chao's genes for later breeding purposes
+            var genes = new Core.ChaoGenes();
+            genes.InitializeFromParents(null, null);
+            genes.ChaoId = chao.Id.Value;
+            await _repo.CreateChaoGenes(genes);
 
             // TODO: better message, perhaps embed like in groups?
             await ctx.Reply($"{Emojis.Success} Your garden has been created. Type `!garden` to view it, and type `!garden help` for more information about commands you can use now.");

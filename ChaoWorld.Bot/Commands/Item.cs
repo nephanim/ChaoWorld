@@ -83,9 +83,17 @@ namespace ChaoWorld.Bot
         {
             await ConfirmUseItem(ctx, item, chao: null, quantity: 1);
 
+            // Make the chao!
             var chao = new Core.Chao();
             chao.Initialize(item.PrimaryColor.GetValueOrDefault(Core.Chao.Colors.Normal), item.SecondaryColor, item.IsShiny.GetValueOrDefault(false), item.IsTwoTone.GetValueOrDefault(true));
             chao = await _repo.CreateChao(ctx.Garden.Id, chao);
+
+            // Record their genes
+            var genes = new Core.ChaoGenes();
+            genes.InitializeFromChao(chao);
+            await _repo.CreateChaoGenes(genes);
+
+            await ctx.Reply(embed: await _embeds.CreateChaoEmbed(ctx, ctx.Garden, chao));
             await ctx.Reply($"{Emojis.Success} {item.Name} hatched! Your chao (ID: `{chao.Id}`) is currently unnamed. Use `!chao {chao.Id} rename {{new name}}` to give it a name.");
             return true;
         }

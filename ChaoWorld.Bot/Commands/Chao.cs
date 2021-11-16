@@ -30,20 +30,6 @@ namespace ChaoWorld.Bot
             _client = client;
         }
 
-        public async Task NewChao(Context ctx)
-        {
-            if (ctx.Garden == null) throw Errors.NoGardenError;
-            await using var conn = await _db.Obtain();
-
-            // Create the chao
-            var chaoTemplate = new Core.Chao();
-            chaoTemplate.Initialize();
-            var chao = await _repo.CreateChao(ctx.Garden.Id, chaoTemplate);
-
-            // Send confirmation
-            await ctx.Reply($"{Emojis.Success} Chao {chao.Id} registered!");
-        }
-
         public async Task ViewChao(Context ctx, Core.Chao target)
         {
             var garden = await _repo.GetGarden(target.GardenId.Value);
