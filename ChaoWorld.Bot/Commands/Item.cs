@@ -124,7 +124,7 @@ namespace ChaoWorld.Bot
                         break;
                     case ItemBase.ItemEffects.Mushroom:
                         var random = new Random();
-                        if (random.Next(1, 3) == 1) {
+                        if (random.Next(1, 4) == 1) {
                             chao.RaiseLuck(statIncreaseAmount);
                             chao.RaiseStamina(statIncreaseAmount);
                             effect = " Your chao's luck improved.";

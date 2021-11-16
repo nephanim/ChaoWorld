@@ -11,7 +11,7 @@ namespace ChaoWorld.Core
         {
             var random = new Random();
             var roll = random.Next(1, 100);
-            if (roll > 95)
+            if (roll > 98)
                 return Chao.StatGrades.S;
             if (roll > 85)
                 return Chao.StatGrades.A;

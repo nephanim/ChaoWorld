@@ -514,7 +514,7 @@ namespace ChaoWorld.Bot
             // Evenly matched -- ~1/3 of power as damage
             // Strong attacker, weak defender -- ~1/2 of power as damage, capping at 1500
             // Additional variation of +/- 10%
-            var randomFactor = new Random().Next(90, 110) / 100.0;
+            var randomFactor = new Random().Next(90, 111) / 100.0;
             var damage = (int)Math.Min(1500, (
                     100 + attacker.PowerValue /
                         (2.0 + (defender.SwimValue / (1.0 + attacker.PowerValue))) * randomFactor
@@ -531,7 +531,7 @@ namespace ChaoWorld.Bot
             // Evenly matched -- 15
             // Strong attacker, weak defender -- 100 (instant ringout if the hit lands)
             // Additional variation of +/- 10%
-            var randomFactor = new Random().Next(90, 110) / 100.0;
+            var randomFactor = new Random().Next(90, 111) / 100.0;
             var knockback = (int)Math.Min(100, (
                     5.0 + (attacker.PowerValue / (1.0 + defender.FlyValue)) * 10.0 * randomFactor
                 ));
@@ -543,8 +543,8 @@ namespace ChaoWorld.Bot
         private bool CheckDodge(Core.Chao attacker, Core.Chao defender)
         {
             // First see if we're just lucky
-            var attackingLuckRoll = new Random().Next(1, attacker.LuckValue + 30);
-            var defendingLuckRoll = new Random().Next(1, defender.LuckValue + 30);
+            var attackingLuckRoll = new Random().Next(1, attacker.LuckValue + 31);
+            var defendingLuckRoll = new Random().Next(1, defender.LuckValue + 31);
             if (defendingLuckRoll > attackingLuckRoll * 2)
             {
                 defender.RaiseLuck(30); // Successful dodge by luck awards stat progress
@@ -552,8 +552,8 @@ namespace ChaoWorld.Bot
             }
 
             // Then see if our flying beats their running
-            var attackingRunRoll = new Random().Next(1, attacker.RunValue + 30);
-            var defendingFlyRoll = new Random().Next(1, defender.FlyValue + 30);
+            var attackingRunRoll = new Random().Next(1, attacker.RunValue + 31);
+            var defendingFlyRoll = new Random().Next(1, defender.FlyValue + 31);
             if (defendingFlyRoll > attackingRunRoll * 2)
             {
                 defender.RaiseFly(30); // Successful dodge by flying awards stat progress
@@ -599,7 +599,7 @@ namespace ChaoWorld.Bot
                 return $"{attacker.Emoji} {attacker.Chao.Name} brings {defender.Chao.Name} down with a final blow, but they're seeing stars.";
             if (attacker.RemainingHealth >= GetStartingHealthForChao(attacker.Chao))
                 return $"{attacker.Emoji} {attacker.Chao.Name} finishes the opponent off without breaking a sweat.";
-            switch(new Random().Next(1, 3))
+            switch(new Random().Next(1, 4))
             {
                 case 1:
                     return $"{attacker.Emoji} {attacker.Chao.Name} strikes the finishing blow. {defender.Emoji} {defender.Chao.Name} is down for the count.";
@@ -617,7 +617,7 @@ namespace ChaoWorld.Bot
                 return $"{attacker.Emoji} {attacker.Chao.Name} effortlessly flings {defender.Emoji} {defender.Chao.Name} from the ring. They didn't stand a chance.";
             if (GetKnockback(attacker.Chao, defender.Chao) <= 3)
                 return $"{attacker.Emoji} {attacker.Chao.Name} and {defender.Emoji} {defender.Chao.Name} exchange blows on the very edge of the ring. {defender.Emoji} {defender.Chao.Name} accidentally dodges out of bounds.";
-            switch (new Random().Next(1, 4))
+            switch (new Random().Next(1, 5))
             {
                 case 1:
                     return $"{attacker.Emoji} {attacker.Chao.Name} lands a powerful hit, launching {defender.Emoji} {defender.Chao.Name} out of the ring.";
@@ -633,7 +633,7 @@ namespace ChaoWorld.Bot
 
         private string GetNormalHitMessage(TournamentCombatant attacker, TournamentCombatant defender)
         {
-            switch (new Random().Next(1, 7))
+            switch (new Random().Next(1, 8))
             {
                 case 1:
                     return $"{attacker.Emoji} {attacker.Chao.Name} throws a punch at {defender.Emoji} {defender.Chao.Name}.";
@@ -655,7 +655,7 @@ namespace ChaoWorld.Bot
 
         private string GetKnockdownMessage(TournamentCombatant attacker, TournamentCombatant defender)
         {
-            switch (new Random().Next(1, 4))
+            switch (new Random().Next(1, 5))
             {
                 case 1:
                     return $"{attacker.Emoji} {attacker.Chao.Name} sent {defender.Emoji} {defender.Chao.Name} to their knees. {defender.Emoji} {defender.Chao.Name} is catching their breath.";
@@ -671,7 +671,7 @@ namespace ChaoWorld.Bot
 
         private string GetNormalDodgeMessage(TournamentCombatant attacker, TournamentCombatant defender)
         {
-            switch (new Random().Next(1, 4))
+            switch (new Random().Next(1, 5))
             {
                 case 1:
                     return $"{defender.Emoji} {defender.Chao.Name} expertly evades {attacker.Emoji} {attacker.Chao.Name}'s charge.";
@@ -689,7 +689,7 @@ namespace ChaoWorld.Bot
         {
             if (defender.RemainingZeal >= 100)
                 return $"{defender.Emoji} {defender.Chao.Name} seems to have total control of the situation. {attacker.Emoji} {attacker.Chao.Name} is out of breath.";
-            switch (new Random().Next(1, 4))
+            switch (new Random().Next(1, 5))
             {
                 case 1:
                     return $"{defender.Emoji} {defender.Chao.Name} dodges {attacker.Emoji} {attacker.Chao.Name}'s attack, and {attacker.Emoji} {attacker.Chao.Name} loses their balance.";
