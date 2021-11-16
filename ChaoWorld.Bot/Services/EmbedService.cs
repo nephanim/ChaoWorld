@@ -61,6 +61,7 @@ namespace ChaoWorld.Bot
             var totalRetires = raceStats != null ? string.Format("{0:n0}", raceStats.TotalRetires) : "0";
             var winRate = raceStats != null ? raceStats.WinRate.ToString("N2") : "0";
             var retireRate = raceStats != null ? raceStats.RetireRate.ToString("N2") : "0";
+            var isFertile = chao.IsFertile ? "Yes" : "No";
             var imageUrl = MiscUtils.GenerateThumbnailForChao(chao);
 
             var eb = new EmbedBuilder()
@@ -76,7 +77,8 @@ namespace ChaoWorld.Bot
                 $"Current Age: {chao.CurrentAge}\r\n" +
                 $"Total Age: {chao.TotalAge}\r\n" +
                 $"Reincarnations: {chao.Reincarnations}\r\n" +
-                $"Chaos Factor: {Math.Floor(chao.ReincarnationStatFactor*100)}%"
+                $"Chaos Factor: {Math.Floor(chao.ReincarnationStatFactor*100)}%" +
+                (chao.EvolutionState != Core.Chao.EvolutionStates.Child ? $"\r\nFertile: {isFertile}" : string.Empty)
             ));
             eb.Field(new($"__Development:__",
                 $"Affinity: {chao.GetEffectiveAbilityType().GetDescription()}\r\n" +

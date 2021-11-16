@@ -60,6 +60,7 @@ namespace ChaoWorld.Core
         public bool IsShiny { get; set; }
         public bool IsTwoTone { get; set; }
         public bool IsReversed { get; set; }
+        public bool IsFertile { get; set; }
 
         //Development stats
         public int CurrentAge
@@ -495,6 +496,7 @@ namespace ChaoWorld.Core
             Reincarnations++;
             RebirthOn = SystemClock.Instance.GetCurrentInstant();
             EvolutionState = EvolutionStates.Child;
+            IsFertile = false;
             Alignment = Alignments.Neutral;
             AlignmentValue = 0;
             FirstEvolutionType = null;
@@ -577,10 +579,10 @@ namespace ChaoWorld.Core
         {
             // We will modify the genes, but also generate a chao for the caller based on those genes
             var chao = new Chao();
+            chao.Initialize();
             if (firstParent == null || secondParent == null)
             {
                 // Treat this as a default normal chao since we don't know anything
-                chao.Initialize();
                 FirstColor = SecondColor = chao.PrimaryColor;
                 FirstShiny = SecondShiny = chao.IsShiny;
                 FirstTwoTone = SecondTwoTone = chao.IsTwoTone;

@@ -22,6 +22,7 @@ namespace ChaoWorld.Bot
         public static Command ChaoCuddle = new Command("chao cuddle", "chao {id/name} cuddle", "Cuddles the specified chao");
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
         public static Command ChaoTag = new Command("chao tag", "chao {id/name} tag {emoji}", "Changes a chao's tag");
+        public static Command ChaoBreed = new Command("chao breed", "chao {id/name} {id/name}", "Breeds the specified chao with one another (first chao must belong to your garden and must have eaten a heart fruit, and breeding between gardens requires user approval)");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
         public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order, with optional filters");
         public static Command RaceInfo = new Command("race", "race {id/name}", "Looks up information about a race using either the name or ID");
@@ -53,7 +54,7 @@ namespace ChaoWorld.Bot
         };
 
         public static Command[] ChaoCommands = {
-            ChaoInfo, ChaoRename, ChaoGoodbye, ChaoPet, ChaoRock, ChaoCuddle, ChaoRankings
+            ChaoInfo, ChaoRename, ChaoGoodbye, ChaoPet, ChaoRock, ChaoCuddle, ChaoRankings, ChaoBreed
         };
 
         public static Command[] RaceCommands =
@@ -182,17 +183,22 @@ namespace ChaoWorld.Bot
                 if (await ctx.MatchChao() is Core.Chao petTarget)
                     await ctx.Execute<Chao>(ChaoPet, m => m.PetChao(ctx, petTarget));
                 else
-                    await PrintCommandNotFoundError(ctx, ChaoPet);
+                    await PrintCommandExpectedError(ctx, ChaoPet);
             else if (ctx.Match("rock"))
                 if (await ctx.MatchChao() is Core.Chao rockTarget)
                     await ctx.Execute<Chao>(ChaoRock, m => m.RockChao(ctx, rockTarget));
                 else
-                    await PrintCommandNotFoundError(ctx, ChaoRock);
+                    await PrintCommandExpectedError(ctx, ChaoRock);
             else if (ctx.Match("cuddle"))
                 if (await ctx.MatchChao() is Core.Chao cuddleTarget)
                     await ctx.Execute<Chao>(ChaoCuddle, m => m.CuddleChao(ctx, cuddleTarget));
                 else
-                    await PrintCommandNotFoundError(ctx, ChaoCuddle);
+                    await PrintCommandExpectedError(ctx, ChaoCuddle);
+            else if (ctx.Match("breed", "mate"))
+                if (await ctx.MatchChao() is Core.Chao breedTarget)
+                    await ctx.Execute<Chao>(ChaoBreed, m => m.Breed(ctx, breedTarget));
+                else
+                    await PrintCommandExpectedError(ctx, ChaoBreed);
             else if (await ctx.MatchChao() is Core.Chao target)
                 await HandleChaoCommandTargeted(ctx, target);
             else
@@ -214,6 +220,8 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<Chao>(ChaoRock, m => m.RockChao(ctx, target));
             else if (ctx.Match("cuddle"))
                 await ctx.Execute<Chao>(ChaoCuddle, m => m.CuddleChao(ctx, target));
+            else if (ctx.Match("breed", "mate"))
+                await ctx.Execute<Chao>(ChaoBreed, m => m.Breed(ctx, target));
             else if (!ctx.HasNext()) // Bare command
                 await ctx.Execute<Chao>(ChaoInfo, m => m.ViewChao(ctx, target));
             else

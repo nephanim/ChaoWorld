@@ -241,6 +241,14 @@ namespace ChaoWorld.Bot
                         chao.LuckGrade = Core.Chao.StatGrades.X;
                         effect = " Chaos energy unlocks your chao's hidden fortune.";
                         break;
+                    case ItemBase.ItemEffects.AllowMating:
+                        if (chao.EvolutionState == Core.Chao.EvolutionStates.Child || chao.CurrentAge < 1)
+                            return false;
+                        if (quantity > 1)
+                            return false;
+                        chao.IsFertile = true;
+                        effect = $" Flowers sprout in a ring around {chao.Name}. Your chao is interested in mating.";
+                        break;
                     default:
                         return false; // Clearly we don't know what to do with this
                 }

@@ -87,6 +87,12 @@ namespace ChaoWorld.Core
             return chao;
         }
 
+        public Task<ChaoGenes?> GetChaoGenes(long chaoId)
+        {
+            var query = new Query("genes").Where("chaoid", chaoId);
+            return _db.QueryFirst<ChaoGenes?>(query);
+        }
+
         public async Task<ChaoGenes> CreateChaoGenes(ChaoGenes genes, IChaoWorldConnection? conn = null)
         {
             var query = new Query("genes").AsInsert(new
@@ -144,6 +150,7 @@ namespace ChaoWorld.Core
                     flyswimaffinity = {chao.FlySwimAffinity},
                     runpoweraffinity = {chao.RunPowerAffinity},
                     isreversed = {chao.IsReversed},
+                    isfertile = {chao.IsFertile},
                     swimgrade = {(int)chao.SwimGrade},
                     swimlevel = {chao.SwimLevel},
                     swimvalue = {chao.SwimValue},
