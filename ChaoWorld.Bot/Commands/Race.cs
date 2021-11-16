@@ -293,6 +293,8 @@ namespace ChaoWorld.Bot
                         segment.StartElevation = lastSegment.EndElevation > template.StartElevation
                             ? lastSegment.EndElevation
                             : template.StartElevation;
+                    var debugMsg = lastSegment == null ? "Couldn't find last segment" : $"Last segment end elevation was {lastSegment.EndElevation}";
+                    await _repo.LogMessage($"RACE SEGMENT DEBUG for {chao.Id} ({chao.Name}) - {debugMsg} / New segment start elevation: {segment.StartElevation}");
                     var updatedSegment = await ProcessSegmentForChao(template, segment, chao);
                     await _repo.UpdateRaceInstanceSegment(updatedSegment); // Persist the results of running this ChaoSegment
                     await _repo.UpdateChao(chao); // Persist any changes to the chao (stat progress)
@@ -372,7 +374,7 @@ namespace ChaoWorld.Bot
                 // Note that power-based segments use the elevation rather than ground distance
                 var remainingDistance = template.TerrainDistance > 0
                     ? template.TerrainDistance - flyDistance
-                    : template.EndElevation - template.StartElevation;
+                    : template.EndElevation - segment.StartElevation.GetValueOrDefault(template.StartElevation); // Use the segment start elevation here if we can (we may be flying into a wall)
                 var terrainTime = CalculateTerrainTime(chao, remainingDistance, template.TerrainType);
                 segment.SegmentTimeSeconds += terrainTime;
 
@@ -446,7 +448,7 @@ namespace ChaoWorld.Bot
                     if (flyDistance > template.TerrainDistance)
                     {
                         // Check where our elevation ends so we keep flying in the next segment (or skip some climbing)
-                        var endElevation = CalculateFlightEndElevation(fallDistance, template.TerrainDistance, flyDistance);
+                        var endElevation = CalculateFlightEndElevation(segment.StartElevation.GetValueOrDefault(template.StartElevation), fallDistance, template.TerrainDistance, flyDistance);
                         
                         segment.EndElevation = endElevation >= template.EndElevation
                             ? endElevation
@@ -549,12 +551,13 @@ namespace ChaoWorld.Bot
             return (int)(distance * Math.Exp(-0.000114 * chao.FlyValue));
         }
 
-        private int CalculateFlightEndElevation(int fallDistance, int segmentDistance, int totalFlyDistance)
+        private int CalculateFlightEndElevation(int startElevation, int fallDistance, int segmentDistance, int totalFlyDistance)
         {
             // Our total flight creates a triangle, and the segmented portion creates a smaller similar triangle inside it
-            // We can calculate the end elevation using: end = (segment distance) / (total flight distance) * (distance fallen)
+            // We can calculate the descent in this segment using: end = (segment distance) / (total flight distance) * (distance fallen)
+            // Then we substract that from the start elevation to determine where we should end up
             var fallRatio = ((double)segmentDistance) / totalFlyDistance;
-            return (int)(fallRatio * fallDistance);
+            return (int)(startElevation - (fallRatio * fallDistance));
         }
 
         private int CalculateTerrainTime(Core.Chao chao, int distance, RaceSegment.RaceTerrains terrainType)
