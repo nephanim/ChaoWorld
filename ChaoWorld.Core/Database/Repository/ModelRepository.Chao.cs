@@ -228,7 +228,6 @@ namespace ChaoWorld.Core
                     and staminalevel = 99
                     and intelligencelevel = 99
                     and lucklevel = 99
-                    )
                 returning *
             "))).AsList();
             if (chao.Count > 0)
