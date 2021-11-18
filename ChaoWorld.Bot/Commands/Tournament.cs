@@ -100,29 +100,15 @@ namespace ChaoWorld.Bot
                     if (currentChaoCount >= tourney.MinimumChao && instance.State == TournamentInstance.TournamentStates.New)
                     {
                         // We've reached the minimum threshold, and haven't begun preparing the tournament
-                        // Check how long we're supposed to wait before we start
-                        instance.ReadyOn = NodaTime.SystemClock.Instance.GetCurrentInstant();
                         instance.State = TournamentInstance.TournamentStates.Preparing;
                         await _repo.UpdateTournamentInstance(instance);
 
-                        await ctx.Reply($"{Emojis.Megaphone} The {tourney.Name} tournament will start in {tourney.ReadyDelayMinutes} minutes. Use `!tournament {instance.Id} join {{chao id/name}}` to participate.");
-
                         // Start polling to make sure the tournament is still ready when it's time to start
-                        var waitTime = 0;
-                        while (waitTime < tourney.ReadyDelayMinutes)
+                        var now = SystemClock.Instance.GetCurrentInstant();
+                        while (now < instance.ReadyOn)
                         {
                             await Task.Delay(TimeSpan.FromMinutes(1));
-                            waitTime++;
-                            currentChaoCount = await _repo.GetTournamentInstanceChaoCount(instance.Id);
-                            if (currentChaoCount < tourney.MinimumChao)
-                            {
-                                // We no longer meet the requirements to start, so set back to new
-                                instance.State = TournamentInstance.TournamentStates.New;
-                                instance.ReadyOn = null;
-                                await _repo.UpdateTournamentInstance(instance);
-                                await ctx.Reply($"{Emojis.Warn} The {tourney.Name} tournament has been delayed as it no longer has the minimum number of participants.");
-                                return;
-                            }
+                            now = SystemClock.Instance.GetCurrentInstant();
                         }
                         // We've waited long enough... if we're still in a preparing state, go ahead and start
                         if (instance.State == TournamentInstance.TournamentStates.Preparing)
