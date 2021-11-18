@@ -202,7 +202,8 @@ namespace ChaoWorld.Bot
                 c.FlySwimAffinity = 0;
                 c.RunPowerAffinity = 0;
                 await _repo.UpdateChao(c);
-                await SendMessage(channel, $"{Emojis.Megaphone} {c.Name} has reached their first evolution! Congratulations!");
+                if (c.GardenId > 0)
+                    await SendMessage(channel, $"{Emojis.Megaphone} {c.Name} has reached their first evolution! Congratulations!");
             }
         }
 

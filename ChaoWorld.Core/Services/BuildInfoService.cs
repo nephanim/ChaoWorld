@@ -10,7 +10,7 @@ namespace ChaoWorld.Core
 
         public static async Task LoadVersion()
         {
-            Version = "1.0";
+            Version = "1.0.1";
 
             /*using (var stream = typeof(BuildInfoService).Assembly.GetManifestResourceStream("version"))
             {
