@@ -20,6 +20,7 @@ using Myriad.Rest;
 using Myriad.Rest.Exceptions;
 using Myriad.Rest.Types.Requests;
 using Myriad.Types;
+using System;
 
 namespace ChaoWorld.Bot
 {
@@ -99,6 +100,194 @@ namespace ChaoWorld.Bot
                     timeRemaining = $"{duration.Seconds} seconds";
 
                 await ctx.Reply($"{Emojis.Error} You couldn't find anything. Please wait another {timeRemaining} to collect rings.");
+            }
+        }
+
+        public async Task SeeJackpot(Context ctx)
+        {
+            var jackpot = await _repo.GetJackpot();
+            await ctx.Reply($"{Emojis.Note} The jackpot is currently {jackpot:n0} rings. Maybe today's your lucky day!");
+        }
+
+        public async Task SimulateSlots(Context ctx)
+        {
+            var balance = 10000000; // Just start with a bunch of rings to allow many iterations
+            var startingBalance = balance;
+            var simulationCount = balance / 100;
+            for (int i = 0; i < simulationCount; i++)
+            {
+                balance -= 100;
+                var tiles = new string[]
+                {
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                };
+
+                var payout = await GetSlotPayout(ctx, tiles);
+                balance += payout;
+            }
+            await ctx.Reply($"{Emojis.Note} After {simulationCount} plays, balance is {balance} ({((double)balance)/startingBalance*100.0:N0}% return)");
+        }
+
+        public async Task PlaySlots(Context ctx)
+        {
+            ctx.CheckGarden();
+            if (ctx.Garden.RingBalance < 100)
+            {
+                await ctx.Reply($"{Emojis.Error} Sorry, you don't have enough rings to play Chao Slots! You need at least 100 rings.");
+            }
+            else
+            {
+                ctx.Garden.RingBalance -= 100; // Pay 100 rings to play
+                var tiles = new string[]
+                {
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                };
+                var msg = await ctx.Reply($"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}");
+
+                // Shuffle the tiles so we can give the "slots" effect
+                var rand = new Random();
+                tiles = new string[]
+                {
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                };
+                await Task.Delay(300);
+                await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
+                    new MessageEditRequest
+                    {
+                        Content = $"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}",
+                        Embed = null
+                    });
+                tiles = new string[]
+                {
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                };
+                await Task.Delay(300);
+                await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
+                    new MessageEditRequest
+                    {
+                        Content = $"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}",
+                        Embed = null
+                    });
+
+                var payout = await GetSlotPayout(ctx, tiles);
+                ctx.Garden.RingBalance += payout;
+                await _repo.UpdateGarden(ctx.Garden);
+                await _repo.UpdateJackpot(100);
+
+                await Task.Delay(300);
+                await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
+                    new MessageEditRequest {
+                        Content = $"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}",
+                        Embed = null
+                    });
+
+                if (payout > 100)
+                    await ctx.Reply($"{Emojis.Success} You won {payout:n0} rings playing Chao Slots!");
+                else if (payout == 100)
+                    await ctx.Reply($"{Emojis.Success} You broke even on Chao Slots.");
+                else if (payout > 0)
+                    await ctx.Reply($"{Emojis.Eggman} You won back {payout:n0} of the rings you put in. Better luck next time.");
+                else
+                    await ctx.Reply($"{Emojis.Eggman} You didn't win anything...");
+            }
+        }
+
+        private string PickSlotResult(int roll)
+        {
+            if (roll > 995)
+                return Emojis.Rings;
+            if (roll > 930)
+                return Emojis.GoldEgg;
+            if (roll > 870)
+                return Emojis.BlueFruit;
+            if (roll > 810)
+                return Emojis.GreenFruit;
+            if (roll > 750)
+                return Emojis.PinkFruit;
+            if (roll > 550)
+                return Emojis.OrangeFruit;
+            if (roll > 350)
+                return Emojis.PurpleFruit;
+            if (roll > 150)
+                return Emojis.RedFruit;
+            if (roll > 30)
+                return Emojis.YellowFruit;
+            return Emojis.Eggman;
+        }
+
+        private async Task<int> GetSlotPayout(Context ctx, string[] tiles)
+        {
+            var payout = 0;
+
+            // Something went wrong if we don't have the number of tiles we expected
+            if (tiles.Length < 9)
+                return payout;
+
+            var ringCount = tiles.Count(x => x == Emojis.Rings); // Rings are rare and guarantee a base payout per ring
+            payout += 1111 * ringCount;
+
+            var eggmanCount = tiles.Count(x => x == Emojis.Eggman); // On the other hand, the eggman logo guarantees a base loss per eggman
+            payout -= 300 * eggmanCount;
+
+            var rowPayout = 0;
+            if (tiles[0] == tiles[1] && tiles[1] == tiles[2]) // Top row match
+                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
+            if (tiles[3] == tiles[4] && tiles[4] == tiles[5]) // Middle row match
+                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[3]));
+            if (tiles[6] == tiles[7] && tiles[7] == tiles[8]) // Bottom row match
+                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[6]));
+            if (tiles[0] == tiles[4] && tiles[4] == tiles[8]) // Diagonal \
+                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
+            if (tiles[2] == tiles[4] && tiles[4] == tiles[6]) // Diagonal /
+                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[2]));
+            if (tiles[0] == tiles[3] && tiles[3] == tiles[6]) // First column match
+                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
+            if (tiles[1] == tiles[4] && tiles[4] == tiles[7]) // Second column match
+                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[1]));
+            if (tiles[2] == tiles[5] && tiles[5] == tiles[8]) // Third column match
+                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[2]));
+            if (tiles.Distinct().Count() == 1) // Full grid match!
+                rowPayout = 8 * await GetSlotRateForRow(ctx, tiles[0]);
+
+            payout += rowPayout;
+            if (payout < 0)
+                payout = 0;
+            return payout;
+        }
+
+        private async Task<int> GetSlotRateForRow(Context ctx, string tile)
+        {
+            switch (tile)
+            {
+                case Emojis.Rings:
+                    var jackpot = await _repo.GetJackpot();
+                    await _repo.ResetJackpot();
+                    await ctx.Reply($"{Emojis.Rings} {Emojis.Rings} {Emojis.Rings} You hit the jackpot! Rings pour out of the slot machine like a waterfall. {Emojis.Rings} {Emojis.Rings} {Emojis.Rings}");
+                    return jackpot;
+                case Emojis.GoldEgg:
+                    return 3333;
+                case Emojis.YellowFruit:
+                    return 888;
+                case Emojis.PinkFruit:
+                case Emojis.BlueFruit:
+                case Emojis.GreenFruit:
+                    return 666;
+                case Emojis.OrangeFruit:
+                case Emojis.PurpleFruit:
+                case Emojis.RedFruit:
+                    return 222;
+                case Emojis.Eggman:
+                    return -9000;
+                default:
+                    return 0;
             }
         }
 

@@ -46,6 +46,8 @@ namespace ChaoWorld.Bot
         public static Command GiveItem = new Command("give item", "give item {id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
         public static Command GiveRings = new Command("give rings", "give rings {qty} {@user}", "Offers the specified amount of rings to another player (target can accept or reject the offer)");
         public static Command Collect = new Command("collect", "collect", "Can be used every 24 hours to collect rings for use in the market");
+        public static Command SlotsPlay = new Command("slots", "slots play", "Try your luck with the chao slots and win big money!");
+        public static Command SlotsJackpot = new Command("slots", "slots jackpot", "Check the current slots jackpot amount");
         public static Command Help = new Command("help", "help", "Shows help information about Chao World");
         public static Command Admin = new Command("admin", "admin", "What? Nothing to see here...");
 
@@ -82,6 +84,11 @@ namespace ChaoWorld.Bot
             GiveItem, GiveRings
         };
 
+        public static Command[] SlotsCommands =
+        {
+            SlotsPlay, SlotsJackpot
+        };
+
         public Task ExecuteCommand(Context ctx)
         {
             if (ctx.Match("garden", "g", "gardens"))
@@ -110,6 +117,15 @@ namespace ChaoWorld.Bot
                 return ctx.Execute<Misc>(null, m => m.Collect(ctx));
             if (ctx.Match("stats"))
                 return ctx.Execute<Misc>(null, m => m.Stats(ctx));
+            if (ctx.Match("slots"))
+                if (ctx.Match("play"))
+                    return ctx.Execute<Misc>(SlotsPlay, m => m.PlaySlots(ctx));
+                else if (ctx.Match("jackpot"))
+                    return ctx.Execute<Misc>(SlotsJackpot, m => m.SeeJackpot(ctx));
+                else if (ctx.Match("simulate"))
+                    return ctx.Execute<Misc>(SlotsPlay, m => m.SimulateSlots(ctx));
+                else
+                    PrintCommandExpectedError(ctx, SlotsCommands);
 
             // remove compiler warning
             return ctx.Reply($"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
