@@ -85,10 +85,10 @@ namespace ChaoWorld.Bot
         {
             if (!BotPermissions.HasFlag(PermissionSet.SendMessages))
                 // Will be "swallowed" during the error handler anyway, this message is never shown.
-                throw new CWError("ChaoWorld does not have permission to send messages in this channel.");
+                throw new CWError("Chao World does not have permission to send messages in this channel.");
 
             if (embed != null && !BotPermissions.HasFlag(PermissionSet.EmbedLinks))
-                throw new CWError("ChaoWorld does not have permission to send embeds in this channel. Please ensure I have the **Embed Links** permission enabled.");
+                throw new CWError("Chao World does not have permission to send embeds in this channel. Please ensure the **Embed Links** permission is enabled.");
 
             var msg = await _rest.CreateMessage(_channel.Id, new MessageRequest
             {

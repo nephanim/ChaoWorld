@@ -25,6 +25,9 @@ using Sentry;
 using Serilog;
 using Serilog.Context;
 using Dapper;
+using Myriad.Rest.Types;
+using Myriad.Rest.Types.Requests;
+using ChaoWorld.Core.Models;
 
 namespace ChaoWorld.Bot
 {
@@ -44,6 +47,7 @@ namespace ChaoWorld.Bot
 
         private bool _hasReceivedReady = false;
         private Timer _periodicTask; // Never read, just kept here for GC reasons
+        private Timer _hourlyTask;
 
         public Bot(ILifetimeScope services, ILogger logger, PeriodicStatCollector collector, IMetrics metrics,
             ErrorMessageService errorMessageService, Cluster cluster, DiscordApiClient rest, IDiscordCache cache, IDatabase db)
@@ -76,6 +80,12 @@ namespace ChaoWorld.Bot
             {
                 var __ = UpdatePeriodic();
             }, null, timeTillNextWholeMinute, TimeSpan.FromMinutes(1));
+
+            var timeTillNextWholeHour = TimeSpan.FromSeconds(3600 - timeNow.ToUnixTimeSeconds() % 3600);
+            _hourlyTask = new Timer(_ =>
+            {
+                var __ = UpdateHourly();
+            }, null, timeTillNextWholeHour, TimeSpan.FromHours(1));
 
             // Clean up orphaned race instances
             PurgeOrphanedRaceInstances();
@@ -283,7 +293,17 @@ namespace ChaoWorld.Bot
             _logger.Debug("Submitted metrics to backend");
 
             await UpdateBotStatus();
+
+            _logger.Debug("Running periodic instance tasks with broadcasts");
+            await _collector.RunPeriodicWithBroadcast();
         }
+
+        private async Task UpdateHourly()
+        {
+            _logger.Debug("Running hourly scheduled tasks");
+            await _collector.RunHourlyWithBroadcast();
+        }
+
         private async Task UpdateBotStatus(Shard specificShard = null)
         {
             // If we're not on any shards, don't bother (this happens if the periodic timer fires before the first Ready)
@@ -340,5 +360,8 @@ namespace ChaoWorld.Bot
                 ));
             }
         }
+
+
+        
     }
 }

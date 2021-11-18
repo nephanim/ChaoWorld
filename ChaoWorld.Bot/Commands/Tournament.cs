@@ -49,7 +49,12 @@ namespace ChaoWorld.Bot
 
             var activeInRace = await _repo.GetActiveRaceByGarden(chao.GardenId.Value);
             var activeInTourney = await _repo.GetActiveTournamentByGarden(chao.GardenId.Value);
+            var allowedChannels = await _repo.ReadBroadcastChannels();
 
+            if (ctx.Channel.Id != allowedChannels.Tournaments)
+            {
+                await ctx.Reply($"{Emojis.Error} Please use <#{allowedChannels.Tournaments}> to join tournaments.");
+            }
             if (instance.State == TournamentInstance.TournamentStates.InProgress
                 || instance.State == TournamentInstance.TournamentStates.Completed
                 || instance.State == TournamentInstance.TournamentStates.Canceled)

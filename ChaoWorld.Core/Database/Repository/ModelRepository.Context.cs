@@ -13,5 +13,6 @@ namespace ChaoWorld.Core
                         guild_id = guild,
                         channel_id = channel
             });
+
     }
 }

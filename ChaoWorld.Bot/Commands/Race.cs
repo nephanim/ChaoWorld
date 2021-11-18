@@ -34,17 +34,6 @@ namespace ChaoWorld.Bot
             _client = client;
         }
 
-        public async Task NewRaceInstance(Context ctx, Core.Race race)
-        {
-            await using var conn = await _db.Obtain();
-
-            // Create the instance
-            var raceInstance = await _repo.CreateRaceInstance(race);
-
-            // Send confirmation
-            await ctx.Reply($"{Emojis.Megaphone} {race.Name} is now available. Use `!race {raceInstance.Id} chao {{id/name}}` to participate.");
-        }
-
         public async Task ViewRaceInstance(Context ctx, Core.RaceInstance target)
         {
             var race = await _repo.GetRaceById(target.RaceId);
@@ -55,15 +44,20 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckOwnChao(chao); //You can only enter your own chao in a race...
 
+            raceInstance = await _repo.GetRaceInstanceById(raceInstance.Id);
             var activeInRace = await _repo.GetActiveRaceByGarden(chao.GardenId.Value);
             var activeInTourney = await _repo.GetActiveTournamentByGarden(chao.GardenId.Value);
             var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
-            var now = SystemClock.Instance.GetCurrentInstant();
             var instanceBans = (await _repo.GetRaceInstanceBans(ctx.Garden))
                 .Where(x => x.RaceInstanceId == raceInstance.Id)
                 .ToList();
+            var allowedChannels = await _repo.ReadBroadcastChannels();
 
-            if (raceInstance.State == RaceInstance.RaceStates.InProgress
+            if (ctx.Channel.Id != allowedChannels.Races)
+            {
+                await ctx.Reply($"{Emojis.Error} Please use <#{allowedChannels.Races}> to join races.");
+            }
+            else if (raceInstance.State == RaceInstance.RaceStates.InProgress
                 || raceInstance.State == RaceInstance.RaceStates.Completed
                 || raceInstance.State == RaceInstance.RaceStates.Canceled)
             {
@@ -82,14 +76,9 @@ namespace ChaoWorld.Bot
                 var tourney = await _repo.GetTournamentById(activeInTourney.TournamentId);
                 await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} tournament. Please support your chao's tournament first!");
             }
-            else if (instanceBans.Any())
-            {
-                // This garden is banned from the instance - need to wait it out or find a different race to join
-                await ctx.Reply($"{Emojis.Error} You are banned from this {race.Name} instance ({raceInstance.Id}) because you left it previously. Please wait or choose another race.");
-            }
             else
             {
-                // Race is in a joinable stat
+                // Race is in a joinable state
                 // Check whether we've reached the minimum number of chao for the race
                 var currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
                 if (race == null)
@@ -112,29 +101,17 @@ namespace ChaoWorld.Bot
                     if (currentChaoCount >= race.MinimumChao && raceInstance.State == RaceInstance.RaceStates.New)
                     {
                         // We've reached the minimum threshold, and haven't begun preparing the race
-                        // Check how long we're supposed to wait before we start
-                        raceInstance.ReadyOn = NodaTime.SystemClock.Instance.GetCurrentInstant();
                         raceInstance.State = RaceInstance.RaceStates.Preparing;
                         await _repo.UpdateRaceInstance(raceInstance);
 
-                        await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race will start in {race.ReadyDelayMinutes} minutes. Use `!race {raceInstance.Id} join {{chao id/name}}` to participate.");
-
                         // Start polling to make sure the tournament is still ready when it's time to start
-                        var waitTime = 0;
-                        while (waitTime < race.ReadyDelayMinutes)
+                        var now = SystemClock.Instance.GetCurrentInstant();
+                        var readyDuration = Duration.FromMinutes(race.ReadyDelayMinutes);
+                        var startTime = raceInstance.ReadyOn.Value.Plus(readyDuration);
+                        while (now < raceInstance.ReadyOn)
                         {
                             await Task.Delay(TimeSpan.FromMinutes(1));
-                            waitTime++;
-                            currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
-                            if (currentChaoCount < race.MinimumChao)
-                            {
-                                // We no longer meet the requirements to start, so set back to new
-                                raceInstance.State = RaceInstance.RaceStates.New;
-                                raceInstance.ReadyOn = null;
-                                await _repo.UpdateRaceInstance(raceInstance);
-                                await ctx.Reply($"{Emojis.Warn} The {race.Name} race has been delayed as it no longer has the minimum number of participants.");
-                                return;
-                            }
+                            now = SystemClock.Instance.GetCurrentInstant();
                         }
                         // We've waited long enough... if we're still in a preparing state, go ahead and start
                         if (raceInstance.State == RaceInstance.RaceStates.Preparing)
@@ -293,8 +270,9 @@ namespace ChaoWorld.Bot
                         segment.StartElevation = lastSegment.EndElevation > template.StartElevation
                             ? lastSegment.EndElevation
                             : template.StartElevation;
-                    var debugMsg = lastSegment == null ? "Couldn't find last segment" : $"Last segment end elevation was {lastSegment.EndElevation}";
-                    await _repo.LogMessage($"RACE SEGMENT DEBUG for {chao.Id} ({chao.Name}) - {debugMsg} / New segment start elevation: {segment.StartElevation}");
+                    var debugMsg = lastSegment == null ? "Couldn't find last segment" : $"Last segment ({lastSegment.RaceSegmentId}) end elevation was {lastSegment.EndElevation}";
+                    if (segment.ChaoId == 1070)
+                        await _repo.LogMessage($"RACE SEGMENT {segment.RaceSegmentId} DEBUG for {chao.Id} ({chao.Name}) - {debugMsg} / New segment start elevation: {segment.StartElevation}");
                     var updatedSegment = await ProcessSegmentForChao(template, segment, chao);
                     await _repo.UpdateRaceInstanceSegment(updatedSegment); // Persist the results of running this ChaoSegment
                     await _repo.UpdateChao(chao); // Persist any changes to the chao (stat progress)

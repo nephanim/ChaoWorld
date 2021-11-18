@@ -72,6 +72,15 @@ namespace ChaoWorld.Core
             return await _db.QueryFirst<RaceInstance?>(query);
         }
 
+        public async Task<IEnumerable<RaceInstance>> GetExpiredRaceInstances()
+        {
+            var now = SystemClock.Instance.GetCurrentInstant();
+            var query = new Query("raceinstances")
+                .Where("raceinstances.state", (int)Core.RaceInstance.RaceStates.New)
+                .Where("raceinstances.readyon", "<", now);
+            return await _db.Query<RaceInstance>(query);
+        }
+
         public async Task<int> GetRaceInstanceChaoCount(long raceInstanceId)
         {
             var query = new Query("raceinstancechao").Where("raceinstanceid", raceInstanceId).SelectRaw("count(chaoid)");
@@ -92,14 +101,25 @@ namespace ChaoWorld.Core
 
         public async Task<RaceInstance> CreateRaceInstance(Race race, IChaoWorldConnection? conn = null)
         {
+            var availableAt = SystemClock.Instance.GetCurrentInstant();
+            var readyIn = Duration.FromMinutes(race.ReadyDelayMinutes);
+            var readyAt = availableAt.Plus(readyIn);
             var query = new Query("raceinstances").AsInsert(new
             {
                 raceid = race.Id,
-                state = RaceInstance.RaceStates.New
+                state = RaceInstance.RaceStates.New,
+                readyon = readyAt
             });
             var raceInstance = await _db.QueryFirst<RaceInstance>(conn, query, "returning *");
             _logger.Information($"Created instance {raceInstance.Id} of race {race.Id} ({race.Name})");
             return raceInstance;
+        }
+
+        public async Task DeleteRaceInstance(RaceInstance instance, IChaoWorldConnection? conn = null)
+        {
+            var query = new Query("raceinstances").Where("id", instance.Id).AsDelete();
+            await _db.ExecuteQuery(query);
+            _logger.Information($"Deleted instance {instance.Id} of race {instance.RaceId}");
         }
 
         public async Task<RaceInstance> UpdateRaceInstance(RaceInstance raceInstance, IChaoWorldConnection? conn = null)
@@ -247,19 +267,22 @@ namespace ChaoWorld.Core
             _logger.Information($"Added segments to instance {raceInstance.Id} of race {raceInstance.RaceId}");
         }
 
-        public Task<RaceSegment> GetRaceSegment(int raceId, int index)
+        public async Task<RaceSegment> GetRaceSegment(int raceId, int index)
         {
             var query = new Query("racesegments").Where("raceid", raceId).Where("raceindex", index);
-            return _db.QueryFirst<RaceSegment>(query);
+            return await _db.QueryFirst<RaceSegment>(query);
         }
         
-        public Task<IEnumerable<RaceInstanceChaoSegment>> GetRaceInstanceSegments(RaceInstance raceInstance, int index, IChaoWorldConnection? conn = null)
+        public async Task<IEnumerable<RaceInstanceChaoSegment>> GetRaceInstanceSegments(RaceInstance raceInstance, int index, IChaoWorldConnection? conn = null)
         {
-            var query = new Query("raceinstancechaosegments")
-                .Join("racesegments", "racesegmentid", "id", "=")
-                .Where("raceinstanceid", raceInstance.Id)
-                .Where("raceindex", index);
-            return _db.Query<RaceInstanceChaoSegment>(query);
+            return await _db.Execute(conn => conn.QueryAsync<RaceInstanceChaoSegment>($@"
+                select cs.*
+                from raceinstancechaosegments cs
+                join racesegments s
+                on cs.racesegmentid = s.id
+                where cs.raceinstanceid = {raceInstance.Id}
+                and s.raceindex = {index}
+            "));
         }
 
         public async Task<int> GetTotalTimeForSegments(long raceInstanceId, long chaoId)
@@ -286,6 +309,8 @@ namespace ChaoWorld.Core
                         startelevation = segment.StartElevation,
                         endelevation = segment.EndElevation
                     });
+            if (segment.ChaoId == 1070)
+                _logger.Information($"Segment {segment.RaceSegmentId} - End Elevation was {segment.EndElevation}");
             var updatedSegment = await _db.QueryFirst<RaceInstanceChaoSegment>(query, extraSql: "returning *");
             return updatedSegment;
         }

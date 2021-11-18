@@ -107,6 +107,14 @@ namespace ChaoWorld.Core
             return await _db.QueryFirst<TournamentInstance?>(query);
         }
 
+        public async Task<IEnumerable<TournamentInstance>> GetExpiredTournamentInstances()
+        {
+            var query = new Query("tournamentinstances")
+                .Where("tournamentinstances.state", (int)Core.TournamentInstance.TournamentStates.New)
+                .WhereRaw("tournamentinstances.readyon < current_timestamp");
+            return await _db.Query<TournamentInstance>(query);
+        }
+
         public async Task<TournamentInstance> CreateTournamentInstance(Tournament tourney, IChaoWorldConnection? conn = null)
         {
             var query = new Query("tournamentinstances").AsInsert(new
@@ -117,6 +125,13 @@ namespace ChaoWorld.Core
             var instance = await _db.QueryFirst<TournamentInstance>(conn, query, "returning *");
             _logger.Information($"Created instance {instance.Id} of tournament {tourney.Id} ({tourney.Name})");
             return instance;
+        }
+
+        public async Task DeleteTournamentInstance(TournamentInstance instance, IChaoWorldConnection? conn = null)
+        {
+            var query = new Query("tournamentinstances").Where("id", instance.Id).AsDelete();
+            await _db.ExecuteQuery(query);
+            _logger.Information($"Deleted instance {instance.Id} of tournament {instance.TournamentId}");
         }
 
         public async Task<TournamentInstance> UpdateTournamentInstance(TournamentInstance instance, IChaoWorldConnection? conn = null)

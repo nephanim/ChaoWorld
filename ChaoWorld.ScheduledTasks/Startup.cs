@@ -6,6 +6,8 @@ using Autofac;
 using Microsoft.Extensions.Configuration;
 
 using ChaoWorld.Core;
+using Myriad.Rest;
+using Serilog;
 
 namespace ChaoWorld.ScheduledTasks
 {
