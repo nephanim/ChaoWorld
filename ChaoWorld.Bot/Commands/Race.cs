@@ -264,9 +264,6 @@ namespace ChaoWorld.Bot
                         segment.StartElevation = lastSegment.EndElevation > template.StartElevation
                             ? lastSegment.EndElevation
                             : template.StartElevation;
-                    var debugMsg = lastSegment == null ? "Couldn't find last segment" : $"Last segment ({lastSegment.RaceSegmentId}) end elevation was {lastSegment.EndElevation}";
-                    if (segment.ChaoId == 1070)
-                        await _repo.LogMessage($"RACE SEGMENT {segment.RaceSegmentId} DEBUG for {chao.Id} ({chao.Name}) - {debugMsg} / New segment start elevation: {segment.StartElevation}");
                     var updatedSegment = await ProcessSegmentForChao(template, segment, chao);
                     await _repo.UpdateRaceInstanceSegment(updatedSegment); // Persist the results of running this ChaoSegment
                     await _repo.UpdateChao(chao); // Persist any changes to the chao (stat progress)
@@ -425,12 +422,6 @@ namespace ChaoWorld.Bot
                         segment.EndElevation = endElevation >= template.EndElevation
                             ? endElevation
                             : template.EndElevation;
-                        await _repo.LogMessage($"FLIGHT CALCULATION for {chao.Id.Value} ({chao.Name}): " +
-                            $"Fall Distance {fallDistance} / " +
-                            $"Terrain Distance: {template.TerrainDistance} / " +
-                            $"Fly Distance: {flyDistance} / " +
-                            $"End Elevation: {endElevation} / " +
-                            $"Segment End Elevation: {segment.EndElevation}");
                         flyDistance = template.TerrainDistance; // Set the actual distance flown based on the size of the segment 
                         segment.State = RaceInstanceChaoSegment.SegmentStates.Completed; // We already know we finished the segment since there's no stamina consumption while flying
                         segment.EndStamina = segment.StartStamina;
