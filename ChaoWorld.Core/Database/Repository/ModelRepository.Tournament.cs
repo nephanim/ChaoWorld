@@ -172,7 +172,7 @@ namespace ChaoWorld.Core
             await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update tournaments t
                 set prizerings = coalesce((
-	                select floor(avg(totaltimeelapsedseconds + t.readydelayminutes*60.0)/1.5)
+	                select floor(avg(totaltimeelapsedseconds + 300 + t.readydelayminutes*60.0)/1.5)
 	                from tournamentinstances i
 	                join chao c
 	                on i.winnerchaoid = c.id
