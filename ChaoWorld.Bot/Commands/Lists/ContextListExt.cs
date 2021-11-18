@@ -288,5 +288,37 @@ namespace ChaoWorld.Bot
                 }));
             }
         }
+
+        public static async Task RenderTreeList(this Context ctx, IDatabase db, string embedTitle, string search)
+        {
+            // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
+            // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            var items = (await db.Execute(conn => conn.QueryTreeList(ctx.Garden.Id.Value, search))).ToList();
+
+            var itemsPerPage = 25; //Maybe do a long list in the future too
+            await ctx.Paginate(items.ToAsyncEnumerable(), items.Count, itemsPerPage, embedTitle, null, Renderer);
+
+            // Base renderer, dispatches based on type
+            Task Renderer(EmbedBuilder eb, IEnumerable<Core.Tree> page)
+            {
+                // Add a global footer with the result count
+                eb.Footer(new($"{"result".ToQuantity(items.Count)}"));
+
+                // Then call the specific renderers
+                ShortRenderer(eb, page);
+                return Task.CompletedTask;
+            }
+
+            void ShortRenderer(EmbedBuilder eb, IEnumerable<Core.Tree> page)
+            {
+                // We may end up over the description character limit
+                // so run it through a helper that "makes it work" :)
+                eb.WithSimpleLineContent(page.Select(m =>
+                {
+                    var ret = $"[`{(int)m.Id}`] {m.Name} ({m.Health:D2}/100)";
+                    return ret;
+                }));
+            }
+        }
     }
 }

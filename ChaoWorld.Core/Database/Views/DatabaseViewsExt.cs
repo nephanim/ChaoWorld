@@ -147,5 +147,23 @@ namespace ChaoWorld.Core
 
             return conn.QueryAsync<MarketItem>(query.ToString());
         }
+
+        public static Task<IEnumerable<Tree>> QueryTreeList(this IChaoWorldConnection conn, long gardenId, string search)
+        {
+            StringBuilder query;
+            query = new StringBuilder(@$"
+                select *
+                from trees
+                where gardenid = {gardenId}");
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                static string Filter(string column) => $"lower({column}) like concat('%', lower(@filter), '%')";
+                query.Append($" and ({Filter("name")})");
+            }
+            query.Append(" order by name asc ");
+
+            return conn.QueryAsync<Tree>(query.ToString(), new { filter = search });
+        }
     }
 }

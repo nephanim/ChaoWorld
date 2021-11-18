@@ -30,6 +30,13 @@ namespace ChaoWorld.Bot
             return ctx;
         }
 
+        public static Context CheckOwnTree(this Context ctx, Core.Tree tree)
+        {
+            if (tree.GardenId != ctx.Garden?.Id.Value)
+                throw Errors.NotOwnTreeError;
+            return ctx;
+        }
+
         public static Context CheckGarden(this Context ctx)
         {
             if (ctx.Garden == null)

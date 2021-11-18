@@ -43,6 +43,10 @@ namespace ChaoWorld.Bot
         public static Command MarketList = new Command("market list", "market list", "Lists all items for sale at the Black Market");
         public static Command MarketBuy = new Command("market buy", "market buy {id/name} [qty]", "Purchases the specified item from the Black Market (quantity of 1 is assumed if not provided)");
         public static Command MarketSell = new Command("market sell", "market sell {id/name} [qty]", "Sells the specified item from your inventory on the Black Market (quantity of 1 is assumed if not provided)");
+        public static Command TreeInfo = new Command("tree info", "tree info {id/name}", "Looks up information about one of your trees using either the name or ID");
+        public static Command TreeList = new Command("tree list", "tree list", "Lists all trees in your orchard and their health");
+        public static Command TreeWater = new Command("tree water", "tree water {id/name}", "Waters a tree in your orchard, improving its overall health when done at the proper time");
+        public static Command TreeRemove = new Command("tree remove", "tree remove {id/name}", "Removes a tree from your orchard to make room for another one (each garden can have up to 7 at at time");
         public static Command GiveItem = new Command("give item", "give item {id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
         public static Command GiveRings = new Command("give rings", "give rings {qty} {@user}", "Offers the specified amount of rings to another player (target can accept or reject the offer)");
         public static Command Collect = new Command("collect", "collect", "Can be used every 24 hours to collect rings for use in the market");
@@ -79,6 +83,11 @@ namespace ChaoWorld.Bot
             MarketList, MarketBuy, MarketSell
         };
 
+        public static Command[] TreeCommands =
+        {
+            TreeInfo, TreeList, TreeWater, TreeRemove
+        };
+
         public static Command[] GiveCommands =
         {
             GiveItem, GiveRings
@@ -103,6 +112,8 @@ namespace ChaoWorld.Bot
                 return HandleItemCommand(ctx);
             if (ctx.Match("market", "m"))
                 return HandleMarketCommand(ctx);
+            if (ctx.Match("tree", "trees", "plants", "orchard", "o"))
+                return HandleTreeCommand(ctx);
             if (ctx.Match("give"))
                 return HandleGiveCommand(ctx);
             if (ctx.Match("commands", "cmd", "command"))
@@ -427,6 +438,11 @@ namespace ChaoWorld.Bot
                 await ctx.Execute<Item>(ItemInfo, m => m.ItemInfo(ctx, itemTarget));
             else
                 await PrintCommandNotFoundError(ctx, MarketCommands);
+        }
+
+        private async Task HandleTreeCommand(Context ctx)
+        {
+            
         }
 
         private async Task HandleGiveCommand(Context ctx)

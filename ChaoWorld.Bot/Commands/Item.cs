@@ -57,6 +57,9 @@ namespace ChaoWorld.Bot
                     case ItemBase.ItemCategories.Fruit:
                         success = await TryHandleUseFruit(ctx, item, chao, quantity);
                         break;
+                    case ItemBase.ItemCategories.Seed:
+                        success = await TryHandleUseSeed(ctx, item);
+                        break;
                     case ItemBase.ItemCategories.Special:
                         success = await TryHandleUseSpecial(ctx, item, chao, quantity);
                         break;
@@ -71,8 +74,10 @@ namespace ChaoWorld.Bot
                 // Only consume the item if we were actually able to handle it
                 if (success)
                     await _repo.UseItem(item, quantity);
-                else
+                else if (chao != null)
                     await ctx.Reply($"{Emojis.Error} {chao.Name} refused the {item.Name}. Maybe it can't be used right now.");
+                else
+                    await ctx.Reply($"{Emojis.Error} You have no idea how to use the {item.Name}. Maybe it can't be used right now.");
             }
             else
             {
@@ -262,6 +267,31 @@ namespace ChaoWorld.Bot
             {
                 // No chao specified, and we couldn't find an active chao...
                 await ctx.Reply($"{Emojis.Error} You can't eat {item.Name}. Did you mean to give this to your chao? (Try `!item \"{item.Name}\" use {{chao id/name}}` instead.)");
+                return false;
+            }
+        }
+
+        private async Task<bool> TryHandleUseSeed(Context ctx, Core.Item item)
+        {
+            await ConfirmUseItem(ctx, item, chao: null, quantity: 1);
+
+            var treeCount = await _repo.GetGardenTreeCount(ctx.Garden.Id.Value);
+            if (treeCount < 7)
+            {
+                // Make the tree!
+                var tree = new Core.Tree();
+                tree.GardenId = ctx.Garden.Id.Value;
+                tree.FruitTypeId = item.GrowsFruitId.GetValueOrDefault(2117); // This shouldn't happen, but in case it does, 2117 is tasty fruit
+                tree.Name = item.Name.Contains("Mushroom") // This weirdness is just because technically there's no such thing as a mushroom "tree"
+                    ? $"{item.Name} Cluster"
+                    : $"{item.Name} Tree";
+                tree = await _repo.CreateTree(tree);
+                await ctx.Reply($"{Emojis.Success} Your {tree.Name} has been added to the garden. Remember to water it regularly.");
+                return true;
+            }
+            else
+            {
+                await ctx.Reply($"{Emojis.Error} You have too many trees in your orchard ({treeCount}/7). Please remove one of your existing trees first.");
                 return false;
             }
         }

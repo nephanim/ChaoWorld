@@ -75,8 +75,8 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckGarden().CheckOwnChao(target);
 
-            await ctx.Reply($"{Emojis.Warn} Are you sure you want to send \"{target.Name}\" away? If so, reply to this message with `!chao {target.Id} goodbye forever`). __***This cannot be undone!***__");
-            if (!await ctx.ConfirmWithReply($"!chao {target.Id} goodbye forever")) throw Errors.ChaoDeleteCancelled;
+            await ctx.Reply($"{Emojis.Warn} Are you sure you want to send \"{target.Name}\" away? If so, reply to this message with `Goodbye forever, {target.Name}`). __***This cannot be undone!***__");
+            if (!await ctx.ConfirmWithReply($"Goodbye forever, {target.Name}")) throw Errors.ChaoDeleteCancelled;
 
             // If this chao is currently selected, we need to clear it as the active chao first
             var garden = ctx.Garden;

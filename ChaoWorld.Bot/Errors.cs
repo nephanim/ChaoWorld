@@ -36,6 +36,7 @@ namespace ChaoWorld.Bot
 
         public static CWError NotOwnChaoError => new CWError($"You can only run this command on your own chao.");
         public static CWError NotOwnItemError => new CWError($"You can only run this command on your own item.");
+        public static CWError NotOwnTreeError => new CWError($"You can only run this command on your own tree.");
         public static CWError NoGardenError => new CWError("You do not have a chao garden registered. To create one, type `!garden new`.");
         public static CWError ExistingGardenError => new CWError("You already have a chao garden registered. To view it, type `!garden`.");
         public static CWError StringTooLongError(string name, int length, int maxLength) => new CWError($"{name} too long ({length}/{maxLength} characters).");

@@ -92,6 +92,21 @@ namespace ChaoWorld.Core
             return items;
         }
 
+        public async Task<IEnumerable<MarketItem>> GetMarketEnabledSeeds(int limit)
+        {
+            if (limit < 1) return new List<MarketItem>();
+
+            var items = await _db.Execute(conn => conn.QueryAsync<MarketItem>($@"
+                    select *
+                    from itemtypes
+                    where ismarketenabled = true
+                    and categoryid = {(int)ItemBase.ItemCategories.Seed}
+                    order by random()
+                    limit {limit}
+            "));
+            return items;
+        }
+
         public async Task<IEnumerable<MarketItem>> GetMarketEnabledSpecials(int limit)
         {
             if (limit < 1) return new List<MarketItem>();

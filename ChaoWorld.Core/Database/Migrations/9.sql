@@ -10,7 +10,8 @@ create table if not exists itemtypes
 	isshiny boolean,
 	istwotone boolean,
 	primarycolorid integer,
-	secondarycolorid integer
+	secondarycolorid integer,
+    growsfruitid integer
 );
 
 --

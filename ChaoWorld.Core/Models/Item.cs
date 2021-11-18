@@ -85,6 +85,7 @@ namespace ChaoWorld.Core
                 SecondaryColorId = (int)value;
             }
         }
+        public int? GrowsFruitId { get; set; }
         public int Quantity { get; set; }
 
         public enum ItemCategories

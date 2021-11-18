@@ -242,6 +242,35 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
+        public async Task<Embed> CreateTreeEmbed(Context ctx, Core.Tree tree)
+        {
+            var name = $"{tree.Name}";
+            var fruitType = await _repo.GetItemBaseByTypeId(tree.FruitTypeId);
+            var desc = string.Empty;
+            if (tree.Health == 0)
+                desc = "It doesn't appear to be producing anything. Maybe it needs water.";
+            else if (tree.Health < 25)
+                desc = "It's producing at low capacity. It could use more attention.";
+            else if (tree.Health < 75)
+                desc = "It's producing at good capacity. Keep taking care of it, and it could be a steady source of food.";
+            else
+                desc = "It's in excellent shape. You've been watering it regularly.";
+
+            var eb = new EmbedBuilder()
+                .Title(new(name))
+                .Description(desc)
+                .Footer(new(
+                    $"Tree ID: {tree.Id} | Created on {tree.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+
+            eb.Field(new("Type", fruitType.Name));
+            eb.Field(new("Age", $"{tree.Age}"));
+            eb.Field(new("Stored Quantity", $"{tree.FruitQuantity}"));
+            eb.Field(new("Health", $"{tree.Health:D2}/100"));
+            eb.Field(new("Next Watering", tree.TimeUntilWatering));
+
+            return eb.Build();
+        }
+
         public async Task<Embed> CreateTournamentRoundResultsEmbed(Context ctx, Core.Tournament tourney, TournamentInstance instance, int round)
         {
             var roundText = round == instance.Rounds ? "Final Round" : $"Round #{round}";

@@ -246,6 +246,14 @@ namespace ChaoWorld.Bot
                 items.Add(fruit);
             }
 
+            var seedLimit = new Random().Next(1, 5) == 1 ? 1 : 0; // Only have seeds available every few hours
+            var seeds = await _repo.GetMarketEnabledSeeds(seedLimit);
+            foreach (var seed in seeds)
+            {
+                seed.Quantity = 1;
+                items.Add(seed);
+            }
+
             var specialLimit = new Random().Next(1, 9) == 1 ? 1 : 0; // Have special items available a few times per day
             var specials = await _repo.GetMarketEnabledSpecials(specialLimit);
             foreach (var special in specials)
