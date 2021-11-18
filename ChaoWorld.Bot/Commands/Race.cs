@@ -48,9 +48,6 @@ namespace ChaoWorld.Bot
             var activeInRace = await _repo.GetActiveRaceByGarden(chao.GardenId.Value);
             var activeInTourney = await _repo.GetActiveTournamentByGarden(chao.GardenId.Value);
             var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
-            var instanceBans = (await _repo.GetRaceInstanceBans(ctx.Garden))
-                .Where(x => x.RaceInstanceId == raceInstance.Id)
-                .ToList();
             var allowedChannels = await _repo.ReadBroadcastChannels();
 
             if (ctx.Channel.Id != allowedChannels.Races)
@@ -135,7 +132,6 @@ namespace ChaoWorld.Bot
                     if (chao != null)
                     {
                         await _repo.RemoveChaoFromRaceInstance(activeRace, chao);
-                        await _repo.BanFromRaceInstance(activeRace, ctx.Garden);
                     }
                     await ctx.Reply($"{Emojis.Success} You are no longer waiting for the race to start.");
                 } else

@@ -151,7 +151,7 @@ namespace ChaoWorld.Bot
                 await _repo.ResetRaceAvailableOn(r);
                 var instance = await _repo.CreateRaceInstance(r);
                 _logger.Information($"Created instance {instance.Id} of race {r.Id} ({r.Name})");
-                await SendMessage(channel, $"{Emojis.Megaphone} The {r.Name} Race is starting in {r.ReadyDelayMinutes} minutes.");
+                await SendMessage(channel, $"{Emojis.Megaphone} The {r.Name} Race will begin in {r.ReadyDelayMinutes} minutes.");
             }
         }
 
@@ -174,7 +174,7 @@ namespace ChaoWorld.Bot
                 await _repo.ResetTournamentAvailableOn(t);
                 var instance = await _repo.CreateTournamentInstance(t);
                 _logger.Information($"Created instance {instance.Id} of tournament {t.Id} ({t.Name})");
-                await SendMessage(channel, $"{Emojis.Megaphone} The {t.Name} Tournament is starting in {t.ReadyDelayMinutes}.");
+                await SendMessage(channel, $"{Emojis.Megaphone} The {t.Name} Tournament will begin in {t.ReadyDelayMinutes}.");
             }
         }
 

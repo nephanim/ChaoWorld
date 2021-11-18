@@ -117,10 +117,14 @@ namespace ChaoWorld.Core
 
         public async Task<TournamentInstance> CreateTournamentInstance(Tournament tourney, IChaoWorldConnection? conn = null)
         {
+            var availableAt = SystemClock.Instance.GetCurrentInstant();
+            var readyIn = Duration.FromMinutes(tourney.ReadyDelayMinutes);
+            var readyAt = availableAt.Plus(readyIn);
             var query = new Query("tournamentinstances").AsInsert(new
             {
                 tournamentid = tourney.Id,
-                state = TournamentInstance.TournamentStates.New
+                state = TournamentInstance.TournamentStates.New,
+                readyon = readyAt
             });
             var instance = await _db.QueryFirst<TournamentInstance>(conn, query, "returning *");
             _logger.Information($"Created instance {instance.Id} of tournament {tourney.Id} ({tourney.Name})");

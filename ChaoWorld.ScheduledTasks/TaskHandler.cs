@@ -70,9 +70,6 @@ namespace ChaoWorld.ScheduledTasks
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            _logger.Information("Clearing expired instance bans...");
-            await _repo.ClearExpiredRaceInstanceBans();
-
             stopwatch.Stop();
             _logger.Information("Ran hourly scheduled tasks in {Time}", stopwatch.ElapsedDuration());
         }
