@@ -103,8 +103,6 @@ namespace ChaoWorld.Bot
 
                         // Start polling to make sure the tournament is still ready when it's time to start
                         var now = SystemClock.Instance.GetCurrentInstant();
-                        var readyDuration = Duration.FromMinutes(race.ReadyDelayMinutes);
-                        var startTime = raceInstance.ReadyOn.Value.Plus(readyDuration);
                         while (now < raceInstance.ReadyOn)
                         {
                             await Task.Delay(TimeSpan.FromMinutes(1));
