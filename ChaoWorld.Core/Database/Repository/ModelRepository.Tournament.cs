@@ -185,16 +185,24 @@ namespace ChaoWorld.Core
 
         public async Task GiveTournamentRewards(TournamentInstance instance, int prizeRings)
         {
+            // Only the winner gets the normal prize amount, but participants still get a participation prize
+            // Unlike races, it doesn't matter how long you last
             await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update gardens g
-                set ringbalance = ringbalance + {prizeRings}
+                set ringbalance = (
+						case when i.winnerchaoid = c.id then ringbalance + {prizeRings}
+							else ringbalance + {prizeRings / 10}
+						end
+					)
                 from tournamentinstances i
+				join tournamentinstancechao tic
+				on i.id = tic.tournamentinstanceid
                 join chao c
-                on i.winnerchaoid = c.id
+                on tic.chaoid = c.id
                 where i.id = {instance.Id}
                 and g.id = c.gardenid
             "));
-            _logger.Information($"Delivered prize of {prizeRings} rings for instance {instance.Id} of tournament {instance.TournamentId}");
+            _logger.Information($"Delivered base prize of {prizeRings} rings for instance {instance.Id} of tournament {instance.TournamentId}");
         }
 
         public async Task JoinChaoToTournamentInstance(TournamentInstance instance, Chao chao, IChaoWorldConnection? conn = null)
