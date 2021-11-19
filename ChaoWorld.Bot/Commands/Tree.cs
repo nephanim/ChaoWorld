@@ -35,7 +35,7 @@ namespace ChaoWorld.Bot
             if (tree.NextWatering < now)
             {
                 // It's time to water - good!
-                tree.Health += 8;
+                tree.Health += new Random().Next(5, 10);
                 tree.NextWatering = now.Plus(Duration.FromHours(4));
                 if (tree.Health > 100)
                     tree.Health = 100;

@@ -76,7 +76,11 @@ namespace ChaoWorld.Core
         {
             await _db.Execute(conn => conn.QueryAsync($@"
                 update trees
-                set health = health - 1,
+                set health = (
+                        case when health < 1 then health
+                            when floor(random()*100) < health) then health - 1
+                            else health,
+                        end),
 	                fruitquantity = (
 		                case when fruitquantity >= 10 then fruitquantity
 			                when floor(random()*100) < health then fruitquantity + 1
