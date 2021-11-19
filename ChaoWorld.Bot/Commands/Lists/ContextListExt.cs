@@ -311,11 +311,18 @@ namespace ChaoWorld.Bot
 
             void ShortRenderer(EmbedBuilder eb, IEnumerable<Core.Tree> page)
             {
+                var now = SystemClock.Instance.GetCurrentInstant();
                 // We may end up over the description character limit
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{(int)m.Id}`] {m.Name} ({m.Health:D2}/100)";
+                    var waterMe = m.NextWatering < now
+                        ? $" {Emojis.Droplet}"
+                        : string.Empty;
+                    var hasFruit = m.FruitQuantity > 0
+                        ? $" {Emojis.OrangeFruit}"
+                        : string.Empty;
+                    var ret = $"[`{(int)m.Id}`] {m.Name} ({m.Health:D2}/100){waterMe}{hasFruit}";
                     return ret;
                 }));
             }

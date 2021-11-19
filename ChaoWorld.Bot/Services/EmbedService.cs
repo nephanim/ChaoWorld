@@ -247,6 +247,7 @@ namespace ChaoWorld.Bot
             var name = $"{tree.Name}";
             var fruitType = await _repo.GetItemBaseByTypeId(tree.FruitTypeId);
             var desc = string.Empty;
+            var now = SystemClock.Instance.GetCurrentInstant();
             if (tree.Health == 0)
                 desc = "It doesn't appear to be producing anything. Maybe it needs water.";
             else if (tree.Health < 25)
@@ -267,9 +268,15 @@ namespace ChaoWorld.Bot
             var yieldType = tree.Name.Contains("Mushroom")
                 ? "Mushrooms"
                 : "Fruits";
-            eb.Field(new(yieldType, $"{tree.FruitQuantity}"));
+            var hasFruits = tree.FruitQuantity > 0
+                ? $" {Emojis.OrangeFruit}"
+                : string.Empty;
+            eb.Field(new(yieldType, $"{tree.FruitQuantity}{hasFruits}"));
             eb.Field(new("Health", $"{tree.Health:D2}/100"));
-            eb.Field(new("Next Watering", tree.TimeUntilWatering));
+            var waterMe = tree.NextWatering < now
+                ? $" {Emojis.Droplet}"
+                : string.Empty;
+            eb.Field(new("Next Watering", $"{tree.TimeUntilWatering}{waterMe}"));
 
             return eb.Build();
         }

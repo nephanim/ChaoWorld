@@ -14,6 +14,7 @@ namespace ChaoWorld.Core
         public const string Paperclip = "\U0001F4CE";
         public const string Megaphone = ":mega:";
         public const string Heart = ":heart:";
+        public const string Droplet = ":droplet:";
         public const string BlueDiamond = ":small_blue_diamond:";
         public const string OrangeDiamond = ":small_orange_diamond:";
 
