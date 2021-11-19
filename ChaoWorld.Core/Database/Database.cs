@@ -44,7 +44,7 @@ namespace ChaoWorld.Core
                 Pooling = true,
                 Enlist = false,
                 NoResetOnClose = true,
-
+                CommandTimeout = 120,
                 // Lower timeout than default (15s -> 2s), should ideally fail-fast instead of hanging
                 Timeout = 2
             }.ConnectionString;
