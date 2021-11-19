@@ -46,6 +46,7 @@ namespace ChaoWorld.Bot
         public static Command TreeInfo = new Command("tree info", "tree info {id/name}", "Looks up information about one of your trees using either the name or ID");
         public static Command TreeList = new Command("tree list", "tree list", "Lists all trees in your orchard and their health");
         public static Command TreeWater = new Command("tree water", "tree water {id/name}", "Waters a tree in your orchard, improving its overall health when done at the proper time");
+        public static Command TreeCollect = new Command("tree collect", "tree collect {id/name}", "Collects fruit from a tree in your orchard");
         public static Command TreeRemove = new Command("tree remove", "tree remove {id/name}", "Removes a tree from your orchard to make room for another one (each garden can have up to 7 at at time");
         public static Command GiveItem = new Command("give item", "give item {id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
         public static Command GiveRings = new Command("give rings", "give rings {qty} {@user}", "Offers the specified amount of rings to another player (target can accept or reject the offer)");
@@ -85,7 +86,7 @@ namespace ChaoWorld.Bot
 
         public static Command[] TreeCommands =
         {
-            TreeInfo, TreeList, TreeWater, TreeRemove
+            TreeInfo, TreeList, TreeWater, TreeCollect, TreeRemove
         };
 
         public static Command[] GiveCommands =
@@ -442,7 +443,43 @@ namespace ChaoWorld.Bot
 
         private async Task HandleTreeCommand(Context ctx)
         {
-            
+            if (ctx.Match("list", "l") || !ctx.HasNext())
+                await ctx.Execute<TreeList>(TreeList, m => m.OrchardList(ctx));
+            else if (ctx.Match("info", "i"))
+                if (await ctx.MatchTree() is { } infoTree)
+                    await ctx.Execute<Tree>(TreeInfo, m => m.TreeInfo(ctx, infoTree));
+                else
+                    await PrintCommandExpectedError(ctx, TreeInfo);
+            else if (ctx.Match("destroy", "delete", "remove", "yeet", "chop", "erase", "d"))
+                if (await ctx.MatchTree() is { } deleteMeTheTree)
+                    await ctx.Execute<Tree>(TreeRemove, m => m.RemoveTree(ctx, deleteMeTheTree));
+                else
+                    await PrintCommandExpectedError(ctx, TreeRemove);
+            else if (ctx.Match("water", "w", "tend", "t"))
+                if (await ctx.MatchTree() is { } waterTree)
+                    await ctx.Execute<Tree>(TreeWater, m => m.WaterTree(ctx, waterTree));
+                else
+                    await PrintCommandExpectedError(ctx, TreeWater);
+            else if (ctx.Match("collect", "c", "harvest", "pick"))
+                if (await ctx.MatchTree() is { } collectTree)
+                    await ctx.Execute<Tree>(TreeCollect, m => m.CollectFruit(ctx, collectTree));
+                else
+                    await PrintCommandExpectedError(ctx, TreeCollect);
+            else if (await ctx.MatchTree() is { } aTree)
+            {
+                if (ctx.Match("info", "i") || !ctx.HasNext())
+                    await ctx.Execute<Tree>(TreeInfo, m => m.TreeInfo(ctx, aTree));
+                else if (ctx.Match("destroy", "delete", "remove", "yeet", "chop", "erase", "d"))
+                    await ctx.Execute<Tree>(TreeRemove, m => m.RemoveTree(ctx, aTree));
+                else if (ctx.Match("water", "w", "tend", "t"))
+                    await ctx.Execute<Tree>(TreeWater, m => m.WaterTree(ctx, aTree));
+                else if (ctx.Match("collect", "c", "harvest", "pick"))
+                    await ctx.Execute<Tree>(TreeCollect, m => m.CollectFruit(ctx, aTree));
+                else
+                    await PrintCommandNotFoundError(ctx, TreeCommands);
+            }
+            else
+                await PrintCommandNotFoundError(ctx, TreeCommands);
         }
 
         private async Task HandleGiveCommand(Context ctx)

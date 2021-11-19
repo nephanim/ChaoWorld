@@ -316,6 +316,50 @@ namespace ChaoWorld.Bot
             return item;
         }
 
+        public static async Task<Core.Tree> PeekTree(this Context ctx)
+        {
+            var input = ctx.PeekArgument();
+            if (!string.IsNullOrEmpty(input))
+                input = input.Replace("\"", string.Empty).Replace(" ", string.Empty).Replace("#", string.Empty);
+
+            // Trees might be referenced by their ID or by their name
+            // e.g. "!tree 123" or "!tree 'Swim'"
+
+            // Try finding the tree by its ID first
+            if (int.TryParse(input, out int id))
+            {
+                if (await ctx.Repository.GetTree(id) is Core.Tree treeById)
+                    return treeById;
+            }
+
+            // Try interpreting the input as a tree name
+            if (!string.IsNullOrEmpty(input))
+            {
+                // Try looking it up by exact match
+                if (await ctx.Repository.GetTreeByName(ctx.Garden.Id.Value, input) is Core.Tree treeByName)
+                    return treeByName;
+
+                // Try fuzzy matching
+                if (await ctx.Repository.GetTreeByNameWithFuzzyMatching(ctx.Garden.Id.Value, input) is Core.Tree treeByFuzzyMatch)
+                    return treeByFuzzyMatch;
+            }
+
+            // We didn't find anything, so we return null.
+            return null;
+        }
+
+        public static async Task<Core.Tree> MatchTree(this Context ctx)
+        {
+            // First, peek
+            var tree = await ctx.PeekTree();
+
+            // If the peek was successful, we've used up the next argument, so we pop that just to get rid of it.
+            if (tree != null) ctx.PopArgument();
+
+            // Finally, we return it
+            return tree;
+        }
+
         public static string CreateChaoNotFoundError(this Context ctx, string input)
         {
             if (ctx.Member != null)

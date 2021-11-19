@@ -29,22 +29,27 @@ namespace ChaoWorld.Bot
             ctx.CheckGarden();
             ctx.CheckOwnTree(tree);
 
-            // They can water as often as they want, but depending on the frequency, it may have positive or negative effects...
+            // Only allow watering if the tree is ready
+            var timeUntilWatering = tree.TimeUntilWatering;
             var now = SystemClock.Instance.GetCurrentInstant();
             if (tree.NextWatering < now)
             {
                 // It's time to water - good!
                 tree.Health += 8;
+                tree.NextWatering = now.Plus(Duration.FromHours(4));
                 if (tree.Health > 100)
                     tree.Health = 100;
-                await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It looks refreshed and healthy.");
+
+                if (tree.Health > 75)
+                    await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It looks refreshed and healthy.");
+                else if (tree.Health > 25)
+                    await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It's starting to grow stronger.");
+                else
+                    await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It will need some more attention later.");
             } else
             {
                 // Uh oh, we're overwatering the tree...
-                tree.Health -= 1;
-                if (tree.Health < 0)
-                    tree.Health = 0;
-                await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It looks a little soggy...");
+                await ctx.Reply($"{Emojis.Warn} You decide not to water the {tree.Name}. It looks like it's too soon. Try again in {timeUntilWatering}.");
             }
             await _repo.UpdateTree(tree);
         }
@@ -54,23 +59,59 @@ namespace ChaoWorld.Bot
             ctx.CheckGarden();
             ctx.CheckOwnTree(tree);
 
-            // TODO
+            if (tree.FruitQuantity > 0)
+            {
+                var quantity = tree.FruitQuantity;
+                var yieldType = tree.Name.Replace(" Cluster", string.Empty).Replace(" Tree", string.Empty);
+                await HarvestFruit(ctx.Garden, tree);
+                await ctx.Reply($"{Emojis.Success} You harvested {quantity} {yieldType} from the {tree.Name}.");
+            }
+            else
+                await ctx.Reply($"{Emojis.Error} There is nothing to harvest. Try again later.");
         }
 
-        private async Task RemoveTree(Context ctx, Core.Tree tree)
+        public async Task RemoveTree(Context ctx, Core.Tree tree)
         {
             ctx.CheckGarden();
             ctx.CheckOwnTree(tree);
             await ConfirmRemoveTree(ctx, tree);
 
-            // TODO: Collect their fruit for them at least...
+            // Collect their fruit for them at least...
+            await HarvestFruit(ctx.Garden, tree);
 
             // Make a stump out of that sucker
             await _repo.DeleteTree(tree);
             await ctx.Reply($"{Emojis.Success} {tree.Name} was removed from your orchard.");
         }
 
-        public async Task ConfirmRemoveTree(Context ctx, Core.Tree tree)
+        private async Task HarvestFruit(Core.Garden garden, Core.Tree tree)
+        {
+            if (tree.FruitQuantity > 0)
+            {
+                tree.FruitQuantity = 0;
+                await _repo.UpdateTree(tree); // We're updating this first as a duping precaution
+
+                var existingItem = await _repo.GetInventoryItemByTypeId(garden.Id.Value, tree.FruitTypeId);
+                if (existingItem != null)
+                {
+                    existingItem.Quantity += tree.FruitQuantity;
+                    await _repo.UpdateItem(existingItem);
+                }
+                else
+                {
+                    var item = new Core.Item()
+                    {
+                        GardenId = garden.Id.Value,
+                        Category = Core.ItemBase.ItemCategories.Fruit,
+                        TypeId = tree.FruitTypeId,
+                        Quantity = tree.FruitQuantity
+                    };
+                    await _repo.AddItem(garden.Id.Value, item);
+                }
+            }
+        }
+
+        private async Task ConfirmRemoveTree(Context ctx, Core.Tree tree)
         {
             var prompt = $"{Emojis.Warn} Are you sure you want to remove {tree.Name}?";
             if (!(await ctx.PromptYesNo(prompt, "Confirm")))

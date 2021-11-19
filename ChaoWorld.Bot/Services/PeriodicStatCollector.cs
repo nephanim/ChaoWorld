@@ -120,6 +120,9 @@ namespace ChaoWorld.Bot
 
             await RunFirstEvolutions(broadcastChannels.General);
 
+            _logger.Information("Updating trees...");
+            await _repo.GrowFruitForAllTrees();
+
             _logger.Information("Updating Black Market...");
             await _repo.ClearMarketListings();
             try
@@ -174,7 +177,7 @@ namespace ChaoWorld.Bot
                 await _repo.ResetTournamentAvailableOn(t);
                 var instance = await _repo.CreateTournamentInstance(t);
                 _logger.Information($"Created instance {instance.Id} of tournament {t.Id} ({t.Name})");
-                await SendMessage(channel, $"{Emojis.Megaphone} The {t.Name} Tournament will begin in {t.ReadyDelayMinutes}.");
+                await SendMessage(channel, $"{Emojis.Megaphone} The {t.Name} Tournament will begin in {t.ReadyDelayMinutes} minutes.");
             }
         }
 

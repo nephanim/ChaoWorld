@@ -264,7 +264,10 @@ namespace ChaoWorld.Bot
 
             eb.Field(new("Type", fruitType.Name));
             eb.Field(new("Age", $"{tree.Age}"));
-            eb.Field(new("Stored Quantity", $"{tree.FruitQuantity}"));
+            var yieldType = tree.Name.Contains("Mushroom")
+                ? "Mushrooms"
+                : "Fruits";
+            eb.Field(new(yieldType, $"{tree.FruitQuantity}"));
             eb.Field(new("Health", $"{tree.Health:D2}/100"));
             eb.Field(new("Next Watering", tree.TimeUntilWatering));
 

@@ -16,6 +16,24 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Tree?>(query);
         }
 
+        public Task<Tree?> GetTreeByName(int gardenId, string name)
+        {
+            var query = new Query("trees")
+                .Where("gardenid", gardenId)
+                .WhereRaw("lower(name) = lower(?)", name.Replace("\"", string.Empty))
+                .Limit(1);
+            return _db.QueryFirst<Tree?>(query);
+        }
+
+        public Task<Tree?> GetTreeByNameWithFuzzyMatching(int gardenId, string name)
+        {
+            var query = new Query("trees")
+                .Where("gardenid", gardenId)
+                .OrderByRaw("similarity(name, lower(?)) desc", name.ToLower().Replace("\"", string.Empty))
+                .Limit(1);
+            return _db.QueryFirst<Tree?>(query);
+        }
+
         public async Task<Tree> CreateTree(Tree tree, IChaoWorldConnection? conn = null)
         {
             var query = new Query("trees").AsInsert(new
@@ -52,6 +70,21 @@ namespace ChaoWorld.Core
         {
             var query = new Query("trees").SelectRaw("count(*)").Where("gardenid", gardenId);
             return _db.QueryFirst<int>(query);
+        }
+
+        public async Task GrowFruitForAllTrees(IChaoWorldConnection? conn = null)
+        {
+            await _db.Execute(conn => conn.QueryAsync($@"
+                update trees
+                set health = health - 1,
+	                fruitquantity = (
+		                case when floor(random()*100) < health
+			                then fruitquantity + 1
+			                else fruitquantity
+		                end)
+                where health > 0
+            "));
+            _logger.Information($"Updated tree health and fruit quantity");
         }
     }
 }

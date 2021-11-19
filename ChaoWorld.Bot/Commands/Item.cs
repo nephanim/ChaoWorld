@@ -285,6 +285,7 @@ namespace ChaoWorld.Bot
                 tree.Name = item.Name.Contains("Mushroom") // This weirdness is just because technically there's no such thing as a mushroom "tree"
                     ? $"{item.Name} Cluster"
                     : $"{item.Name} Tree";
+                tree.Name = tree.Name.Replace("Spores", string.Empty).Replace("Seed", "Fruit");
                 tree = await _repo.CreateTree(tree);
                 await ctx.Reply($"{Emojis.Success} Your {tree.Name} has been added to the garden. Remember to water it regularly.");
                 return true;
