@@ -85,6 +85,16 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Garden>(conn, query, extraSql: "returning *");
         }
 
+        public async Task ResetGardenInstanceLimits()
+        {
+            var query = new Query("gardens").AsUpdate(new
+            {
+                instancelimit = 200
+            });
+            await _db.Query<Garden>(query);
+            _logger.Information("Reset instance limits for all gardens");
+        }
+
         public Task AddAccount(GardenId garden, ulong accountId, IChaoWorldConnection? conn = null)
         {
             // We have "on conflict do nothing" since linking an account when it's already linked to the same garden is idempotent

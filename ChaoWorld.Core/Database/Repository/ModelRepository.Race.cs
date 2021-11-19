@@ -190,7 +190,8 @@ namespace ChaoWorld.Core
 			                when ric.state = {(int)RaceInstance.RaceStates.Canceled} then ringbalance
                             else ringbalance + {prizeRings/10}
 		                end
-	                )
+	                ),
+                    instancelimit = instancelimit - 1
                 from raceinstances i
                 join raceinstancechao ric
                 on i.id = ric.raceinstanceid

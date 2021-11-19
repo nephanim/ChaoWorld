@@ -61,6 +61,10 @@ namespace ChaoWorld.Bot
                 // Race isn't joinable - sorry!
                 await ctx.Reply($"{Emojis.Error} The {race.Name} race is {Core.MiscUtils.GetDescription(raceInstance.State).ToLower()} and can no longer be joined. Please wait for the next race.");
             }
+            else if (ctx.Garden.InstanceLimit <= 0)
+            {
+                await ctx.Reply($"{Emojis.Error} You have reached the daily instance limit. You can join races again tomorrow.");
+            }
             else if (activeInRace != null)
             {
                 // There's a chao in this garden that's already participating in a race.

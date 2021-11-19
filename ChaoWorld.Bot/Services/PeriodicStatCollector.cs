@@ -111,7 +111,7 @@ namespace ChaoWorld.Bot
 
             _logger.Information("Updating available tournaments...");
             await InstantiateTournaments(broadcastChannels.Tournaments);
-            await CancelTournaments(broadcastChannels.Races);
+            await CancelTournaments(broadcastChannels.Tournaments);
         }
 
         public async Task RunHourlyWithBroadcast()
@@ -144,6 +144,12 @@ namespace ChaoWorld.Bot
             _logger.Information("Recalculating instance prize amounts...");
             await _repo.RecalculateRaceRewards();
             await _repo.RecalculateTournamentRewards();
+        }
+
+        public async Task RunDaily()
+        {
+            _logger.Information("Resetting instance limits for gardens...");
+            await _repo.ResetGardenInstanceLimits();
         }
 
         private async Task InstantiateRaces(ulong channel)

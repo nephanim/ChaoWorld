@@ -34,7 +34,7 @@ namespace ChaoWorld.Core
                 availableon = availableOn
             });
             var updatedTourney = await _db.QueryFirst<Tournament>(query, extraSql: "returning *");
-            _logger.Information($"Updated instance {tourney.Id} of tournament {tourney.Name}");
+            _logger.Information($"Updated next available time for tournament {tourney.Id} ({tourney.Name})");
             return updatedTourney;
         }
 
@@ -109,9 +109,10 @@ namespace ChaoWorld.Core
 
         public async Task<IEnumerable<TournamentInstance>> GetExpiredTournamentInstances()
         {
+            var now = SystemClock.Instance.GetCurrentInstant();
             var query = new Query("tournamentinstances")
                 .Where("tournamentinstances.state", (int)Core.TournamentInstance.TournamentStates.New)
-                .WhereRaw("tournamentinstances.readyon < current_timestamp");
+                .WhereRaw("tournamentinstances.readyon", "<", now);
             return await _db.Query<TournamentInstance>(query);
         }
 
@@ -193,7 +194,8 @@ namespace ChaoWorld.Core
 						case when i.winnerchaoid = c.id then ringbalance + {prizeRings}
 							else ringbalance + {prizeRings / 10}
 						end
-					)
+					),
+                    instancelimit = instancelimit - 1
                 from tournamentinstances i
 				join tournamentinstancechao tic
 				on i.id = tic.tournamentinstanceid

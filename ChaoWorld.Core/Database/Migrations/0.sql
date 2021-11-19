@@ -4,7 +4,8 @@ create table if not exists gardens
     ringbalance bigint not null default 0,
     createdon timestamp without time zone not null default (current_timestamp),
     nextcollecton timestamp without time zone not null default (current_timestamp),
-    activechao bigint
+    activechao bigint,
+    instancelimit integer not null default 200
 );
 
 create table if not exists accounts

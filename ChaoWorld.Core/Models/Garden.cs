@@ -42,5 +42,6 @@ namespace ChaoWorld.Core
         public Instant CreatedOn { get; set; }
         public Instant NextCollectOn { get; set; }
         public long? ActiveChao { get; set; }
+        public int InstanceLimit { get; set; }
     }
 }

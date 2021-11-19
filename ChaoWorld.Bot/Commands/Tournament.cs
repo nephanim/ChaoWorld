@@ -62,6 +62,10 @@ namespace ChaoWorld.Bot
                 // Tourney isn't joinable - sorry!
                 await ctx.Reply($"{Emojis.Error} This tournament is {Core.MiscUtils.GetDescription(instance.State).ToLower()} and can no longer be joined.");
             }
+            else if (ctx.Garden.InstanceLimit <= 0)
+            {
+                await ctx.Reply($"{Emojis.Error} You have reached the daily instance limit. You can join tournaments again tomorrow.");
+            }
             else if (activeInRace != null)
             {
                 // There's a chao in this garden that's already participating in a race.

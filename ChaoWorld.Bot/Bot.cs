@@ -48,6 +48,7 @@ namespace ChaoWorld.Bot
         private bool _hasReceivedReady = false;
         private Timer _periodicTask; // Never read, just kept here for GC reasons
         private Timer _hourlyTask;
+        private Timer _dailyTask;
 
         public Bot(ILifetimeScope services, ILogger logger, PeriodicStatCollector collector, IMetrics metrics,
             ErrorMessageService errorMessageService, Cluster cluster, DiscordApiClient rest, IDiscordCache cache, IDatabase db)
@@ -86,6 +87,12 @@ namespace ChaoWorld.Bot
             {
                 var __ = UpdateHourly();
             }, null, timeTillNextWholeHour, TimeSpan.FromHours(1));
+
+            var timeTillNextDay = TimeSpan.FromMinutes(1440 - (timeNow.ToUnixTimeSeconds() / 60) % 1440);
+            _dailyTask = new Timer(_ =>
+            {
+                var __ = UpdateDaily();
+            }, null, timeTillNextDay, TimeSpan.FromDays(1));
 
             // Clean up orphaned race instances
             PurgeOrphanedRaceInstances();
@@ -302,6 +309,12 @@ namespace ChaoWorld.Bot
         {
             _logger.Debug("Running hourly scheduled tasks");
             await _collector.RunHourlyWithBroadcast();
+        }
+
+        private async Task UpdateDaily()
+        {
+            _logger.Debug("Running daily scheduled tasks");
+            await _collector.RunDaily();
         }
 
         private async Task UpdateBotStatus(Shard specificShard = null)
