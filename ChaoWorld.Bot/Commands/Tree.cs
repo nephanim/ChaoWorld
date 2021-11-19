@@ -88,13 +88,14 @@ namespace ChaoWorld.Bot
         {
             if (tree.FruitQuantity > 0)
             {
+                var quantity = tree.FruitQuantity;
                 tree.FruitQuantity = 0;
                 await _repo.UpdateTree(tree); // We're updating this first as a duping precaution
 
                 var existingItem = await _repo.GetInventoryItemByTypeId(garden.Id.Value, tree.FruitTypeId);
                 if (existingItem != null)
                 {
-                    existingItem.Quantity += tree.FruitQuantity;
+                    existingItem.Quantity += quantity;
                     await _repo.UpdateItem(existingItem);
                 }
                 else
@@ -104,7 +105,7 @@ namespace ChaoWorld.Bot
                         GardenId = garden.Id.Value,
                         Category = Core.ItemBase.ItemCategories.Fruit,
                         TypeId = tree.FruitTypeId,
-                        Quantity = tree.FruitQuantity
+                        Quantity = quantity
                     };
                     await _repo.AddItem(garden.Id.Value, item);
                 }
