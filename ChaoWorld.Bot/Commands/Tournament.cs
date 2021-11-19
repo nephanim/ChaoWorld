@@ -70,13 +70,13 @@ namespace ChaoWorld.Bot
             {
                 // There's a chao in this garden that's already participating in a race.
                 var race = await _repo.GetRaceById(activeInRace.RaceId);
-                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {race.Name} race. Please support your chao in that race first!");
+                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {race.Name} Race. Please support your chao in that race first!");
             }
             else if (activeInTourney != null)
             {
                 // There's a chao in this garden that's already participating in a tournament.
                 var tourney = await _repo.GetTournamentById(activeInTourney.TournamentId);
-                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} tournament. Please support your chao's tournament first!");
+                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} Tournament. Please support your chao's tournament first!");
             }
             else
             {
@@ -98,7 +98,7 @@ namespace ChaoWorld.Bot
                     // The tournament is not full - join it
                     await _repo.JoinChaoToTournamentInstance(instance, chao);
                     currentChaoCount++;
-                    await ctx.Reply($"{Emojis.Success} {chao.Name} has joined the {tourney.Name} tournament. Do your best!");
+                    await ctx.Reply($"{Emojis.Success} {chao.Name} has joined the {tourney.Name} Tournament. Do your best!");
 
                     // See whether this chao joining puts us at the required threshold to start
                     if (currentChaoCount >= tourney.MinimumChao && instance.State == TournamentInstance.TournamentStates.New)
@@ -149,38 +149,47 @@ namespace ChaoWorld.Bot
             // The ready delay period is over -- time to fight!
             if (instance.State == TournamentInstance.TournamentStates.Preparing || instance.State == TournamentInstance.TournamentStates.Preparing)
             {
-                // Start the race!
-                instance.State = TournamentInstance.TournamentStates.InProgress;
-                await _repo.UpdateTournamentInstance(instance);
-                //await ctx.Reply($"{Emojis.Megaphone} The {tourney.Name} tournament is starting! Good luck to all participants!");
-
-                try
+                var currentChaoCount = await _repo.GetTournamentInstanceChaoCount(instance.Id);
+                if (currentChaoCount >= tourney.MinimumChao)
                 {
-                    // Determine how many slots to fill with NPC chao and select random chao to fill those
-                    var currentChaoCount = await _repo.GetTournamentInstanceChaoCount(instance.Id);
-                    var limit = GetTourneySize(currentChaoCount);
-                    tourney.PrizeRings = tourney.PrizeRings * (limit / 4);
-                    await _repo.LogMessage($"Tournament instance {instance.Id} has {currentChaoCount} participants. Filling to {limit}.");
+                    // Start the race!
+                    instance.State = TournamentInstance.TournamentStates.InProgress;
+                    await _repo.UpdateTournamentInstance(instance);
+                    //await ctx.Reply($"{Emojis.Megaphone} The {tourney.Name} tournament is starting! Good luck to all participants!");
 
-                    var joiningNPCs = new List<Core.Chao>();
-                    while (currentChaoCount < limit)
+                    try
                     {
-                        var npc = await _repo.GetRandomChao(0); // Garden 0 is a special holding place reserved for NPCs
-                        if (joiningNPCs.All(x => x.Id != npc.Id))
-                        {
-                            joiningNPCs.Add(npc);
-                            await _repo.JoinChaoToTournamentInstance(instance, npc);
-                            currentChaoCount++;
-                        } // else we loop again without incrementing, so we get another one
-                    }
-                }
-                catch (Exception e)
-                {
-                    await _repo.LogMessage($"Failed to fill race instance {instance.Id} of tournament {tourney.Id} with NPC chao: {e.Message}");
-                }
+                        // Select random NPC chao to fill the remaining slots
+                        // The tournament size will automatically scale up based on the number of human participants to the next highest power of two
+                        var limit = GetTourneySize(currentChaoCount);
+                        tourney.PrizeRings = tourney.PrizeRings * (limit / 4);
+                        await _repo.LogMessage($"Tournament instance {instance.Id} has {currentChaoCount} participants. Filling to {limit}.");
 
-                // Now we have a full roster - sound the gong
-                await ProcessTournament(ctx, tourney, instance);
+                        var joiningNPCs = new List<Core.Chao>();
+                        while (currentChaoCount < limit)
+                        {
+                            var npc = await _repo.GetRandomChao(0); // Garden 0 is a special holding place reserved for NPCs
+                            if (joiningNPCs.All(x => x.Id != npc.Id))
+                            {
+                                joiningNPCs.Add(npc);
+                                await _repo.JoinChaoToTournamentInstance(instance, npc);
+                                currentChaoCount++;
+                            } // else we loop again without incrementing, so we get another one
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        await _repo.LogMessage($"Failed to fill race instance {instance.Id} of tournament {tourney.Id} with NPC chao: {e.Message}");
+                    }
+
+                    // Now we have a full roster - sound the gong
+                    await ProcessTournament(ctx, tourney, instance);
+                }
+                else
+                {
+                    await _repo.DeleteTournamentInstance(instance);
+                    await ctx.Reply($"{Emojis.Stop} The {tourney.Name} Tournament has been canceled as it did not reach the minimum number of participants.");
+                }
             }
             else
             {

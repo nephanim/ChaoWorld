@@ -59,7 +59,7 @@ namespace ChaoWorld.Bot
                 || raceInstance.State == RaceInstance.RaceStates.Canceled)
             {
                 // Race isn't joinable - sorry!
-                await ctx.Reply($"{Emojis.Error} The {race.Name} race is {Core.MiscUtils.GetDescription(raceInstance.State).ToLower()} and can no longer be joined. Please wait for the next race.");
+                await ctx.Reply($"{Emojis.Error} The {race.Name} Race is {Core.MiscUtils.GetDescription(raceInstance.State).ToLower()} and can no longer be joined. Please wait for the next race.");
             }
             else if (ctx.Garden.InstanceLimit <= 0)
             {
@@ -69,13 +69,13 @@ namespace ChaoWorld.Bot
             {
                 // There's a chao in this garden that's already participating in a race.
                 var activeRace = await _repo.GetRaceByInstanceId(activeInRace.Id);
-                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {activeRace.Name} race. Please support your chao in that race first!");
+                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {activeRace.Name} Race. Please support your chao in that race first!");
             }
             else if (activeInTourney != null)
             {
                 // There's a chao in this garden that's already participating in a tournament.
                 var tourney = await _repo.GetTournamentById(activeInTourney.TournamentId);
-                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} tournament. Please support your chao's tournament first!");
+                await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} Tournament. Please support your chao's tournament first!");
             }
             else
             {
@@ -160,43 +160,51 @@ namespace ChaoWorld.Bot
             // The ready delay period is over -- time to race!
             if (raceInstance.State == RaceInstance.RaceStates.Preparing || raceInstance.State == RaceInstance.RaceStates.New)
             {
-                // Start the race!
-                raceInstance.State = RaceInstance.RaceStates.InProgress;
-                await _repo.UpdateRaceInstance(raceInstance);
-                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race is starting! Good luck to all participants!");
-
-                try
+                var currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
+                if (currentChaoCount >= race.MinimumChao)
                 {
-                    // Determine how many slots to fill with NPC chao and select random chao to fill those
-                    var currentChaoCount = await _repo.GetRaceInstanceChaoCount(raceInstance.Id);
-                    var joiningNPCs = new List<Core.Chao>();
-                    while (currentChaoCount < race.MaximumChao)
+                    // Start the race!
+                    raceInstance.State = RaceInstance.RaceStates.InProgress;
+                    await _repo.UpdateRaceInstance(raceInstance);
+                    await ctx.Reply($"{Emojis.Megaphone} The {race.Name} Race is starting! Good luck to all participants!");
+
+                    try
                     {
-                        var npc = await _repo.GetRandomChao(0); // Garden 0 is a special holding place reserved for NPCs
-                        if (joiningNPCs.All(x => x.Id != npc.Id))
+                        // Select random NPC chao to fill remaining slots
+                        var joiningNPCs = new List<Core.Chao>();
+                        while (currentChaoCount < race.MaximumChao)
                         {
-                            joiningNPCs.Add(npc);
-                            await _repo.JoinChaoToRaceInstance(raceInstance, npc);
-                            currentChaoCount++;
-                        } // else we loop again without incrementing, so we get another one
+                            var npc = await _repo.GetRandomChao(0); // Garden 0 is a special holding place reserved for NPCs
+                            if (joiningNPCs.All(x => x.Id != npc.Id))
+                            {
+                                joiningNPCs.Add(npc);
+                                await _repo.JoinChaoToRaceInstance(raceInstance, npc);
+                                currentChaoCount++;
+                            } // else we loop again without incrementing, so we get another one
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        await _repo.LogMessage($"Failed to fill race instance {raceInstance.Id} of race {race.Id} with NPC chao: {e.Message}");
+                    }
+
+                    // Now we have a full roster - initialize all the race segments
+                    await _repo.AddSegmentsToRaceInstance(raceInstance);
+
+                    // Queue updates for the first set of race segments
+                    var complete = false;
+                    var index = 0;
+                    while (!complete)
+                    {
+                        var result = await UpdateRaceSegments(ctx, race, raceInstance, index);
+                        complete = result.Complete;
+                        index++;
                     }
                 }
-                catch (Exception e)
+                else
                 {
-                    await _repo.LogMessage($"Failed to fill race instance {raceInstance.Id} of race {race.Id} with NPC chao: {e.Message}");
-                }
-
-                // Now we have a full roster - initialize all the race segments
-                await _repo.AddSegmentsToRaceInstance(raceInstance);
-
-                // Queue updates for the first set of race segments
-                var complete = false;
-                var index = 0;
-                while (!complete)
-                {
-                    var result = await UpdateRaceSegments(ctx, race, raceInstance, index);
-                    complete = result.Complete;
-                    index++;
+                    await _repo.DeleteRaceInstance(raceInstance);
+                    await ctx.Reply($"{Emojis.Stop} The {race.Name} Race has been canceled as it did not reach the minimum number of participants.");
                 }
             }
             else
@@ -233,7 +241,7 @@ namespace ChaoWorld.Bot
                     Users = notifyList.ToArray()
                 };
                 
-                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has finished. Thanks for playing!{notifyString}", mentions: mentions);
+                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} Race has finished. Thanks for playing!{notifyString}", mentions: mentions);
                 result.Complete = true;
             }
             else if (segments.All(x => x.State == RaceInstanceChaoSegment.SegmentStates.Retired))
@@ -249,7 +257,7 @@ namespace ChaoWorld.Bot
                     Users = notifyList.ToArray()
                 };
 
-                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} race has been canceled because the chao can no longer continue.{notifyString}", mentions: mentions);
+                await ctx.Reply($"{Emojis.Megaphone} The {race.Name} Race has been canceled because the chao can no longer continue.{notifyString}", mentions: mentions);
                 result.Complete = true;
             }
             else
