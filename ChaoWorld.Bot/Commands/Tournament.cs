@@ -55,7 +55,7 @@ namespace ChaoWorld.Bot
             {
                 await ctx.Reply($"{Emojis.Error} Please use <#{allowedChannels.Tournaments}> to join tournaments.");
             }
-            if (instance.State == TournamentInstance.TournamentStates.InProgress
+            else if (instance.State == TournamentInstance.TournamentStates.InProgress
                 || instance.State == TournamentInstance.TournamentStates.Completed
                 || instance.State == TournamentInstance.TournamentStates.Canceled)
             {
