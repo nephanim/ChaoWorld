@@ -78,7 +78,7 @@ namespace ChaoWorld.Core
                 update trees
                 set health = (
                         case when health < 1 then health
-                            when floor(random()*100) < health) then health - 1
+                            when floor(random()*100) < health then health - 1
                             else health,
                         end),
 	                fruitquantity = (
