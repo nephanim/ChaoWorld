@@ -22,13 +22,13 @@ namespace ChaoWorld.Bot
         public static Command ChaoCuddle = new Command("chao cuddle", "chao {id/name} cuddle", "Cuddles the specified chao");
         public static Command ChaoRename = new Command("chao name", "chao {id/name} name {new name}", "Changes a chao's name");
         public static Command ChaoTag = new Command("chao tag", "chao {id/name} tag {emoji}", "Changes a chao's tag");
-        public static Command ChaoBreed = new Command("chao breed", "chao {id/name} {id/name}", "Breeds the specified chao with one another (first chao must belong to your garden and must have eaten a heart fruit, and breeding between gardens requires user approval)");
+        public static Command ChaoBreed = new Command("chao breed", "chao breed {id/name} {id/name}", "Breeds the specified chao with one another (first chao must belong to your garden and must have eaten a heart fruit, and breeding between gardens requires user approval)");
         public static Command ChaoGoodbye = new Command("chao goodbye", "chao {id/name} goodbye", "Sends a chao to the forest forever");
         public static Command RaceInstanceList = new Command("race list", "race list [all/complete/incomplete]", "Lists all races in reverse chronological order, with optional filters");
         public static Command RaceInfo = new Command("race", "race {id/name}", "Looks up information about a race using either the name or ID");
         public static Command RaceJoin = new Command("race join", "race join {race id/name} [chao id/name]", "Joins a race with the specified chao (garden default is used if no chao is specified)");
         public static Command RaceLeave = new Command("race leave", "race leave", "Leaves a race your chao is currently waiting for (provided it hasn't started yet)");
-        public static Command RacePings = new Command("race pings", "race pings {on/off}", "Updates account settings for pings on race completion (e.g. `!race pings on` will notify you when your chao completes a race");
+        public static Command RacePings = new Command("race pings", "race pings {on/off}", "Updates account settings for pings on race completion (e.g. `!race pings on` will notify you when your chao completes a race)");
         public static Command TournamentInstanceList = new Command("tournament list", "tournament list [all/complete/incomplete]", "Lists all tournaments in reverse chronological order, with optional filters");
         public static Command TournamentInfo = new Command("tournament", "tournament {id/name}", "Looks up information about a tournament using either the name or ID");
         public static Command TournamentJoin = new Command("tournament join", "tournament join {tournament id/name} [chao id/name]", "Joins a tournament with the specified chao (garden default is used if no chao is specified)");
@@ -123,7 +123,7 @@ namespace ChaoWorld.Bot
                 return ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             if (ctx.Match("help"))
                 if (ctx.Match("commands"))
-                    return ctx.Reply("For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
+                    return ctx.Reply("For a full list of commands, see #resources.");
                 else return ctx.Execute<Help>(Help, m => m.HelpRoot(ctx));
             if (ctx.Match("collect", "explore", "daily", "gather"))
                 return ctx.Execute<Misc>(null, m => m.Collect(ctx));
@@ -140,7 +140,7 @@ namespace ChaoWorld.Bot
                     PrintCommandExpectedError(ctx, SlotsCommands);
 
             // remove compiler warning
-            return ctx.Reply($"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
+            return ctx.Reply($"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a full list of commands, see #resources.");
         }
 
         private async Task HandleGardenCommand(Context ctx)
@@ -499,9 +499,9 @@ namespace ChaoWorld.Bot
         {
             if (!ctx.HasNext())
             {
-                await ctx.Reply($"Available command help targets: `garden`, `chao`, `collect`, `race`, `tournament`, `market`, `item`"
+                await ctx.Reply($"Available command help targets: `garden`, `chao`, `collect`, `race`, `tournament`, `market`, `item`, `tree`, `give`, `slots`"
                     + "\n- **!commands {target}** - *View commands related to a help target.*"
-                    + "\n\nFor a full list of commands, see: https://bytebarcafe.com/chao/commands.php"
+                    + "\n\nFor a full list of commands, see #resources."
                     + "\nIf you have any questions, just ask!");
                 return;
             }
@@ -530,9 +530,27 @@ namespace ChaoWorld.Bot
                 case "m":
                     await PrintCommandList(ctx, "market", MarketCommands);
                     break;
+                case "tournament":
+                case "tournaments":
+                case "t":
+                    await PrintCommandList(ctx, "tournament", TournamentCommands);
+                    break;
+                case "tree":
+                case "trees":
+                case "orchard":
+                case "o":
+                    await PrintCommandList(ctx, "trees", TreeCommands);
+                    break;
+                case "give":
+                    await PrintCommandList(ctx, "give", GiveCommands);
+                    break;
+                case "slots":
+                case "s":
+                    await PrintCommandList(ctx, "slots", SlotsCommands);
+                    break;
                 // TODO: Add help for tournament and misc commands
                 default:
-                    await ctx.Reply("For a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
+                    await ctx.Reply("For a full list of commands and their usage, see #resources.");
                     break;
             }
         }
@@ -541,14 +559,14 @@ namespace ChaoWorld.Bot
         {
             var commandListStr = CreatePotentialCommandList(potentialCommands);
             await ctx.Reply(
-                $"{Emojis.Error} Unknown command `!{ctx.FullCommand().Truncate(100)}`. Did you mean to use one of the following commands?\n{commandListStr}\n\nFor a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
+                $"{Emojis.Error} Unknown command `!{ctx.FullCommand().Truncate(100)}`. Did you mean to use one of the following commands?\n{commandListStr}\n\nFor a full list of commands, see #resources.");
         }
 
         private async Task PrintCommandExpectedError(Context ctx, params Command[] potentialCommands)
         {
             var commandListStr = CreatePotentialCommandList(potentialCommands);
             await ctx.Reply(
-                $"{Emojis.Error} You need to pass a command. Did you mean to use one of the following commands?\n{commandListStr}\n\nFor a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
+                $"{Emojis.Error} You need to pass a command. Did you mean to use one of the following commands?\n{commandListStr}\n\nFor a full list of commands, see #resources.");
         }
 
         private static string CreatePotentialCommandList(params Command[] potentialCommands)
@@ -559,7 +577,7 @@ namespace ChaoWorld.Bot
         private async Task PrintCommandList(Context ctx, string subject, params Command[] commands)
         {
             var str = CreatePotentialCommandList(commands);
-            await ctx.Reply($"Here is a list of commands related to {subject}: \n{str}\nFor a full list of commands, see: https://bytebarcafe.com/chao/commands.php");
+            await ctx.Reply($"Here is a list of commands related to {subject}: \n{str}\nFor a full list of commands, see #resources.");
         }
 
         private async Task<string> CreateSystemNotFoundError(Context ctx)
