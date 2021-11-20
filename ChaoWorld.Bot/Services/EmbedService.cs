@@ -66,12 +66,13 @@ namespace ChaoWorld.Bot
 
             var eb = new EmbedBuilder()
                 .Title(new(name))
-                .Thumbnail(new(imageUrl))
-                //.Image(new(imageUrl))
+                //.Thumbnail(new(imageUrl))
+                .Image(new(imageUrl))
                 .Description(chao.Appearance)
                 .Footer(new(
                     $"Garden ID: {garden.Id} | Chao ID: {chao.Id} {$"| Created on {chao.CreatedOn.FormatZoned(DateTimeZone.Utc)}"}"));
 
+            //eb.Field(new("URL", imageUrl));
             eb.Field(new("__General Info:__",
                 $"Owner: {gardenOwner}\r\n" +
                 $"Current Age: {chao.CurrentAge}\r\n" +

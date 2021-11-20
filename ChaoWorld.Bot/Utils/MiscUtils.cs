@@ -74,7 +74,7 @@ namespace ChaoWorld.Bot
 
         public static string GenerateThumbnailForChao(Core.Chao chao)
         {
-            var urlRoot = "https://nephanim.com/chao/resources/";
+            var urlRoot = "http://chaoworld.online/chao/resources/";
             var shiny = chao.IsShiny ? "shiny_" : "";
             var twoTone = chao.IsTwoTone ? "_twotone" : "";
             var color = chao.PrimaryColor.ToString().ToLower();
@@ -96,21 +96,21 @@ namespace ChaoWorld.Bot
             var child = chao.EvolutionState == Core.Chao.EvolutionStates.Child ? "child/" : "";
 
             // Examples (separated out for clarity):
-            //  https://bytebarcafe.com/chao/resources/ child/ neutral/ shiny_orange_twotone.jpg
-            //  https://bytebarcafe.com/chao/resources/ dark/ fly/ run/ white.jpg
-            return $"{urlRoot}{child}{alignment}{firstAbilityType}{secondAbilityType}{shiny}{color}{mixColor}{twoTone}.jpg?i=1";
+            //  https://chaoworld.online/chao/resources/ child/ neutral/ shiny_orange_twotone.jpg
+            //  https://chaoworld.online/chao/resources/ dark/ fly/ run/ white.jpg
+            return $"{urlRoot}{child}{alignment}{firstAbilityType}{secondAbilityType}{shiny}{color}{mixColor}{twoTone}.jpg?i=0";
         }
 
         public static string GenerateThumbnailForRace(Core.Race race)
         {
-            var urlRoot = "https://nephanim.com/chao/resources/races/";
+            var urlRoot = "https://chaoworld.online/chao/resources/races/";
             var name = race.Name.ToLower().Replace(" ", string.Empty);
             return $"{urlRoot}{name}.png?i=1";
         }
 
         public static string GenerateThumbnailForTournament()
         {
-            return "https://nephanim.com/chao/resources/misc/chaokarate.jpg";
+            return "https://chaoworld.online/chao/resources/misc/chaokarate.jpg";
         }
 
         public static async Task<string> GetCachedGardenOwnerName(IDiscordCache cache, DiscordApiClient rest, IEnumerable<ulong> accountIds, int gardenId)
