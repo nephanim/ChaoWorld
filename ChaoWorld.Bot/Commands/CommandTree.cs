@@ -129,12 +129,12 @@ namespace ChaoWorld.Bot
                 return ctx.Execute<Misc>(null, m => m.Collect(ctx));
             if (ctx.Match("stats"))
                 return ctx.Execute<Misc>(null, m => m.Stats(ctx));
-            if (ctx.Match("slots"))
-                if (ctx.Match("play"))
+            if (ctx.Match("slots", "s"))
+                if (ctx.Match("play", "s"))
                     return ctx.Execute<Misc>(SlotsPlay, m => m.PlaySlots(ctx));
-                else if (ctx.Match("jackpot"))
+                else if (ctx.Match("jackpot", "j"))
                     return ctx.Execute<Misc>(SlotsJackpot, m => m.SeeJackpot(ctx));
-                else if (ctx.Match("simulate"))
+                else if (ctx.Match("simulatepls"))
                     return ctx.Execute<Misc>(SlotsPlay, m => m.SimulateSlots(ctx));
                 else
                     PrintCommandExpectedError(ctx, SlotsCommands);
