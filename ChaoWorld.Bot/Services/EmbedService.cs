@@ -85,6 +85,27 @@ namespace ChaoWorld.Bot
                 $"Affinity: {chao.GetEffectiveAbilityType().GetDescription()}\r\n" +
                 $"Alignment: {chao.GetEffectiveAlignment()}"
             ));
+
+            if (await _repo.GetChaoGenes(chao.Id.Value) is { } genes)
+            {
+                var papaString = string.Empty;
+                var mamaString = string.Empty;
+                if (genes.FirstParentId != null && genes.SecondParentId != null)
+                {
+                    if (await _repo.GetChao(genes.FirstParentId.Value) is { } papaChao)
+                    {
+                        var papaOwner = ctx.GetCachedGardenOwner(papaChao.GardenId);
+                        papaString = $"{papaChao.Name} ({papaOwner}) ({papaChao.SwimGrade}{papaChao.FlyGrade}{papaChao.RunGrade}{papaChao.PowerGrade}{papaChao.StaminaGrade}{papaChao.IntelligenceGrade}{papaChao.LuckGrade})";
+                    }
+                    if (await _repo.GetChao(genes.SecondParentId.Value) is { } mamaChao)
+                    {
+                        var mamaOwner = ctx.GetCachedGardenOwner(mamaChao.GardenId);
+                        mamaString = $"{mamaChao.Name} ({mamaOwner}) ({mamaChao.SwimGrade}{mamaChao.FlyGrade}{mamaChao.RunGrade}{mamaChao.PowerGrade}{mamaChao.StaminaGrade}{mamaChao.IntelligenceGrade}{mamaChao.LuckGrade})";
+                    }
+                    eb.Field(new($"__Lineage:__", $"{papaString}\r\n{mamaString}"));
+                }
+            }
+
             eb.Field(new($"__Abilities:__",
                 $"**Swim** (Lv.{chao.SwimLevel:D2})\r\n{chao.SwimGrade} • {chao.SwimProgress:D2}/100 ({chao.SwimValue:D4})\r\n"
                 + $"**Fly** (Lv.{chao.FlyLevel:D2})\r\n{chao.FlyGrade} • {chao.FlyProgress:D2}/100 ({chao.FlyValue:D4})\r\n"
