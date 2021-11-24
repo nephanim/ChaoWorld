@@ -79,7 +79,7 @@ namespace ChaoWorld.Bot
                 // so run it through a helper that "makes it work" :)
                 eb.WithSimpleLineContent(page.Select(m =>
                 {
-                    var ret = $"[`{m.Id}`] **{m.DisplayName}** - {m.Appearance} ({m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade})";
+                    var ret = $"[`{m.Id}`] **{m.DisplayName}** - {m.Appearance} ({m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade}{m.IntelligenceGrade}{m.LuckGrade})";
 
                     switch (opts.SortProperty)
                     {
@@ -108,7 +108,7 @@ namespace ChaoWorld.Bot
                     profile.Append($"\n**Age**: {m.CurrentAge}");
                     profile.Append($"\n**Reincarnations**: {m.Reincarnations}");
                     profile.Append($"\n**Type**: {m.Appearance}");
-                    profile.Append($"\n**Stat Grades**: {m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade}");
+                    profile.Append($"\n**Stat Grades**: {m.SwimGrade}{m.FlyGrade}{m.RunGrade}{m.PowerGrade}{m.StaminaGrade}{m.IntelligenceGrade}{m.LuckGrade}");
                     if (opts.IncludeCreated || opts.SortProperty == SortProperty.CreationDate)
                         profile.Append($"\n**Created on**: {m.CreatedOn.FormatZoned(zone)}");
 
