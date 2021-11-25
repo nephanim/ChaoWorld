@@ -127,7 +127,7 @@ namespace ChaoWorld.Bot
                 var payout = await GetSlotPayout(ctx, tiles);
                 balance += payout;
             }
-            await ctx.Reply($"{Emojis.Note} After {simulationCount} plays, balance is {balance} ({((double)balance)/startingBalance*100.0:N0}% return)");
+            await ctx.Reply($"{Emojis.Note} After {simulationCount} plays, balance is {balance:n0} ({((double)balance)/startingBalance*100.0:N0}% return)");
         }
 
         public async Task PlaySlots(Context ctx)
@@ -140,6 +140,7 @@ namespace ChaoWorld.Bot
             else
             {
                 ctx.Garden.RingBalance -= 100; // Pay 100 rings to play
+                await _repo.UpdateJackpot(100); // This immediately goes into the jackpot prize pool
                 var tiles = new string[]
                 {
                     PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
@@ -180,8 +181,7 @@ namespace ChaoWorld.Bot
                 var payout = await GetSlotPayout(ctx, tiles);
                 ctx.Garden.RingBalance += payout;
                 await _repo.UpdateGarden(ctx.Garden);
-                await _repo.UpdateJackpot(100);
-
+                
                 await Task.Delay(300);
                 await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
                     new MessageEditRequest {
@@ -190,13 +190,13 @@ namespace ChaoWorld.Bot
                     });
 
                 if (payout > 100)
-                    await ctx.Reply($"{Emojis.Success} You won {payout:n0} rings playing Chao Slots!");
+                    await ctx.Reply($"{Emojis.Success} You won {payout:n0} rings playing Chao Slots! (+{payout-100:n0})");
                 else if (payout == 100)
-                    await ctx.Reply($"{Emojis.Success} You broke even on Chao Slots.");
+                    await ctx.Reply($"{Emojis.Success} You broke even on Chao Slots. (+0)");
                 else if (payout > 0)
-                    await ctx.Reply($"{Emojis.Eggman} You won back {payout:n0} of the rings you put in. Better luck next time.");
+                    await ctx.Reply($"{Emojis.Eggman} You won back {payout:n0} of the rings you put in. Better luck next time. ({100-payout:n0})");
                 else
-                    await ctx.Reply($"{Emojis.Eggman} You didn't win anything...");
+                    await ctx.Reply($"{Emojis.Eggman} You didn't win anything... (-100)");
             }
         }
 
@@ -212,11 +212,11 @@ namespace ChaoWorld.Bot
                 return Emojis.GreenFruit;
             if (roll > 750)
                 return Emojis.PinkFruit;
-            if (roll > 550)
+            if (roll > 555)
                 return Emojis.OrangeFruit;
             if (roll > 350)
                 return Emojis.PurpleFruit;
-            if (roll > 150)
+            if (roll > 145)
                 return Emojis.RedFruit;
             if (roll > 30)
                 return Emojis.YellowFruit;
