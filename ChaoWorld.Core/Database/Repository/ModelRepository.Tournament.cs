@@ -107,6 +107,17 @@ namespace ChaoWorld.Core
             return await _db.QueryFirst<TournamentInstance?>(query);
         }
 
+        public async Task<TournamentInstance?> GetActiveTournamentByChao(long chaoId)
+        {
+            var query = new Query("tournamentinstances")
+                .Join("tournamentinstancechao", "tournamentinstances.id", "tournamentinstancechao.tournamentinstanceid")
+                .Where("tournamentinstancechao.chaoid", "=", chaoId)
+                .Where("tournamentinstances.state", "!=", (int)TournamentInstance.TournamentStates.Completed)
+                .Where("tournamentinstances.state", "!=", (int)TournamentInstance.TournamentStates.Canceled)
+                .Select("tournamentinstances.*");
+            return await _db.QueryFirst<TournamentInstance?>(query);
+        }
+
         public async Task<IEnumerable<TournamentInstance>> GetExpiredTournamentInstances()
         {
             var now = SystemClock.Instance.GetCurrentInstant();

@@ -99,6 +99,17 @@ namespace ChaoWorld.Core
             return await _db.QueryFirst<RaceInstance?>(query);
         }
 
+        public async Task<RaceInstance?> GetActiveRaceByChao(long chaoId)
+        {
+            var query = new Query("raceinstances")
+                .Join("raceinstancechao", "raceinstances.id", "raceinstancechao.raceinstanceid")
+                .Where("raceinstancechao.chaoid", "=", chaoId)
+                .Where("raceinstances.state", "!=", (int)RaceInstance.RaceStates.Completed)
+                .Where("raceinstances.state", "!=", (int)RaceInstance.RaceStates.Canceled)
+                .Select("raceinstances.*");
+            return await _db.QueryFirst<RaceInstance?>(query);
+        }
+
         public async Task<RaceInstance> CreateRaceInstance(Race race, IChaoWorldConnection? conn = null)
         {
             var availableAt = SystemClock.Instance.GetCurrentInstant();
@@ -168,7 +179,7 @@ namespace ChaoWorld.Core
             await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update races r
                 set prizerings = coalesce((
-	                select floor(avg(timeelapsedseconds + 300 + r.readydelayminutes*60.0)/1.5)
+	                select floor(avg(timeelapsedseconds + 300 + (100 * (r.difficulty-1)) + r.readydelayminutes*60.0)/1.5)
 	                from raceinstances i
 	                join chao c
 	                on i.winnerchaoid = c.id

@@ -10,18 +10,34 @@ namespace ChaoWorld.Core
         public static Chao.StatGrades GenerateStatGrade()
         {
             var random = new Random();
-            var roll = random.Next(1, 100);
-            if (roll > 98)
+            var roll = random.Next(1, 101);
+            if (roll > 99)
                 return Chao.StatGrades.S;
-            if (roll > 85)
+            if (roll > 86)
                 return Chao.StatGrades.A;
-            if (roll > 65)
+            if (roll > 66)
                 return Chao.StatGrades.B;
             if (roll > 30)
                 return Chao.StatGrades.C;
             if (roll > 10)
                 return Chao.StatGrades.D;
             return Chao.StatGrades.E;
+        }
+
+        public static string GetDifficultyString(int difficulty)
+        {
+            if (difficulty <= 1)
+                return "★";
+            if (difficulty == 2)
+                return "★★";
+            if (difficulty == 3)
+                return "★★★";
+            if (difficulty == 4)
+                return "★★★★";
+            if (difficulty == 5)
+                return "★★★★★";
+
+            return $"★ˣ{difficulty}";
         }
 
         public static bool TryMatchUri(string input, out Uri uri)

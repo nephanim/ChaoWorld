@@ -94,12 +94,12 @@ namespace ChaoWorld.Bot
                 {
                     if (await _repo.GetChao(genes.FirstParentId.Value) is { } papaChao)
                     {
-                        var papaOwner = ctx.GetCachedGardenOwner(papaChao.GardenId);
+                        var papaOwner = await ctx.GetCachedGardenOwner(papaChao.GardenId);
                         papaString = $"{papaChao.Name} ({papaOwner}) ({papaChao.SwimGrade}{papaChao.FlyGrade}{papaChao.RunGrade}{papaChao.PowerGrade}{papaChao.StaminaGrade}{papaChao.IntelligenceGrade}{papaChao.LuckGrade})";
                     }
                     if (await _repo.GetChao(genes.SecondParentId.Value) is { } mamaChao)
                     {
-                        var mamaOwner = ctx.GetCachedGardenOwner(mamaChao.GardenId);
+                        var mamaOwner = await ctx.GetCachedGardenOwner(mamaChao.GardenId);
                         mamaString = $"{mamaChao.Name} ({mamaOwner}) ({mamaChao.SwimGrade}{mamaChao.FlyGrade}{mamaChao.RunGrade}{mamaChao.PowerGrade}{mamaChao.StaminaGrade}{mamaChao.IntelligenceGrade}{mamaChao.LuckGrade})";
                     }
                     eb.Field(new($"__Lineage:__", $"{papaString}\r\n{mamaString}"));
@@ -368,6 +368,23 @@ namespace ChaoWorld.Bot
                 var loserOwner = await ctx.GetCachedGardenOwner(loser.GardenId);
                 eb.Field(new("Loser", $"{loser.DisplayName} ({loserOwner})"));
             }
+
+            return eb.Build();
+        }
+
+        public async Task<Embed> CreateExpeditionEmbed(Context ctx, Expedition expedition, ExpeditionInstance instance)
+        {
+            var name = $"Expedition: {expedition.Name}";
+
+            var eb = new EmbedBuilder()
+                .Title(new(name))
+                .Description(new(expedition.Description))
+                .Footer(new (
+                    $"Instance ID: {instance.Id} | Created on {instance.CreatedOn.FormatZoned(DateTimeZone.Utc)}"));
+
+            eb.Field(new("Status", $"{instance.State.GetDescription()}"));
+            eb.Field(new("Time Remaining", $"{instance.TimeRemaining}"));
+            eb.Field(new("Progress", $"{Math.Round(instance.TotalContribution.GetValueOrDefault(0) / (double)expedition.ProgressRequired * 100)}%"));
 
             return eb.Build();
         }
