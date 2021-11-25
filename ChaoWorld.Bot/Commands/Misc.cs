@@ -133,29 +133,39 @@ namespace ChaoWorld.Bot
         public async Task PlaySlots(Context ctx)
         {
             ctx.CheckGarden();
-            if (ctx.Garden.RingBalance < 100)
+            var betInput = ctx.RemainderOrNull();
+            var bet = 100; // Default this to 100, but let them go higher if they want... (this should reduce slots spam somewhat)
+            if (int.TryParse(betInput, out int newBet))
+                bet = newBet;
+
+            if (ctx.Garden.RingBalance < bet)
             {
                 await ctx.Reply($"{Emojis.Error} Sorry, you don't have enough rings to play Chao Slots! You need at least 100 rings.");
             }
+            else if (bet < 100)
+            {
+                await ctx.Reply($"{Emojis.Error} Sorry, the minimum bet for Chao Slots is 100 rings.");
+            }
             else
             {
-                ctx.Garden.RingBalance -= 100; // Pay 100 rings to play
-                await _repo.UpdateJackpot(100); // This immediately goes into the jackpot prize pool
+                ctx.Garden.RingBalance -= bet; // Pay 100 rings to play
+                await _repo.UpdateJackpot(bet); // This immediately goes into the jackpot prize pool
+                var payoutMultiplier = bet / 100.0;
+
                 var tiles = new string[]
                 {
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(30, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(150, 1001)),
+                    PickSlotResult(new Random().Next(100, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(200, 1001)), PickSlotResult(new Random().Next(100, 1001)),
                 };
                 var msg = await ctx.Reply($"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}");
 
-                // Shuffle the tiles so we can give the "slots" effect
-                var rand = new Random();
+                // Shuffle the tiles so we can give the "slots" effect (some of these are deliberately more likely to show "exciting" rewards to keep them playing)
                 tiles = new string[]
                 {
+                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(200, 1001)), PickSlotResult(new Random().Next(50, 1001)),
                     PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
+                    PickSlotResult(new Random().Next(50, 1001)), PickSlotResult(new Random().Next(100, 1001)), PickSlotResult(new Random().Next(0, 1001)),
                 };
                 await Task.Delay(300);
                 await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
@@ -178,7 +188,7 @@ namespace ChaoWorld.Bot
                         Embed = null
                     });
 
-                var payout = await GetSlotPayout(ctx, tiles);
+                var payout = (int)Math.Floor((await GetSlotPayout(ctx, tiles)) * payoutMultiplier);
                 ctx.Garden.RingBalance += payout;
                 await _repo.UpdateGarden(ctx.Garden);
                 
@@ -189,14 +199,14 @@ namespace ChaoWorld.Bot
                         Embed = null
                     });
 
-                if (payout > 100)
-                    await ctx.Reply($"{Emojis.Success} You won {payout:n0} rings playing Chao Slots! (+{payout-100:n0})");
-                else if (payout == 100)
-                    await ctx.Reply($"{Emojis.Success} You broke even on Chao Slots. (+0)");
+                if (payout > bet)
+                    await ctx.Reply($"{Emojis.Success} {ctx.Author.Username} won {payout:n0} rings playing Chao Slots! (+{payout-bet:n0})");
+                else if (payout == bet)
+                    await ctx.Reply($"{Emojis.Success} {ctx.Author.Username} broke even on Chao Slots. (+0)");
                 else if (payout > 0)
-                    await ctx.Reply($"{Emojis.Eggman} You won back {payout:n0} of the rings you put in. Better luck next time. ({100-payout:n0})");
+                    await ctx.Reply($"{Emojis.Eggman} {ctx.Author.Username} won back {payout:n0} of the rings they put in. Better luck next time. ({bet-payout:n0})");
                 else
-                    await ctx.Reply($"{Emojis.Eggman} You didn't win anything... (-100)");
+                    await ctx.Reply($"{Emojis.Eggman} {ctx.Author.Username} didn't win anything... (-{bet:n0})");
             }
         }
 

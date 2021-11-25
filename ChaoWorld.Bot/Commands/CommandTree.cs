@@ -130,7 +130,7 @@ namespace ChaoWorld.Bot
             if (ctx.Match("stats"))
                 return ctx.Execute<Misc>(null, m => m.Stats(ctx));
             if (ctx.Match("slots", "s"))
-                if (ctx.Match("play", "s"))
+                if (ctx.Match("play", "s", "p") || !ctx.HasNext())
                     return ctx.Execute<Misc>(SlotsPlay, m => m.PlaySlots(ctx));
                 else if (ctx.Match("jackpot", "j"))
                     return ctx.Execute<Misc>(SlotsJackpot, m => m.SeeJackpot(ctx));

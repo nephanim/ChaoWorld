@@ -98,14 +98,14 @@ namespace ChaoWorld.Bot
             // Examples (separated out for clarity):
             //  https://chaoworld.online/chao/resources/ child/ neutral/ shiny_orange_twotone.jpg
             //  https://chaoworld.online/chao/resources/ dark/ fly/ run/ white.jpg
-            return $"{urlRoot}{child}{alignment}{firstAbilityType}{secondAbilityType}{shiny}{color}{mixColor}{twoTone}.jpg?i={chao.Id}";
+            return $"{urlRoot}{child}{alignment}{firstAbilityType}{secondAbilityType}{shiny}{color}{mixColor}{twoTone}.jpg";
         }
 
         public static string GenerateThumbnailForRace(Core.Race race)
         {
             var urlRoot = "https://chaoworld.online/chao/resources/races/";
             var name = race.Name.ToLower().Replace(" ", string.Empty);
-            return $"{urlRoot}{name}.png?i={race.Id}";
+            return $"{urlRoot}{name}.png";
         }
 
         public static string GenerateThumbnailForTournament()
