@@ -149,7 +149,7 @@ namespace ChaoWorld.Bot
             else
             {
                 ctx.Garden.RingBalance -= bet; // Pay 100 rings to play
-                await _repo.UpdateJackpot(bet); // This immediately goes into the jackpot prize pool
+                await _repo.UpdateJackpot(bet / 20); // A portion of the bet goes into the jackpot pool (intentionally less so they never just win back everything)
                 var payoutMultiplier = bet / 100.0;
 
                 var tiles = new string[]
@@ -249,23 +249,21 @@ namespace ChaoWorld.Bot
 
             var rowPayout = 0;
             if (tiles[0] == tiles[1] && tiles[1] == tiles[2]) // Top row match
-                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
+                rowPayout += Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
             if (tiles[3] == tiles[4] && tiles[4] == tiles[5]) // Middle row match
-                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[3]));
+                rowPayout += Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[3]));
             if (tiles[6] == tiles[7] && tiles[7] == tiles[8]) // Bottom row match
-                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[6]));
+                rowPayout += Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[6]));
             if (tiles[0] == tiles[4] && tiles[4] == tiles[8]) // Diagonal \
-                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
+                rowPayout += Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
             if (tiles[2] == tiles[4] && tiles[4] == tiles[6]) // Diagonal /
-                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[2]));
+                rowPayout += Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[2]));
             if (tiles[0] == tiles[3] && tiles[3] == tiles[6]) // First column match
-                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
+                rowPayout += Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[0]));
             if (tiles[1] == tiles[4] && tiles[4] == tiles[7]) // Second column match
-                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[1]));
+                rowPayout += Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[1]));
             if (tiles[2] == tiles[5] && tiles[5] == tiles[8]) // Third column match
-                rowPayout = Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[2]));
-            if (tiles.Distinct().Count() == 1) // Full grid match!
-                rowPayout = 8 * await GetSlotRateForRow(ctx, tiles[0]);
+                rowPayout += Math.Max(rowPayout, await GetSlotRateForRow(ctx, tiles[2]));
 
             payout += rowPayout;
             if (payout < 0)
@@ -280,7 +278,7 @@ namespace ChaoWorld.Bot
                 case Emojis.Rings:
                     var jackpot = await _repo.GetJackpot();
                     await _repo.ResetJackpot();
-                    await ctx.Reply($"{Emojis.Rings} {Emojis.Rings} {Emojis.Rings} You hit the jackpot! Rings pour out of the slot machine like a waterfall. {Emojis.Rings} {Emojis.Rings} {Emojis.Rings}");
+                    await ctx.Reply($"{Emojis.Rings} {Emojis.Rings} {Emojis.Rings} {ctx.Author.Username} hit the jackpot! Rings pour out of the slot machine like a waterfall. {Emojis.Rings} {Emojis.Rings} {Emojis.Rings}");
                     return jackpot;
                 case Emojis.GoldEgg:
                     return 3333;
