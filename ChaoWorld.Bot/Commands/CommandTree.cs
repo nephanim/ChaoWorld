@@ -45,8 +45,8 @@ namespace ChaoWorld.Bot
         public static Command MarketSell = new Command("market sell", "market sell {id/name} [qty]", "Sells the specified item from your inventory on the Black Market (quantity of 1 is assumed if not provided)");
         public static Command TreeInfo = new Command("tree info", "tree info {id/name}", "Looks up information about one of your trees using either the name or ID");
         public static Command TreeList = new Command("tree list", "tree list", "Lists all trees in your orchard and their health");
-        public static Command TreeWater = new Command("tree water", "tree water {id/name}", "Waters a tree in your orchard, improving its overall health when done at the proper time");
-        public static Command TreeCollect = new Command("tree collect", "tree collect {id/name}", "Collects fruit from a tree in your orchard");
+        public static Command TreeWater = new Command("tree water", "tree water [id/name]", "Waters a tree in your orchard, improving its overall health (the thirstiest tree will be chosen if one is not specified)");
+        public static Command TreeCollect = new Command("tree collect", "tree collect [id/name]", "Collects fruit from a tree in your orchard (the one with the most fruit will be chosen if one is not specified");
         public static Command TreeRemove = new Command("tree remove", "tree remove {id/name}", "Removes a tree from your orchard to make room for another one (each garden can have up to 7 at at time");
         public static Command GiveItem = new Command("give item", "give item {id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
         public static Command GiveRings = new Command("give rings", "give rings {qty} {@user}", "Offers the specified amount of rings to another player (target can accept or reject the offer)");
@@ -456,12 +456,16 @@ namespace ChaoWorld.Bot
                 else
                     await PrintCommandExpectedError(ctx, TreeRemove);
             else if (ctx.Match("water", "w", "tend", "t"))
-                if (await ctx.MatchTree() is { } waterTree)
+                if (!ctx.HasNext())
+                    await ctx.Execute<Tree>(TreeWater, m => m.WaterNext(ctx));
+                else if (await ctx.MatchTree() is { } waterTree)
                     await ctx.Execute<Tree>(TreeWater, m => m.WaterTree(ctx, waterTree));
                 else
                     await PrintCommandExpectedError(ctx, TreeWater);
             else if (ctx.Match("collect", "c", "harvest", "pick"))
-                if (await ctx.MatchTree() is { } collectTree)
+                if (!ctx.HasNext())
+                    await ctx.Execute<Tree>(TreeCollect, m => m.CollectNext(ctx));
+                else if (await ctx.MatchTree() is { } collectTree)
                     await ctx.Execute<Tree>(TreeCollect, m => m.CollectFruit(ctx, collectTree));
                 else
                     await PrintCommandExpectedError(ctx, TreeCollect);

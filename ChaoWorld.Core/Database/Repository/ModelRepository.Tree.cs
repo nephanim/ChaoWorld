@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SqlKata;
 using Dapper;
 using System.Collections.Generic;
+using NodaTime;
 
 namespace ChaoWorld.Core
 {
@@ -13,6 +14,27 @@ namespace ChaoWorld.Core
         public Task<Tree?> GetTree(long id)
         {
             var query = new Query("trees").Where("id", id);
+            return _db.QueryFirst<Tree?>(query);
+        }
+        
+        public Task<Tree?> GetThirstiestTreeForGarden(int gardenId)
+        {
+            var now = SystemClock.Instance.GetCurrentInstant();
+            var query = new Query("trees")
+                .Where("gardenid", gardenId)
+                .Where("nextwatering", "<", now)
+                .OrderBy("nextwatering")
+                .Limit(1);
+            return _db.QueryFirst<Tree?>(query);
+        }
+
+        public Task<Tree?> GetMostBountifulTreeForGarden(int gardenId)
+        {
+            var query = new Query("trees")
+                .Where("gardenid", gardenId)
+                .Where("fruitquantity", ">", 0)
+                .OrderByDesc("fruitquantity")
+                .Limit(1);
             return _db.QueryFirst<Tree?>(query);
         }
 

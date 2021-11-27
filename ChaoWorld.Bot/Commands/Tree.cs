@@ -24,6 +24,18 @@ namespace ChaoWorld.Bot
             await ctx.Reply(embed: await _embeds.CreateTreeEmbed(ctx, tree));
         }
 
+        public async Task WaterNext(Context ctx)
+        {
+            ctx.CheckGarden();
+
+            // See if there are any thirsty trees...
+            var tree = await _repo.GetThirstiestTreeForGarden(ctx.Garden.Id.Value);
+            if (tree != null)
+                await WaterTree(ctx, tree);
+            else
+                await ctx.Reply($"{Emojis.Warn} You decide not to water any of your trees. It looks like they're doing fine.");
+        }
+
         public async Task WaterTree(Context ctx, Core.Tree tree)
         {
             ctx.CheckGarden();
@@ -52,6 +64,18 @@ namespace ChaoWorld.Bot
                 await ctx.Reply($"{Emojis.Warn} You decide not to water the {tree.Name}. It looks like it's too soon. Try again in {timeUntilWatering}.");
             }
             await _repo.UpdateTree(tree);
+        }
+
+        public async Task CollectNext(Context ctx)
+        {
+            ctx.CheckGarden();
+
+            // See if there are any trees with fruit...
+            var tree = await _repo.GetMostBountifulTreeForGarden(ctx.Garden.Id.Value);
+            if (tree != null)
+                await CollectFruit(ctx, tree);
+            else
+                await ctx.Reply($"{Emojis.Warn} There is nothing to harvest. Try again later.");
         }
 
         public async Task CollectFruit(Context ctx, Core.Tree tree)
