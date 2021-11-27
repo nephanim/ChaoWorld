@@ -54,6 +54,9 @@ namespace ChaoWorld.Bot
         public static Command SlotsPlay = new Command("slots", "slots play", "Try your luck with the chao slots and win big money!");
         public static Command SlotsJackpot = new Command("slots", "slots jackpot", "Check the current slots jackpot amount");
         public static Command Help = new Command("help", "help", "Shows help information about Chao World");
+        public static Command HelpAbilities = new Command("help abilities", "help abilities", "Shows help information about chao abilities and what they do");
+        public static Command HelpEvolution = new Command("help evolution", "help evolution", "Shows help information about chao evolutions and what they do");
+        public static Command HelpReincarnation = new Command("help reincarnation", "help reincarnation", "Shows help information about reincarnation and how it works");
         public static Command Admin = new Command("admin", "admin", "What? Nothing to see here...");
 
         public static Command[] GardenCommands = {
@@ -122,9 +125,10 @@ namespace ChaoWorld.Bot
             if (ctx.Match("list", "find", "chao", "search", "query", "l", "f", "fd"))
                 return ctx.Execute<GardenList>(GardenList, m => m.ChaoList(ctx, ctx.Garden));
             if (ctx.Match("help"))
-                if (ctx.Match("commands"))
-                    return ctx.Reply("For a full list of commands, see #resources.");
-                else return ctx.Execute<Help>(Help, m => m.HelpRoot(ctx));
+                if (!ctx.HasNext())
+                    return ctx.Execute<Help>(Help, m => m.HelpRoot(ctx));
+                else
+                    return CommandHelpRoot(ctx);
             if (ctx.Match("collect", "explore", "daily", "gather"))
                 return ctx.Execute<Misc>(null, m => m.Collect(ctx));
             if (ctx.Match("stats"))
@@ -512,6 +516,19 @@ namespace ChaoWorld.Bot
 
             switch (ctx.PeekArgument())
             {
+                case "abilities":
+                case "stats":
+                case "levels":
+                    await ctx.Execute<Help>(HelpAbilities, m => m.HelpAbilities(ctx));
+                    break;
+                case "evolution":
+                case "evolve":
+                    await ctx.Execute<Help>(HelpEvolution, m => m.HelpEvolution(ctx));
+                    break;
+                case "rebirth":
+                case "reincarnation":
+                    await ctx.Execute<Help>(HelpReincarnation, m => m.HelpReincarnation(ctx));
+                    break;
                 case "garden":
                 case "gardens":
                 case "g":
