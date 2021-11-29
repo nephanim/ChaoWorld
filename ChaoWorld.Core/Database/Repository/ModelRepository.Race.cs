@@ -64,8 +64,6 @@ namespace ChaoWorld.Core
         public async Task<RaceInstance?> GetRaceInstanceByNameWithFuzzyMatching(string name)
         {
             var query = new Query("raceinstances").Join("races", "races.id", "raceinstances.raceid", "=")
-                //.Where("raceinstances.state", "!=", (int)Core.RaceInstance.RaceStates.Completed)
-                //.Where("raceinstances.state", "!=", (int)Core.RaceInstance.RaceStates.Canceled)
                 .Select("raceinstances.*")
                 .OrderByRaw("similarity(races.name, lower(?)) desc, raceinstances.id desc", name.ToLower().Replace("\"", string.Empty))
                 .Limit(1);
@@ -179,7 +177,7 @@ namespace ChaoWorld.Core
             await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update races r
                 set prizerings = coalesce((
-	                select floor(avg(timeelapsedseconds + 300 + (100 * (r.difficulty-1)) + r.readydelayminutes*60.0)/1.5)
+	                select floor(avg(timeelapsedseconds + (100 * r.difficulty) + r.readydelayminutes*60.0)/1.5)
 	                from raceinstances i
 	                join chao c
 	                on i.winnerchaoid = c.id

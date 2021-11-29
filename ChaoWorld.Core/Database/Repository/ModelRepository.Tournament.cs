@@ -123,7 +123,7 @@ namespace ChaoWorld.Core
             var now = SystemClock.Instance.GetCurrentInstant();
             var query = new Query("tournamentinstances")
                 .Where("tournamentinstances.state", (int)Core.TournamentInstance.TournamentStates.New)
-                .WhereRaw("tournamentinstances.readyon", "<", now);
+                .Where("tournamentinstances.readyon", "<", now);
             return await _db.Query<TournamentInstance>(query);
         }
 
@@ -184,7 +184,7 @@ namespace ChaoWorld.Core
             await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update tournaments t
                 set prizerings = coalesce((
-	                select floor(avg(totaltimeelapsedseconds + 300 + t.readydelayminutes*60.0)/1.5)
+	                select floor(avg(totaltimeelapsedseconds + 100 + t.readydelayminutes*60.0)/1.5)
 	                from tournamentinstances i
 	                join chao c
 	                on i.winnerchaoid = c.id

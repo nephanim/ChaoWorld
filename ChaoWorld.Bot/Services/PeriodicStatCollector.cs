@@ -189,12 +189,19 @@ namespace ChaoWorld.Bot
 
         private async Task CancelTournaments(ulong channel)
         {
-            var instances = await _repo.GetExpiredTournamentInstances();
-            foreach (var i in instances)
+            try
             {
-                var tourney = await _repo.GetTournamentByInstanceId(i.Id);
-                await _repo.DeleteTournamentInstance(i);
-                await SendMessage(channel, $"{Emojis.Stop} The {tourney.Name} Tournament has been canceled as it did not reach the minimum number of participants.");
+                var instances = await _repo.GetExpiredTournamentInstances();
+                _logger.Information($"Found {instances.Count()} expired tournament instances");
+                foreach (var i in instances)
+                {
+                    var tourney = await _repo.GetTournamentByInstanceId(i.Id);
+                    await _repo.DeleteTournamentInstance(i);
+                    await SendMessage(channel, $"{Emojis.Stop} The {tourney.Name} Tournament has been canceled as it did not reach the minimum number of participants.");
+                }
+            } catch (Exception e)
+            {
+                _logger.Error($"Failed to cancel expired tournaments: {e.ToString()}");
             }
         }
 
