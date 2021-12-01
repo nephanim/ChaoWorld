@@ -75,6 +75,8 @@ namespace ChaoWorld.Bot
             //eb.Field(new("URL", imageUrl));
             eb.Field(new("__General Info:__",
                 $"Owner: {gardenOwner}\r\n" +
+                $"Energy: {chao.Energy}/20\r\n" +
+                $"Hunger: {chao.Hunger}/100\r\n" +
                 $"Current Age: {chao.CurrentAge}\r\n" +
                 $"Total Age: {chao.TotalAge}\r\n" +
                 $"Reincarnations: {chao.Reincarnations}\r\n" +

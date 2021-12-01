@@ -78,6 +78,11 @@ namespace ChaoWorld.Bot
                 var tourney = await _repo.GetTournamentById(activeInTourney.TournamentId);
                 await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} Tournament. Please support your chao's tournament first!");
             }
+            else if (chao.Energy <= 0)
+            {
+                // This chao is exhausted!
+                await ctx.Reply($"{Emojis.Error} This chao is exhausted! Please keep {chao.Name} well-fed and allow some time to rest.");
+            }
             else
             {
                 // Race is in a joinable stat
@@ -152,7 +157,7 @@ namespace ChaoWorld.Bot
                 var currentChaoCount = await _repo.GetTournamentInstanceChaoCount(instance.Id);
                 if (currentChaoCount >= tourney.MinimumChao)
                 {
-                    // Start the race!
+                    // Start the tournament!
                     instance.State = TournamentInstance.TournamentStates.InProgress;
                     await _repo.UpdateTournamentInstance(instance);
                     //await ctx.Reply($"{Emojis.Megaphone} The {tourney.Name} tournament is starting! Good luck to all participants!");
@@ -471,6 +476,7 @@ namespace ChaoWorld.Bot
             await _repo.UpdateTournamentInstance(instance);
 
             await _repo.FinalizeTournamentInstanceChao(instance); // Set final results for each chao
+            await _repo.UpdateEnergyForTournament(instance); // Update energy levels for participants
             var prizeRings = GetPrizeAmount(tournament);
             await _repo.GiveTournamentRewards(instance, prizeRings); // Award the prize to the winner
 

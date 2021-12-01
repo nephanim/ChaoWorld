@@ -258,6 +258,7 @@ namespace ChaoWorld.Bot
                     default:
                         return false; // Clearly we don't know what to do with this
                 }
+                chao.Hunger = Math.Max(0, chao.Hunger - 8); // If eating the fruit worked, it should reduce hunger a little
                 await _repo.UpdateChao(chao);
                 var quantityText = quantity > 1 ? $" x{quantity}" : string.Empty;
                 await ctx.Reply($"{Emojis.Success} {chao.Name} ate the {item.Name}{quantityText}!{effect}");

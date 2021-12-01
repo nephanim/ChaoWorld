@@ -63,6 +63,14 @@ namespace ChaoWorld.Core
             return await _db.Query<Chao>(query);
         }
 
+        public async Task<IEnumerable<Chao>> GetChaoReadyForSecondEvolution()
+        {
+            var query = new Query("chao")
+                .Where("evolutionstate", Chao.EvolutionStates.First)
+                .WhereRaw("trunc(date_part('day', now() at time zone 'utc' - rebirthon)) >= 28");
+            return await _db.Query<Chao>(query);
+        }
+
         public async Task<Chao> CreateChao(GardenId garden, Chao chao, IChaoWorldConnection? conn = null)
         {
             var query = new Query("chao").AsInsert(new
@@ -178,7 +186,9 @@ namespace ChaoWorld.Core
                     luckgrade = {(int)chao.LuckGrade},
                     lucklevel = {chao.LuckLevel},
                     luckvalue = {chao.LuckValue},
-                    luckprogress = {chao.LuckProgress}
+                    luckprogress = {chao.LuckProgress},
+                    energy = {chao.Energy},
+                    hunger = {chao.Hunger}
                 where id = {chao.Id.Value};
             ", new { tag = chao.Tag }));
             _logger.Information($"Updated chao {chao.Id.Value} ({chao.Name}) for garden {chao.GardenId}");
@@ -196,6 +206,22 @@ namespace ChaoWorld.Core
             _logger.Information("Deleted {ChaoId}", id);
             var query = new Query("chao").AsDelete().Where("id", id);
             return _db.ExecuteQuery(query);
+        }
+
+        public async Task UpdateChaoEnergyAndHunger(IChaoWorldConnection? conn = null)
+        {
+            // If hunger is 0 (chao is full), chao will always get 20 energy per hour (which is the cap)
+            // If chao is hungry, they will likely get less... maybe even nothing if they have 100 hunger
+            // Hunger also goes up by 1 every hour no matter what
+            // This stuff doesn't matter for NPC chao, so we'll just skip updating them
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
+                update chao
+                set
+                    energy = least(20, energy + 20 - floor(random() * hunger / 5)),
+                    hunger = case when hunger >= 100 then hunger else hunger + 1 end
+                where gardenid != 0;
+            "));
+            _logger.Information($"Updated chao energy and hunger levels");
         }
 
         public async Task<IEnumerable<Chao>> ReincarnateEligibleNpcChao(IChaoWorldConnection? conn = null)

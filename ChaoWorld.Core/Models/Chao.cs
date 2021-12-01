@@ -159,6 +159,9 @@ namespace ChaoWorld.Core
         public int LuckValue { get; private set; }
         public double ReincarnationStatFactor { get; set; }
 
+        public int Energy { get; set; }
+        public int Hunger { get; set; }
+
         public string Appearance
         {
             get

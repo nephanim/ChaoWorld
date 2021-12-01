@@ -363,6 +363,19 @@ namespace ChaoWorld.Core
             _logger.Information($"Finalized chao statistics for race instance {instance.Id} of race {instance.RaceId}");
         }
 
+        public async Task UpdateEnergyForRace(RaceInstance instance)
+        {
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
+                update chao c
+                set
+	                energy = (case when energy <= 0 then energy else energy - 1 end)
+                from raceinstancechao i
+                where c.id = i.chaoid
+                and i.raceinstanceid = {instance.Id}
+            "));
+            _logger.Information($"Updated chao energy levels for race instance {instance.Id} of race {instance.RaceId}");
+        }
+
         public async Task LogMessage(string msg)
         {
             _logger.Information(msg);
@@ -382,6 +395,8 @@ namespace ChaoWorld.Core
                     where r.isenabled = true
                     and i.id is null
                     and r.availableon < (now() at time zone 'utc')
+                    order by r.availableon
+                    limit 1
                 "))).AsList();
             }
             catch (Exception e)

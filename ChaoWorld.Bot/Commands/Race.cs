@@ -77,6 +77,11 @@ namespace ChaoWorld.Bot
                 var tourney = await _repo.GetTournamentById(activeInTourney.TournamentId);
                 await ctx.Reply($"{Emojis.Error} You already have a chao participating in a {tourney.Name} Tournament. Please support your chao's tournament first!");
             }
+            else if (chao.Energy <= 0)
+            {
+                // This chao is exhausted!
+                await ctx.Reply($"{Emojis.Error} This chao is exhausted! Please keep {chao.Name} well-fed and allow some time to rest.");
+            }
             else
             {
                 // Race is in a joinable state
@@ -227,6 +232,7 @@ namespace ChaoWorld.Bot
             {
                 // Race is done - finish it!
                 await _repo.FinalizeRaceInstanceChao(raceInstance); // Set final results for each chao
+                await _repo.UpdateEnergyForRace(raceInstance); // Reduce participants' energy levels
                 await _repo.CompleteRaceInstance(raceInstance); // Set final results for the race
                 var prizeRings = GetPrizeAmount(race); 
                 await _repo.GiveRaceRewards(raceInstance, prizeRings); // Award the prize to the winner
@@ -248,6 +254,7 @@ namespace ChaoWorld.Bot
             {
                 // Race isn't done, but all chao already retired...
                 await _repo.FinalizeRaceInstanceChao(raceInstance); // Set final results for each chao
+                await _repo.UpdateEnergyForRace(raceInstance); // Reduce participants' energy levels
                 await _repo.CompleteRaceInstance(raceInstance); // Set final results for the race
 
                 var notifyList = await _repo.GetAccountsToPingForRace(raceInstance.Id);

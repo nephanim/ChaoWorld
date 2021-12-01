@@ -179,6 +179,19 @@ namespace ChaoWorld.Core
             _logger.Information($"Finalized chao statistics for tournament instance {instance.Id} of tournament {instance.TournamentId}");
         }
 
+        public async Task UpdateEnergyForTournament(TournamentInstance instance)
+        {
+            await _db.Execute(conn => conn.QueryAsync<int>($@"
+                update chao c
+                set
+	                energy = (case when energy <= 0 then energy else energy - 1 end)
+                from tournamentinstancechao i
+                where c.id = i.chaoid
+                and i.tournamentinstanceid = {instance.Id}
+            "));
+            _logger.Information($"Updated chao energy levels for tournament instance {instance.Id} of race {instance.TournamentId}");
+        }
+
         public async Task RecalculateTournamentRewards()
         {
             await _db.Execute(conn => conn.QueryAsync<int>($@"

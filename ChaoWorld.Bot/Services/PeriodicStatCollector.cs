@@ -138,6 +138,9 @@ namespace ChaoWorld.Bot
                 _logger.Error($"Failed to list items on the market: {e.Message} {e.StackTrace}");
             }
 
+            _logger.Information("Updating energy/hunger...");
+            await _repo.UpdateChaoEnergyAndHunger();
+
             _logger.Information("Reincarnating eligible NPCs...");
             await _repo.ReincarnateEligibleNpcChao();
 
