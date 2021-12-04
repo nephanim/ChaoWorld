@@ -75,6 +75,12 @@ namespace ChaoWorld.Bot
         public static string GenerateThumbnailForChao(Core.Chao chao)
         {
             var urlRoot = "http://chaoworld.online/chao/resources/";
+
+            // Check for special chao
+            var specialChao = new string[] { "chacron" };
+            if (specialChao.Contains(chao.Name.ToLower()))
+                return $"{urlRoot}special/{chao.Name.ToLower()}.jpg";
+
             var shiny = chao.IsShiny ? "shiny_" : "";
             var twoTone = chao.IsTwoTone ? "_twotone" : "";
             var color = chao.PrimaryColor.ToString().ToLower();
@@ -125,6 +131,11 @@ namespace ChaoWorld.Bot
 
             var users = await Task.WhenAll(accountIds.Select(Inner));
             return users.FirstOrDefault();
+        }
+
+        private static bool IsIn<T>(this T Source, params T[] values)
+        {
+            return values.Contains(Source);
         }
     }
 }
