@@ -74,7 +74,7 @@ namespace ChaoWorld.Bot
             // Aggregate DB stats
             // just fetching from database here - actual updating of the data is done in ChaoWorld.ScheduledTasks
             // if you're not running ScheduledTasks and want up-to-date counts, uncomment the following line:
-            //await _repo.UpdateStats(); //TODO: Reevaluate whether we need this
+            await _repo.UpdateStats(); //TODO: Reevaluate whether we need this
             var counts = await _repo.GetStats();
             _metrics.Measure.Gauge.SetValue(CoreMetrics.GardenCount, counts.GardenCount);
             _metrics.Measure.Gauge.SetValue(CoreMetrics.ChaoCount, counts.ChaoCount);
