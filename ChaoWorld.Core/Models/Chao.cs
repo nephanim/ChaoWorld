@@ -256,7 +256,9 @@ namespace ChaoWorld.Core
             [Description("Swim-Power")] SwimPower,
             [Description("Fly-Run")] FlyRun,
             [Description("Fly-Power")] FlyPower,
-            [Description("Chaos")] Chaos
+            [Description("Chaos")] Chaos,
+            [Description("Intelligence")] Intelligence,
+            [Description("Luck")] Luck
         }
 
         public enum StatGrades
@@ -282,31 +284,67 @@ namespace ChaoWorld.Core
             LuckGrade = MiscUtils.GenerateStatGrade();
         }
 
-        public void RaiseStatGrade(AbilityTypes type)
+        public bool RaiseStatGrade(AbilityTypes type)
         {
             switch (type)
             {
                 case AbilityTypes.Swim:
                     if (SwimGrade < StatGrades.S)
+                    {
                         SwimGrade++;
-                    break;
+                        return true;
+                    }
+                    else
+                        return false;
                 case AbilityTypes.Fly:
                     if (FlyGrade < StatGrades.S)
+                    {
                         FlyGrade++;
-                    break;
+                        return true;
+                    }
+                    else
+                        return false;
                 case AbilityTypes.Run:
                     if (RunGrade < StatGrades.S)
+                    {
                         RunGrade++;
-                    break;
+                        return true;
+                    }
+                    else
+                        return false;
                 case AbilityTypes.Power:
                     if (PowerGrade < StatGrades.S)
+                    {
                         PowerGrade++;
-                    break;
+                        return true;
+                    }
+                    else
+                        return false;
+                case AbilityTypes.Intelligence:
+                    if (IntelligenceGrade < StatGrades.S)
+                    {
+                        IntelligenceGrade++;
+                        return true;
+                    }
+                    else
+                        return false;
+                case AbilityTypes.Luck:
+                    if (LuckGrade < StatGrades.S)
+                    {
+                        LuckGrade++;
+                        return true;
+                    }
+                    else
+                        return false;
                 case AbilityTypes.Normal:
                 default:
                     if (StaminaGrade < StatGrades.S)
+                    {
                         StaminaGrade++;
-                    break;
+                        return true;
+                    }
+                    else
+                        return false;
             }
         }
 

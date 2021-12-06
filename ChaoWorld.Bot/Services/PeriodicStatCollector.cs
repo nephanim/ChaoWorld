@@ -141,9 +141,6 @@ namespace ChaoWorld.Bot
             _logger.Information("Updating energy/hunger...");
             await _repo.UpdateChaoEnergyAndHunger();
 
-            _logger.Information("Reincarnating eligible NPCs...");
-            await _repo.ReincarnateEligibleNpcChao();
-
             _logger.Information("Recalculating instance prize amounts...");
             await _repo.RecalculateRaceRewards();
             await _repo.RecalculateTournamentRewards();
@@ -153,6 +150,9 @@ namespace ChaoWorld.Bot
         {
             _logger.Information("Resetting instance limits for gardens...");
             await _repo.ResetGardenInstanceLimits();
+
+            _logger.Information("Reincarnating eligible NPCs...");
+            await _repo.ReincarnateEligibleNpcChao();
         }
 
         private async Task InstantiateRaces(ulong channel)
@@ -217,9 +217,29 @@ namespace ChaoWorld.Bot
                 c.Alignment = c.GetEffectiveAlignment();
                 c.EvolutionState = Core.Chao.EvolutionStates.First;
                 c.FirstEvolutionType = abilityType;
-                c.RaiseStatGrade(abilityType);
-                c.FlySwimAffinity = 0;
-                c.RunPowerAffinity = 0;
+
+                // Try to raise the stat grade for this ability type and check whether it worked
+                if (!c.RaiseStatGrade(abilityType))
+                {
+                    // The stat grade for this ability type is already S or higher - try to give them an intelligence or luck boost instead
+                    if (c.IntelligenceGrade < Core.Chao.StatGrades.S)
+                        c.RaiseStatGrade(Core.Chao.AbilityTypes.Intelligence);
+                    else if (c.LuckGrade < Core.Chao.StatGrades.S)
+                        c.RaiseStatGrade(Core.Chao.AbilityTypes.Luck);
+                }
+
+                if (c.GardenId.Value != 0)
+                {
+                    // Player chao start from scratch with affinity, but can build toward whatever type they want
+                    c.FlySwimAffinity = 0;
+                    c.RunPowerAffinity = 0;
+                }
+                else
+                {
+                    // NPC chao won't be given fruit, so randomize their affinity for future evolution
+                    c.FlySwimAffinity = new Random().Next(-100, 101);
+                    c.RunPowerAffinity = new Random().Next(-100, 101);
+                }
                 await _repo.UpdateChao(c);
                 if (c.GardenId.Value > 0)
                     await SendMessage(channel, $"{Emojis.Megaphone} {c.Name} has reached their first evolution! Congratulations!");

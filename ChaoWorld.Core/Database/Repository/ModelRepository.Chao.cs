@@ -244,6 +244,9 @@ namespace ChaoWorld.Core
 	                intelligencevalue = floor(intelligencevalue*reincarnationstatfactor),
 	                lucklevel = 1,
 	                luckvalue = floor(luckvalue*reincarnationstatfactor),
+                    flyswimaffinity = floor(random()*200-100),
+                    runpoweraffinity = floor(random()*200-100),
+                    alignmentvalue = floor(random()*200-100),
 	                rebirthon = current_timestamp
                 where gardenid = 0
                     and id != 1
