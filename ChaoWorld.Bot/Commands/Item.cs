@@ -481,7 +481,6 @@ namespace ChaoWorld.Bot
                 {
                     // We know who to give it to, so should be safe to proceed
                     await _repo.UseItem(item, 1); // The original item gets deleted first thing to eliminate risk of duping items
-                    await _repo.AddItem(targetGarden.Id.Value, item);
 
                     // Now update the target inventory - increase quantity of existing item or add new item
                     var existingInventoryItem = await _repo.GetInventoryItemByTypeId(targetGarden.Id.Value, item.TypeId);
