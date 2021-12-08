@@ -15,7 +15,8 @@ values
     (11, 'Diamond', 'Intermediate race. General ability is key to victory.', 4, 4, true, 1, 8, 250, 4, 0.14, 0.04, 0.42, 0.08, 0.16, 0.16),
     (12, 'River Run', 'Expert race. Swimming and flying are key to victory.', 5, 5, true, 1, 8, 300, 5, 0.35, 0.29, 0.04, 0, 0.18, 0.14),
    	(13, 'Egg Tower', 'Expert race. Power is key to victory.', 1, 1, false, 1, 8, 300, 5, 0, 0.16, 0.04, 0.56, 0.06, 0.18),
-    (14, 'Windy Valley', 'Expert race. Flying and intelligence are key to victory.', 5, 5, false, 1, 8, 0, 5, 0, 0.63, 0, 0, 0.38, 0);
+    (14, 'Windy Valley', 'Expert race. Flying and intelligence are key to victory.', 5, 5, false, 1, 8, 0, 5, 0, 0.63, 0, 0, 0.38, 0),
+    (15, 'Obstacle Course', 'Intermediate race. Intelligence and luck are key to victory.', 1, 1, false, 1, 8, 600, 4, 0.13, 0.03, 0.12, 0.08, 0.32, 0.32);
 
 insert into racesegments
     (id, raceid, description, raceindex, terraintype, startelevation, endelevation, terraindistance, staminalossmultiplier,
@@ -108,6 +109,11 @@ values
 	(71, 14, 'A tornado rolls through their path, its mighty winds causing some chao to fly astray. They adjust their course amidst the peril and realign with their destination.', 2, 0, 0, 0, 60, 10.0, 0, 60, 0),
 	(72, 14, 'The winds seem calm up in the air, but they continue to rage down below. From glimpses through the mist, the terrain is nearly impassable.', 3, 0, 0, 0, 60, 10.0, 0, 0, 0),
 	(73, 14, 'A powerful gust swirls from beneath the chao and then shoots skyward. While the wind in their sails may be welcome, the sheer force causes the chao to spiral out of control for a moment as they study the winds.', 4, 0, 0, 0, 60, 10.0, 0, 60, 0),
-	(74, 14, 'Just a short distance remains to the finish line located in a grassy clearing surrounded by thick forest. The racing chao ride one another''s slipstreams as they vie for first place.', 5, 0, 0, 0, 60, 10.0, 0, 0, 0);
+	(74, 14, 'Just a short distance remains to the finish line located in a grassy clearing surrounded by thick forest. The racing chao ride one another''s slipstreams as they vie for first place.', 5, 0, 0, 0, 60, 10.0, 0, 0, 0),
+    --Obstacle Course
+    (75, 15, 'An artificial climbing wall waits at the start of the race. Everyone begins scaling it, searching for the right path as other chao block their way.', 0, 2, 0, 30, 0, 1.0, 0, 80, 0),
+    (76, 15, 'Atop the wall is a wooden suspension bridge. As the chao proceed, they realize the walls have cannons hidden inside. Plungers fire at them from left and right. The chao try to avoid not only the plungers, but their fallen competition.', 1, 0, 30, 30, 25, 1.0, 0, 60, 100),
+    (77, 15, 'Ropes allow the chao to swing down to a track below. As they leap forward, they glide a short distance to the ground. The track is riddled with hidden pitfalls that pull some of them under.', 2, 0, 30, 20, 25, 1.0, 0, 0, 40),
+    (78, 15, 'The last stretch is a swimming pool full of floating mines. These explode when touched, sometimes causing chain reactions. The chao are tossed about as they try to navigate this final obstacle.', 3, 1, 20, 20, 50, 1.0, 0, 100, 100);
 
 update info set schema_version = 4;
