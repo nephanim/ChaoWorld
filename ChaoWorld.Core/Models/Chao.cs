@@ -355,14 +355,19 @@ namespace ChaoWorld.Core
                 SwimProgress += amount;
                 if (SwimProgress >= 100)
                 {
-                    SwimLevel += SwimProgress / 100;
+                    var levels = Math.Min(99 - SwimLevel, SwimProgress / 100);
+                    SwimLevel += levels;
                     SwimProgress = SwimProgress % 100;
                     if (SwimLevel >= 99)
                     {
                         SwimLevel = 99;
                         SwimProgress = 0;
                     }
-                    SwimValue += GetLevelUpIncrease(SwimGrade);
+                    while (levels > 0)
+                    {
+                        SwimValue += GetLevelUpIncrease(SwimGrade);
+                        levels--;
+                    }
                 }
             }
         }
@@ -374,14 +379,19 @@ namespace ChaoWorld.Core
                 FlyProgress += amount;
                 if (FlyProgress >= 100)
                 {
-                    FlyLevel += FlyProgress / 100;
+                    var levels = Math.Min(99 - FlyLevel, FlyProgress / 100);
+                    FlyLevel += levels;
                     FlyProgress = FlyProgress % 100;
                     if (FlyLevel >= 99)
                     {
                         FlyLevel = 99;
                         FlyProgress = 0;
                     }
-                    FlyValue += GetLevelUpIncrease(FlyGrade);
+                    while (levels > 0)
+                    {
+                        FlyValue += GetLevelUpIncrease(FlyGrade);
+                        levels--;
+                    }
                 }
             }
         }
@@ -393,14 +403,19 @@ namespace ChaoWorld.Core
                 RunProgress += amount;
                 if (RunProgress >= 100)
                 {
-                    RunLevel += RunProgress / 100;
+                    var levels = Math.Min(99 - RunLevel, RunProgress / 100);
+                    RunLevel += levels;
                     RunProgress = RunProgress % 100;
                     if (RunLevel >= 99)
                     {
                         RunLevel = 99;
                         RunProgress = 0;
                     }
-                    RunValue += GetLevelUpIncrease(RunGrade);
+                    while (levels > 0)
+                    {
+                        RunValue += GetLevelUpIncrease(RunGrade);
+                        levels--;
+                    }
                 }
             }
         }
@@ -412,14 +427,19 @@ namespace ChaoWorld.Core
                 PowerProgress += amount;
                 if (PowerProgress >= 100)
                 {
-                    PowerLevel += PowerProgress / 100;
+                    var levels = Math.Min(99 - PowerLevel, PowerProgress / 100);
+                    PowerLevel += levels;
                     PowerProgress = PowerProgress % 100;
                     if (PowerLevel >= 99)
                     {
                         PowerLevel = 99;
                         PowerProgress = 0;
                     }
-                    PowerValue += GetLevelUpIncrease(PowerGrade);
+                    while (levels > 0)
+                    {
+                        PowerValue += GetLevelUpIncrease(PowerGrade);
+                        levels--;
+                    }
                 }
             }
         }
@@ -431,14 +451,19 @@ namespace ChaoWorld.Core
                 StaminaProgress += amount;
                 if (StaminaProgress >= 100)
                 {
-                    StaminaLevel += StaminaProgress / 100;
+                    var levels = Math.Min(99 - StaminaLevel, StaminaProgress / 100);
+                    StaminaLevel += levels;
                     StaminaProgress = StaminaProgress % 100;
                     if (StaminaLevel >= 99)
                     {
                         StaminaLevel = 99;
                         StaminaProgress = 0;
                     }
-                    StaminaValue += GetLevelUpIncrease(StaminaGrade);
+                    while (levels > 0)
+                    {
+                        StaminaValue += GetLevelUpIncrease(StaminaGrade);
+                        levels--;
+                    }
                 }
             }
         }
@@ -450,14 +475,19 @@ namespace ChaoWorld.Core
                 IntelligenceProgress += amount;
                 if (IntelligenceProgress >= 100)
                 {
-                    IntelligenceLevel += IntelligenceProgress / 100;
+                    var levels = Math.Min(99 - IntelligenceLevel, IntelligenceProgress / 100);
+                    IntelligenceLevel += levels;
                     IntelligenceProgress = IntelligenceProgress % 100;
                     if (IntelligenceLevel >= 99)
                     {
                         IntelligenceLevel = 99;
                         IntelligenceProgress = 0;
                     }
-                    IntelligenceValue += GetLevelUpIncrease(IntelligenceGrade);
+                    while (levels > 0)
+                    {
+                        IntelligenceValue += GetLevelUpIncrease(IntelligenceGrade);
+                        levels--;
+                    }
                 }
             }
         }
@@ -469,24 +499,31 @@ namespace ChaoWorld.Core
                 LuckProgress += amount;
                 if (LuckProgress >= 100)
                 {
-                    LuckLevel += LuckProgress / 100;
+                    var levels = Math.Min(99 - LuckLevel, LuckProgress / 100);
+                    LuckLevel += levels;
                     LuckProgress = LuckProgress % 100;
                     if (LuckLevel >= 99)
                     {
                         LuckLevel = 99;
                         LuckProgress = 0;
                     }
-                    LuckValue += GetLevelUpIncrease(LuckGrade);
+                    while (levels > 0)
+                    {
+                        LuckValue += GetLevelUpIncrease(LuckGrade);
+                        levels--;
+                    }
                 }
             }
         }
 
         public int GetLevelUpIncrease(StatGrades grade)
         {
-            var baseModifier = ((int)grade) + 1;
+            var baseModifier = (int)grade;
+            // This has possible values from 11-16 at grade E (0) - upper bound is not included in Random.Next return value
+            // At grade X (6), possible values are from 29-34
             var r = new Random().Next(
                 11 + baseModifier*3,
-                16 + baseModifier*3
+                17 + baseModifier*3
             );
             return r;
         }
