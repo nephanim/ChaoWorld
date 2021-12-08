@@ -372,6 +372,7 @@ namespace ChaoWorld.Core
                 from raceinstancechao i
                 where c.id = i.chaoid
                 and i.raceinstanceid = {instance.Id}
+                and c.gardenid != 0
             "));
             _logger.Information($"Updated chao energy levels for race instance {instance.Id} of race {instance.RaceId}");
         }
