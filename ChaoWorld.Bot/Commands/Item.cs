@@ -141,13 +141,13 @@ namespace ChaoWorld.Bot
                         }
                         break;
                     case ItemBase.ItemEffects.AllStatsProgressIncrease:
-                        chao.RaiseSwim(statIncreaseAmount);
-                        chao.RaiseFly(statIncreaseAmount);
-                        chao.RaiseRun(statIncreaseAmount);
-                        chao.RaisePower(statIncreaseAmount);
-                        chao.RaiseStamina(statIncreaseAmount);
-                        chao.RaiseIntelligence(statIncreaseAmount);
-                        chao.RaiseLuck(statIncreaseAmount);
+                        chao.RaiseSwim(statIncreaseAmount/5);
+                        chao.RaiseFly(statIncreaseAmount/5);
+                        chao.RaiseRun(statIncreaseAmount/5);
+                        chao.RaisePower(statIncreaseAmount/5);
+                        chao.RaiseStamina(statIncreaseAmount/5);
+                        chao.RaiseIntelligence(statIncreaseAmount/5);
+                        chao.RaiseLuck(statIncreaseAmount/5);
                         effect = " Your chao's stats all improved.";
                         break;
                     case ItemBase.ItemEffects.SwimProgressIncrease:
@@ -189,8 +189,8 @@ namespace ChaoWorld.Bot
                             return false;
                         if (quantity > 1)
                             return false;
-                        chao.RaiseStamina(statIncreaseAmount);
                         chao.SwimGrade = Core.Chao.StatGrades.X;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Chaos energy unlocks your chao's hidden swimming potential.";
                         break;
                     case ItemBase.ItemEffects.FlyGradeIncrease:
@@ -198,8 +198,8 @@ namespace ChaoWorld.Bot
                             return false;
                         if (quantity > 1)
                             return false;
-                        chao.RaiseStamina(statIncreaseAmount);
                         chao.FlyGrade = Core.Chao.StatGrades.X;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Chaos energy unlocks your chao's hidden flying potential.";
                         break;
                     case ItemBase.ItemEffects.RunGradeIncrease:
@@ -207,8 +207,8 @@ namespace ChaoWorld.Bot
                             return false;
                         if (quantity > 1)
                             return false;
-                        chao.RaiseStamina(statIncreaseAmount);
                         chao.RunGrade = Core.Chao.StatGrades.X;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Chaos energy unlocks your chao's hidden running potential.";
                         break;
                     case ItemBase.ItemEffects.PowerGradeIncrease:
@@ -216,8 +216,8 @@ namespace ChaoWorld.Bot
                             return false;
                         if (quantity > 1)
                             return false;
-                        chao.RaiseStamina(statIncreaseAmount);
                         chao.PowerGrade = Core.Chao.StatGrades.X;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Chaos energy unlocks your chao's hidden might.";
                         break;
                     case ItemBase.ItemEffects.StaminaGradeIncrease:
@@ -225,8 +225,8 @@ namespace ChaoWorld.Bot
                             return false;
                         if (quantity > 1)
                             return false;
-                        chao.RaiseStamina(statIncreaseAmount);
                         chao.StaminaGrade = Core.Chao.StatGrades.X;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Chaos energy unlocks your chao's hidden endurance.";
                         break;
                     case ItemBase.ItemEffects.IntelligenceGradeIncrease:
@@ -234,8 +234,8 @@ namespace ChaoWorld.Bot
                             return false;
                         if (quantity > 1)
                             return false;
-                        chao.RaiseStamina(statIncreaseAmount);
                         chao.IntelligenceGrade = Core.Chao.StatGrades.X;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Chaos energy unlocks your chao's hidden genius.";
                         break;
                     case ItemBase.ItemEffects.LuckGradeIncrease:
@@ -243,8 +243,8 @@ namespace ChaoWorld.Bot
                             return false;
                         if (quantity > 1)
                             return false;
-                        chao.RaiseStamina(statIncreaseAmount);
                         chao.LuckGrade = Core.Chao.StatGrades.X;
+                        chao.RaiseStamina(statIncreaseAmount);
                         effect = " Chaos energy unlocks your chao's hidden fortune.";
                         break;
                     case ItemBase.ItemEffects.AllowMating:
