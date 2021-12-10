@@ -177,9 +177,16 @@ namespace ChaoWorld.Bot
                     {
                         // Select random NPC chao to fill remaining slots
                         var joiningNPCs = new List<Core.Chao>();
+                        var statThreshold = race.Difficulty * 500;
                         while (currentChaoCount < race.MaximumChao)
                         {
-                            var npc = await _repo.GetRandomChao(0); // Garden 0 is a special holding place reserved for NPCs
+                            var npc = await _repo.GetRandomChao(0, statThreshold); // Garden 0 is a special holding place reserved for NPCs
+                            // We might not be able to find NPCs in this range since they level up... so go higher and try again
+                            if (npc == null)
+                            {
+                                statThreshold += 500;
+                                continue;
+                            }
                             if (joiningNPCs.All(x => x.Id != npc.Id))
                             {
                                 joiningNPCs.Add(npc);

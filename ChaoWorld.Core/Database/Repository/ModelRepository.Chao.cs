@@ -42,16 +42,19 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Chao?>(query);
         }
 
-        public async Task<Chao?> GetRandomChao(int gardenId)
+        public async Task<Chao?> GetRandomChao(int gardenId, int statThreshold = 10000)
         {
             var chao = await _db.Execute(conn => conn.QueryAsync<Chao?>($@"
-                    select *
-                    from chao
-                    where gardenid = {gardenId}
+                select *
+                from chao
+                where gardenid = {gardenId}
+                and (swimvalue + flyvalue + runvalue + powervalue + staminavalue + intelligencevalue + luckvalue)/7 <= {statThreshold}
             "));
             var arr = chao.AsList().ToArray();
-            
-            var randomIndex = new Random().Next(0, arr.Length - 1);
+
+            if (arr.Length < 1)
+                return null;
+            var randomIndex = new Random().Next(0, arr.Length);
             return arr[randomIndex];
         }
 
