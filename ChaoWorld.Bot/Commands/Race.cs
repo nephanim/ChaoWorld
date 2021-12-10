@@ -119,7 +119,19 @@ namespace ChaoWorld.Bot
                         }
                         // We've waited long enough... if we're still in a preparing state, go ahead and start
                         if (raceInstance.State == RaceInstance.RaceStates.Preparing)
-                            await StartRace(ctx, race, raceInstance);
+                        {
+                            try
+                            {
+                                await StartRace(ctx, race, raceInstance);
+                            }
+                            catch (Exception e)
+                            {
+                                await ctx.Reply($"{Emojis.Warn} The race was canceled due to an error.");
+                                raceInstance.State = RaceInstance.RaceStates.Canceled;
+                                await _repo.UpdateRaceInstance(raceInstance);
+                                await _repo.LogMessage($"Instance {raceInstance.Id} of race {race.Id} ({race.Name}) failed: {e.ToString()}");
+                            }
+                        }
                     }
                 }
             }
