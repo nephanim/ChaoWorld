@@ -31,7 +31,7 @@ namespace ChaoWorld.Core
 
         public int CompareTo(GardenId other) => Value.CompareTo(other.Value);
 
-        public override string ToString() => $"#{Value:D5}";
+        public override string ToString() => $"{Value}";
     }
 
     public class Garden
