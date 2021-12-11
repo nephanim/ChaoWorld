@@ -46,7 +46,9 @@ namespace ChaoWorld.Bot
         public static Command TreeInfo = new Command("tree info", "tree info {id/name}", "Looks up information about one of your trees using either the name or ID");
         public static Command TreeList = new Command("tree list", "tree list", "Lists all trees in your orchard and their health");
         public static Command TreeWater = new Command("tree water", "tree water [id/name]", "Waters a tree in your orchard, improving its overall health (the thirstiest tree will be chosen if one is not specified)");
+        public static Command TreeWaterAll = new Command("tree water all", "tree water all", "Attempts to water every tree in your orchard");
         public static Command TreeCollect = new Command("tree collect", "tree collect [id/name]", "Collects fruit from a tree in your orchard (the one with the most fruit will be chosen if one is not specified");
+        public static Command TreeCollectAll = new Command("tree collect all", "tree collect all", "Attempts to collect fruit from all trees in your orchard");
         public static Command TreeRemove = new Command("tree remove", "tree remove {id/name}", "Removes a tree from your orchard to make room for another one (each garden can have up to 7 at at time");
         public static Command GiveItem = new Command("give item", "give item {id/name} {@user}", "Offers the specified item in your inventory to another player (target can accept or reject the offer)");
         public static Command GiveRings = new Command("give rings", "give rings {qty} {@user}", "Offers the specified amount of rings to another player (target can accept or reject the offer)");
@@ -89,7 +91,7 @@ namespace ChaoWorld.Bot
 
         public static Command[] TreeCommands =
         {
-            TreeInfo, TreeList, TreeWater, TreeCollect, TreeRemove
+            TreeInfo, TreeList, TreeWater, TreeWaterAll, TreeCollect, TreeCollectAll, TreeRemove
         };
 
         public static Command[] GiveCommands =
@@ -462,6 +464,8 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("water", "w", "tend", "t"))
                 if (!ctx.HasNext())
                     await ctx.Execute<Tree>(TreeWater, m => m.WaterNext(ctx));
+                else if (ctx.Match("all", "a"))
+                    await ctx.Execute<Tree>(TreeWaterAll, m => m.WaterAll(ctx));
                 else if (await ctx.MatchTree() is { } waterTree)
                     await ctx.Execute<Tree>(TreeWater, m => m.WaterTree(ctx, waterTree));
                 else
@@ -469,6 +473,8 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("collect", "c", "harvest", "pick"))
                 if (!ctx.HasNext())
                     await ctx.Execute<Tree>(TreeCollect, m => m.CollectNext(ctx));
+                else if (ctx.Match("all", "a"))
+                    await ctx.Execute<Tree>(TreeCollectAll, m => m.CollectAll(ctx));
                 else if (await ctx.MatchTree() is { } collectTree)
                     await ctx.Execute<Tree>(TreeCollect, m => m.CollectFruit(ctx, collectTree));
                 else

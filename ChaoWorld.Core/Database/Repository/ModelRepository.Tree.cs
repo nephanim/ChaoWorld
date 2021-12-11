@@ -17,6 +17,13 @@ namespace ChaoWorld.Core
             return _db.QueryFirst<Tree?>(query);
         }
         
+        public Task<IEnumerable<Tree>> GetTreesForGarden(int gardenId)
+        {
+            var query = new Query("trees")
+                .Where("gardenid", gardenId);
+            return _db.Query<Tree>(query);
+        }
+
         public Task<Tree?> GetThirstiestTreeForGarden(int gardenId)
         {
             var now = SystemClock.Instance.GetCurrentInstant();
