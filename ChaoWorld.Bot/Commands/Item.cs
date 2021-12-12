@@ -288,7 +288,11 @@ namespace ChaoWorld.Bot
                     : $"{item.Name} Tree";
                 tree.Name = tree.Name.Replace("Spores", string.Empty).Replace("Seed", "Fruit");
                 tree = await _repo.CreateTree(tree);
-                await ctx.Reply($"{Emojis.Success} Your {tree.Name} has been added to the garden. Remember to water it regularly.");
+                treeCount++;
+                var treeLimitWarning = treeCount < 7
+                    ? $"\r\nYour garden now has {treeCount}/7 trees."
+                    : "\r\n**You have reached the tree limit for your garden and will not be able to plant additional trees unless you remove existing ones first.**";
+                await ctx.Reply($"{Emojis.Success} Your {tree.Name} has been added to the garden. Remember to water it regularly.{treeLimitWarning}");
                 return true;
             }
             else
