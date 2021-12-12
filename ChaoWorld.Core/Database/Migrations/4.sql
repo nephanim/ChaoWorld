@@ -16,7 +16,8 @@ values
     (12, 'River Run', 'Expert race. Swimming and flying are key to victory.', 5, 5, true, 1, 8, 300, 5, 0.35, 0.29, 0.04, 0, 0.18, 0.14),
    	(13, 'Egg Tower', 'Expert race. Power is key to victory.', 1, 1, false, 1, 8, 300, 5, 0, 0.16, 0.04, 0.56, 0.06, 0.18),
     (14, 'Windy Valley', 'Expert race. Flying and intelligence are key to victory.', 5, 5, false, 1, 8, 0, 5, 0, 0.63, 0, 0, 0.38, 0),
-    (15, 'Obstacle Course', 'Intermediate race. Intelligence and luck are key to victory.', 1, 1, false, 1, 8, 600, 4, 0.13, 0.03, 0.12, 0.08, 0.32, 0.32);
+    (15, 'Obstacle Course', 'Intermediate race. Intelligence and luck are key to victory.', 1, 1, false, 1, 8, 600, 4, 0.13, 0.03, 0.12, 0.08, 0.32, 0.32),
+    (16, 'Emerald Loop', 'Expert race. Running and power are key to victory.', 1, 1, false, 1, 8, 0, 6, 0, 0, 0.59, 0.41, 0, 0);
 
 insert into racesegments
     (id, raceid, description, raceindex, terraintype, startelevation, endelevation, terraindistance, staminalossmultiplier,
@@ -114,6 +115,14 @@ values
     (75, 15, 'An artificial climbing wall waits at the start of the race. Everyone begins scaling it, searching for the right path as other chao block their way.', 0, 2, 0, 30, 0, 1.0, 0, 80, 0),
     (76, 15, 'Atop the wall is a wooden suspension bridge. As the chao proceed, they realize the walls have cannons hidden inside. Plungers fire at them from left and right. The chao try to avoid not only the plungers, but their fallen competition.', 1, 0, 30, 30, 25, 1.0, 0, 60, 100),
     (77, 15, 'Ropes allow the chao to swing down to a track below. As they leap forward, they glide a short distance to the ground. The track is riddled with hidden pitfalls that pull some of them under.', 2, 0, 30, 20, 25, 1.0, 0, 0, 40),
-    (78, 15, 'The last stretch is a swimming pool full of floating mines. These explode when touched, sometimes causing chain reactions. The chao are tossed about as they try to navigate this final obstacle.', 3, 1, 20, 20, 50, 1.0, 0, 100, 100);
+    (78, 15, 'The last stretch is a swimming pool full of floating mines. These explode when touched, sometimes causing chain reactions. The chao are tossed about as they try to navigate this final obstacle.', 3, 1, 20, 20, 50, 1.0, 0, 100, 100),
+    --Emerald Loop
+    (79, 16, 'The track lines in the inside of a gigantic loop high above the ground. The chao begin their sprint up the base of the ring.', 0, 0, 0, 0, 50, 1.0, 0, 0, 0),
+    (80, 16, 'The path grows steeper as they continue, and the vertical face of the far wall grows nearer with every moment.', 1, 0, 0, 0, 75, 1.5, 0, 0, 0),
+    (81, 16, 'The last runnable stretch tests everyone''s limits - too shallow to climb, but too sharp to tread lightly. The chao in the lead start running on all fours.', 2, 0, 0, 0, 100, 2.0, 0, 0, 0),
+    (82, 16, 'Climbing now, the group ascends the interior wall of the loop.', 3, 2, 0, 50, 0, 1.0, 0, 0, 0),
+    (83, 16, 'As the loop bends inward, gravity works against them. The racers use their wings to keep from falling down to the starting line.', 4, 2, 50, 125, 0, 2.0, 0, 0, 0),
+    (84, 16, 'Before long, they''re climbing upside-down toward the upper reaches of the loop. Only the strongest can maintain their pace now.', 5, 2, 125, 225, 0, 3.0, 0, 0, 0),
+    (85, 16, 'The slower pace of the climb back down transitions into a mad dash for the finish as chao start to find their footing on the track once more. Nothing else stands in their way.', 6, 0, 225, 225, 100, 0.5, 0, 0, 0);
 
 update info set schema_version = 4;
