@@ -253,13 +253,7 @@ namespace ChaoWorld.Core
 	                rebirthon = current_timestamp
                 where gardenid = 0
                     and id != 1
-                    and swimlevel = 99
-                    and flylevel = 99
-                    and runlevel = 99
-                    and powerlevel = 99
-                    and staminalevel = 99
-                    and intelligencelevel = 99
-                    and lucklevel = 99
+                    and (SwimLevel + FlyLevel + RunLevel + PowerLevel + StaminaLevel + IntelligenceLevel + LuckLevel) >= 500
                 returning *
             "))).AsList();
             if (chao.Count > 0)
