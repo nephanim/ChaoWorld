@@ -126,7 +126,7 @@ namespace ChaoWorld.Bot
                             }
                             catch (Exception e)
                             {
-                                await ctx.Reply($"{Emojis.Warn} The race was canceled due to an error.");
+                                await ctx.Reply($"{Emojis.Warn} The {race.Name} Race was canceled due to an error.");
                                 raceInstance.State = RaceInstance.RaceStates.Canceled;
                                 await _repo.UpdateRaceInstance(raceInstance);
                                 await _repo.LogMessage($"Instance {raceInstance.Id} of race {race.Id} ({race.Name}) failed: {e.ToString()}");
