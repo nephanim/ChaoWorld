@@ -151,6 +151,9 @@ namespace ChaoWorld.Bot
             _logger.Information("Resetting instance limits for gardens...");
             await _repo.ResetGardenInstanceLimits();
 
+            _logger.Information("Giving NPC chao daily boost...");
+            await BoostNpcChao();
+
             _logger.Information("Reincarnating eligible NPCs...");
             await _repo.ReincarnateEligibleNpcChao();
         }
@@ -302,6 +305,23 @@ namespace ChaoWorld.Bot
             }
 
             return items;
+        }
+
+        public async Task BoostNpcChao()
+        {
+            var chao = await _repo.GetChaoInGarden(0);
+            foreach (var c in chao)
+            {
+                c.RaiseSwim(500);
+                c.RaiseFly(500);
+                c.RaiseRun(500);
+                c.RaisePower(500);
+                c.RaiseStamina(500);
+                c.RaiseIntelligence(500);
+                c.RaiseLuck(500);
+                await _repo.UpdateChao(c);
+                _logger.Information($"Boosted stats for chao {c.Id} ({c.Name})");
+            }
         }
 
         public async Task<Message> SendMessage(ulong channel, string text = null, Embed embed = null, AllowedMentions? mentions = null)
