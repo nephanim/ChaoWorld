@@ -58,6 +58,13 @@ namespace ChaoWorld.Core
             return arr[randomIndex];
         }
 
+        public async Task<IEnumerable<Chao>> GetChaoInGarden(int gardenId)
+        {
+            var query = new Query("chao")
+                .Where("gardenid", gardenId);
+            return await _db.Query<Chao>(query);
+        }
+
         public async Task<IEnumerable<Chao>> GetChaoReadyForFirstEvolution()
         {
             var query = new Query("chao")
@@ -253,7 +260,13 @@ namespace ChaoWorld.Core
 	                rebirthon = current_timestamp
                 where gardenid = 0
                     and id != 1
-                    and (SwimLevel + FlyLevel + RunLevel + PowerLevel + StaminaLevel + IntelligenceLevel + LuckLevel) >= 500
+                    and SwimLevel = 99
+                    and FlyLevel = 99
+                    and RunLevel = 99
+                    and PowerLevel = 99
+                    and StaminaLevel = 99
+                    and IntelligenceLevel = 99
+                    and LuckLevel = 99
                 returning *
             "))).AsList();
             if (chao.Count > 0)
