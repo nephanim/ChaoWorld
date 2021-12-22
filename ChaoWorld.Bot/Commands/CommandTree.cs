@@ -506,7 +506,7 @@ namespace ChaoWorld.Bot
             else if (ctx.Match("rings", "r"))
                 await ctx.Execute<Garden>(GiveRings, m => m.GiveRings(ctx));
             else
-                PrintCommandNotFoundError(ctx, GiveCommands);
+                await PrintCommandNotFoundError(ctx, GiveCommands);
         }
 
         private async Task CommandHelpRoot(Context ctx)
