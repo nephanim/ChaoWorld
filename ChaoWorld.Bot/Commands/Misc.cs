@@ -111,12 +111,19 @@ namespace ChaoWorld.Bot
 
         public async Task SimulateSlots(Context ctx)
         {
-            var balance = 10000000; // Just start with a bunch of rings to allow many iterations
+            var betInput = ctx.RemainderOrNull();
+            var bet = 100; // Default this to 100, but let them go higher if they want... (this should reduce slots spam somewhat)
+            if (int.TryParse(betInput, out int newBet))
+                bet = newBet;
+            var payoutMultiplier = bet / 100.0;
+
+            var balance = 10000000;
             var startingBalance = balance;
-            var simulationCount = balance / 100;
+            var simulationCount = 1000000;
+
             for (int i = 0; i < simulationCount; i++)
             {
-                balance -= 100;
+                balance -= bet;
                 var tiles = new string[]
                 {
                     PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
@@ -124,10 +131,10 @@ namespace ChaoWorld.Bot
                     PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
                 };
 
-                var payout = await GetSlotPayout(ctx, tiles);
+                var payout = (int)Math.Floor((await GetSlotPayout(ctx, tiles)) * payoutMultiplier);
                 balance += payout;
             }
-            await ctx.Reply($"{Emojis.Note} After {simulationCount} plays, balance is {balance:n0} ({((double)balance)/startingBalance*100.0:N0}% return)");
+            await ctx.Reply($"{Emojis.Note} After {simulationCount} plays (betting {bet} rings), balance is {balance:n0} ({((double)balance)/startingBalance*100.0:N0}% return)");
         }
 
         public async Task PlaySlots(Context ctx)
@@ -226,9 +233,9 @@ namespace ChaoWorld.Bot
                 return Emojis.OrangeFruit;
             if (roll > 350)
                 return Emojis.PurpleFruit;
-            if (roll > 145)
+            if (roll > 127)
                 return Emojis.RedFruit;
-            if (roll > 30)
+            if (roll > 40)
                 return Emojis.YellowFruit;
             return Emojis.Eggman;
         }
