@@ -127,9 +127,9 @@ values
     (85, 16, 'The slower pace of the climb back down transitions into a mad dash for the finish as chao start to find their footing on the track once more. Nothing else stands in their way.', 6, 0, 225, 225, 100, 0.5, 0, 0, 0),
     --Sapphire
     (86, 17, 'Lined up on the beach of a small island, the participants take in the salty breeze. The race begins with a sprint to the ocean through comfortably warm sand.', 0, 0, 0, 0, 25, 2.0, 0, 0, 0),
-    (86, 17, 'Chao splash into the glistening water as they reach it. They rise and fall with the waves, following the course parallel to shore. The sun shines bright in the sky and in its reflection.', 1, 1, 0, 0, 100, 1.0, 0, 0, 0),
-    (86, 17, 'A sandbank just off the coast intersects the course. Right after a swim in cool waters, the sand feels hotter and sticks to their legs.', 2, 0, 0, 0, 20, 2.5, 0, 0, 0),
-    (86, 17, 'Back in the water and refreshed, the chao continue swimming along the coastline. A colony of gulls passes overhead.', 3, 1, 0, 0, 100, 1.0, 0, 0, 0),
-    (86, 17, 'The course turns toward the open sea where a small sailboat awaits. Omochao on board beckon them with checkered flags. The first to climb aboard wins!', 4, 1, 0, 0, 50, 2.0, 0, 0, 0);
+    (87, 17, 'Chao splash into the glistening water as they reach it. They rise and fall with the waves, following the course parallel to shore. The sun shines bright in the sky and in its reflection.', 1, 1, 0, 0, 100, 1.0, 0, 0, 0),
+    (88, 17, 'A sandbank just off the coast intersects the course. Right after a swim in cool waters, the sand feels hotter and sticks to their legs.', 2, 0, 0, 0, 20, 2.5, 0, 0, 0),
+    (89, 17, 'Back in the water and refreshed, the chao continue swimming along the coastline. A colony of gulls passes overhead.', 3, 1, 0, 0, 100, 1.0, 0, 0, 0),
+    (90, 17, 'The course turns toward the open sea where a small sailboat awaits. Omochao on board beckon them with checkered flags. The first to climb aboard wins!', 4, 1, 0, 0, 50, 2.0, 0, 0, 0);
 
 update info set schema_version = 4;
