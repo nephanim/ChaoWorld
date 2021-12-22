@@ -124,12 +124,13 @@ namespace ChaoWorld.Bot
                             {
                                 await StartRace(ctx, race, raceInstance);
                             }
-                            catch (Exception e)
+                            catch (Exception)
                             {
                                 await ctx.Reply($"{Emojis.Warn} The {race.Name} Race was canceled due to an error.");
                                 raceInstance.State = RaceInstance.RaceStates.Canceled;
                                 await _repo.UpdateRaceInstance(raceInstance);
-                                await _repo.LogMessage($"Instance {raceInstance.Id} of race {race.Id} ({race.Name}) failed: {e.ToString()}");
+                                await _repo.LogMessage($"Instance {raceInstance.Id} of race {race.Id} ({race.Name}) failed");
+                                throw;
                             }
                         }
                     }
