@@ -211,7 +211,7 @@ namespace ChaoWorld.Bot
                 else if (payout == bet)
                     await ctx.Reply($"{Emojis.Success} {ctx.Author.Username} broke even on Chao Slots. (+0)");
                 else if (payout > 0)
-                    await ctx.Reply($"{Emojis.Eggman} {ctx.Author.Username} won back {payout:n0} of the rings they put in. Better luck next time. ({bet-payout:n0})");
+                    await ctx.Reply($"{Emojis.Eggman} {ctx.Author.Username} won back some of the rings they put in. Better luck next time. (+{bet-payout:n0})");
                 else
                     await ctx.Reply($"{Emojis.Eggman} {ctx.Author.Username} didn't win anything... (-{bet:n0})");
             }
