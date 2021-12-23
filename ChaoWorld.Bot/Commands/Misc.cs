@@ -91,7 +91,7 @@ namespace ChaoWorld.Bot
                 if (duration.Hours >= 2)
                     timeRemaining = $"{duration.Hours} hours";
                 else if (duration.Hours >= 1)
-                    timeRemaining = $"hour";
+                    timeRemaining = $"1 hour {duration.Minutes - 60} minutes";
                 else if (duration.Minutes >= 2)
                     timeRemaining = $"{duration.Minutes} minutes";
                 else if (duration.Minutes >= 1)
