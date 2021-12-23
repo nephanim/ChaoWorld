@@ -368,6 +368,8 @@ namespace ChaoWorld.Core
                         SwimValue += GetLevelUpIncrease(SwimGrade);
                         levels--;
                     }
+                    if (SwimValue > 9999)
+                        SwimValue = 9999;
                 }
             }
         }
@@ -392,6 +394,8 @@ namespace ChaoWorld.Core
                         FlyValue += GetLevelUpIncrease(FlyGrade);
                         levels--;
                     }
+                    if (FlyValue > 9999)
+                        FlyValue = 9999;
                 }
             }
         }
@@ -416,6 +420,8 @@ namespace ChaoWorld.Core
                         RunValue += GetLevelUpIncrease(RunGrade);
                         levels--;
                     }
+                    if (RunValue > 9999)
+                        RunValue = 9999;
                 }
             }
         }
@@ -440,6 +446,8 @@ namespace ChaoWorld.Core
                         PowerValue += GetLevelUpIncrease(PowerGrade);
                         levels--;
                     }
+                    if (PowerValue > 9999)
+                        PowerValue = 9999;
                 }
             }
         }
@@ -464,6 +472,8 @@ namespace ChaoWorld.Core
                         StaminaValue += GetLevelUpIncrease(StaminaGrade);
                         levels--;
                     }
+                    if (StaminaValue > 9999)
+                        StaminaValue = 9999;
                 }
             }
         }
@@ -488,6 +498,8 @@ namespace ChaoWorld.Core
                         IntelligenceValue += GetLevelUpIncrease(IntelligenceGrade);
                         levels--;
                     }
+                    if (IntelligenceValue > 9999)
+                        IntelligenceValue = 9999;
                 }
             }
         }
@@ -512,6 +524,8 @@ namespace ChaoWorld.Core
                         LuckValue += GetLevelUpIncrease(LuckGrade);
                         levels--;
                     }
+                    if (LuckValue > 9999)
+                        LuckValue = 9999;
                 }
             }
         }
