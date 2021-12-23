@@ -335,13 +335,12 @@ namespace ChaoWorld.Bot
                 var fastestChao = allChao.FirstOrDefault(x => x.Id.Value == fastestSegment.ChaoId);
                 var timeElapsed = TimeSpan.FromSeconds(fastestSegment.TotalTimeSeconds.GetValueOrDefault(0));
 
-                // Now we wait...
-                await Task.Delay(fastestSegment.SegmentTimeSeconds.GetValueOrDefault(0) * 1000);
+                // Now we wait... At least 5 seconds even if the segment is completed faster
+                await Task.Delay(Math.Max(fastestSegment.SegmentTimeSeconds.GetValueOrDefault(0) * 1000, 5000));
 
                 // Report race status - current time / positions of all chao
                 await ctx.Reply(embed: await _embeds.CreateRaceProgressEmbed(race, raceInstance, template, timeElapsed, orderedChao));
 
-                //await ctx.Reply($"{Emojis.Megaphone} {fastestChao.Name} is in the lead in the {race.Name} race!");
                 result.Complete = false; // There may be more segments after this one
                 result.SegmentTimeSeconds = fastestSegment.SegmentTimeSeconds.GetValueOrDefault(0);
             }
