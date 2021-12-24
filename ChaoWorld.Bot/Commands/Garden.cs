@@ -58,7 +58,7 @@ namespace ChaoWorld.Bot
                 ctx.CheckOwnChao(chao);
                 garden.ActiveChao = chao.Id.Value;
                 await _repo.UpdateGarden(garden);
-                await ctx.Reply($"{Emojis.Success} {chao.Name} is now selected for your garden. Some commands can now be used without specifying a chao (e.g. `!race {{id}} join` instead of `!race {{id}} join {{chao id}}`.");
+                await ctx.Reply($"{Emojis.Success} {chao.Name} is now selected for your garden. Some commands can now be used without specifying a chao (e.g. `!race {{id}} join` instead of `!race {{id}} join {{chao id}}`).");
             }
             else
             {
