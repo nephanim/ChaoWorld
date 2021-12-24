@@ -193,7 +193,8 @@ namespace ChaoWorld.Core
             {
                 item.Quantity -= quantity;
                 await UpdateItem(item);
-            } else
+            }
+            else
             {
                 item.Quantity = 0;
                 await DeleteItem(item.Id);
