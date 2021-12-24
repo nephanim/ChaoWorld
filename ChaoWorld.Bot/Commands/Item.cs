@@ -472,44 +472,60 @@ namespace ChaoWorld.Bot
         public async Task GiveItem(Context ctx, Core.Item item)
         {
             ctx.CheckOwnItem(item);
-            await ConfirmGiveItem(ctx, item);
+
+            // Determine the quantity to give, if specified
+            var remainingInput = ctx.RemainderOrNull();
+            int quantity = 1;
+            if (int.TryParse(remainingInput, out int parsedQuantity))
+                quantity = parsedQuantity;
+            if (quantity < 1)
+                quantity = 1;
+            var quantityString = quantity > 1 ? $" x{quantity}" : string.Empty;
+
+            await ConfirmGiveItem(ctx, item, quantity); // Make sure they really want to give this away...
 
             if (await ctx.MatchUser() is { } targetAccount)
             {
-                // Make sure the target wants it (not everybody likes charity)
-                if (!await ctx.PromptYesNo($"{targetAccount.Mention()} Would you like to accept the {item.Name} from {ctx.Author.Username}?", "Accept", user: targetAccount, matchFlag: false))
-                    throw Errors.GiveItemCanceled();
-
-                var targetGarden = await _repo.GetGardenByAccount(targetAccount.Id);
-                if (targetGarden != null)
+                // Make sure they have enough of the item...
+                if (item.Quantity >= quantity)
                 {
-                    // We know who to give it to, so should be safe to proceed
-                    await _repo.UseItem(item, 1); // The original item gets deleted first thing to eliminate risk of duping items
+                    // Make sure the target wants it (not everybody likes charity)
+                    if (!await ctx.PromptYesNo($"{targetAccount.Mention()} Would you like to accept the {item.Name}{quantityString} from {ctx.Author.Username}?", "Accept", user: targetAccount, matchFlag: false))
+                        throw Errors.GiveItemCanceled();
 
-                    // Now update the target inventory - increase quantity of existing item or add new item
-                    var existingInventoryItem = await _repo.GetInventoryItemByTypeId(targetGarden.Id.Value, item.TypeId);
-                    if (existingInventoryItem != null)
+                    var targetGarden = await _repo.GetGardenByAccount(targetAccount.Id);
+                    if (targetGarden != null)
                     {
-                        // We already have some of this item - just update the quantity appropriately
-                        existingInventoryItem.Quantity += 1;
-                        await _repo.UpdateItem(existingInventoryItem);
+                        // We know who to give it to, so should be safe to proceed
+                        await _repo.UseItem(item, quantity); // The original item gets deleted first thing to eliminate risk of duping items
+
+                        // Now update the target inventory - increase quantity of existing item or add new item
+                        var existingInventoryItem = await _repo.GetInventoryItemByTypeId(targetGarden.Id.Value, item.TypeId);
+                        if (existingInventoryItem != null)
+                        {
+                            // We already have some of this item - just update the quantity appropriately
+                            existingInventoryItem.Quantity += quantity;
+                            await _repo.UpdateItem(existingInventoryItem);
+                        }
+                        else
+                        {
+                            // We don't have any of this item - add it to our inventory
+                            var inventoryItem = new Core.Item()
+                            {
+                                TypeId = item.TypeId,
+                                CategoryId = item.CategoryId,
+                                Quantity = quantity,
+                                GardenId = targetGarden.Id.Value
+                            };
+                            await _repo.AddItem(targetGarden.Id.Value, inventoryItem);
+                        }
+                        await ctx.Reply($"{Emojis.Success} Transferred {item.Name} to {targetAccount.Username}.");
                     }
                     else
-                    {
-                        // We don't have any of this item - add it to our inventory
-                        var inventoryItem = new Core.Item()
-                        {
-                            TypeId = item.TypeId,
-                            CategoryId = item.CategoryId,
-                            Quantity = 1,
-                            GardenId = targetGarden.Id.Value
-                        };
-                        await _repo.AddItem(targetGarden.Id.Value, inventoryItem);
-                    }
-                    await ctx.Reply($"{Emojis.Success} Transferred {item.Name} to {targetAccount.Username}.");
+                        await ctx.Reply($"{Emojis.Error} Failed to deliver {item.Name} to {targetAccount.Username}.");
                 }
                 else
-                    await ctx.Reply($"{Emojis.Error} Failed to deliver {item.Name} to {targetAccount.Username}.");
+                    await ctx.Reply($"{Emojis.Error} You only have {item.Quantity} of {item.Name}.");
             }
             else
             {
@@ -517,9 +533,10 @@ namespace ChaoWorld.Bot
             }
         }
 
-        public async Task ConfirmGiveItem(Context ctx, Core.Item item)
+        public async Task ConfirmGiveItem(Context ctx, Core.Item item, int quantity)
         {
-            var prompt = $"{Emojis.Warn} Are you sure you want to give away {item.Name}?";
+            var quantityString = quantity > 1 ? $" x{quantity}" : string.Empty;
+            var prompt = $"{Emojis.Warn} Are you sure you want to give away {item.Name}{quantityString}?";
             if (!(await ctx.PromptYesNo(prompt, "Confirm")))
                 throw Errors.GenericCancelled();
         }
