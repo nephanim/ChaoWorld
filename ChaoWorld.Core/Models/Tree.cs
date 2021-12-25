@@ -41,14 +41,16 @@ namespace ChaoWorld.Core
                 {
                     var duration = NextWatering - now;
                     var timeRemaining = "24 hours";
-                    if (duration.Hours >= 2)
-                        timeRemaining = $"{duration.Hours} hours";
-                    else if (duration.Minutes >= 2)
-                        timeRemaining = $"{duration.Minutes} minutes";
-                    else if (duration.Minutes >= 1)
-                        timeRemaining = $"1 minute";
+                    if (duration.TotalHours >= 2)
+                        timeRemaining = $"{duration.TotalHours} hours";
+                    else if (duration.TotalHours >= 1)
+                        timeRemaining = $"1 hour {duration.TotalMinutes - 60} minutes";
+                    else if (duration.TotalMinutes >= 2)
+                        timeRemaining = $"{duration.TotalMinutes} minutes";
+                    else if (duration.TotalMinutes >= 1)
+                        timeRemaining = $"1 minute {duration.TotalSeconds} seconds";
                     else
-                        timeRemaining = $"{duration.Seconds} seconds";
+                        timeRemaining = $"{duration.TotalSeconds} seconds";
 
                     return timeRemaining;
                 }
