@@ -207,7 +207,13 @@ namespace ChaoWorld.Bot
                                 joiningNPCs.Add(npc);
                                 await _repo.JoinChaoToRaceInstance(raceInstance, npc);
                                 currentChaoCount++;
-                            } // else we loop again without incrementing, so we get another one
+                            }
+                            else
+                            {
+                                // If we're getting duplicates, the pool is probably spread thin
+                                // Use a wider range and try again
+                                statThreshold += 500;
+                            }
                         }
                     }
                     catch (Exception e)
