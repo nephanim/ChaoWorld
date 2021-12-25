@@ -89,15 +89,15 @@ namespace ChaoWorld.Bot
                 var duration = ctx.Garden.NextCollectOn - now;
                 var timeRemaining = "24 hours";
                 if (duration.TotalHours >= 2)
-                    timeRemaining = $"{duration.TotalHours} hours";
+                    timeRemaining = $"{duration.TotalHours:N0} hours";
                 else if (duration.TotalHours >= 1)
-                    timeRemaining = $"1 hour {duration.TotalMinutes - 60} minutes";
+                    timeRemaining = $"1 hour {(duration.TotalMinutes - 60):N0} minutes";
                 else if (duration.TotalMinutes >= 2)
-                    timeRemaining = $"{duration.TotalMinutes} minutes";
+                    timeRemaining = $"{duration.TotalMinutes:N0} minutes";
                 else if (duration.TotalMinutes >= 1)
-                    timeRemaining = $"1 minute {duration.TotalSeconds} seconds";
+                    timeRemaining = $"1 minute {duration.TotalSeconds:N0} seconds";
                 else
-                    timeRemaining = $"{duration.TotalSeconds} seconds";
+                    timeRemaining = $"{duration.TotalSeconds:N0} seconds";
 
                 await ctx.Reply($"{Emojis.Error} You couldn't find anything. Please wait another {timeRemaining} to collect rings.");
             }
