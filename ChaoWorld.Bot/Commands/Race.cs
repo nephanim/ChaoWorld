@@ -190,7 +190,7 @@ namespace ChaoWorld.Bot
                     {
                         // Select random NPC chao to fill remaining slots
                         var joiningNPCs = new List<Core.Chao>();
-                        var statThreshold = race.Difficulty * 500;
+                        var statThreshold = race.Difficulty * 600;
                         var queryCount = 0;
                         while (currentChaoCount < race.MaximumChao && queryCount < 16) // This limit is totally arbitrary, just a safeguard if we can't find enough chao
                         {
@@ -199,7 +199,7 @@ namespace ChaoWorld.Bot
                             // We might not be able to find NPCs in this range since they level up... so go higher and try again
                             if (npc == null)
                             {
-                                statThreshold += 500;
+                                statThreshold += 600;
                                 continue;
                             }
                             if (joiningNPCs.All(x => x.Id != npc.Id))
@@ -212,7 +212,7 @@ namespace ChaoWorld.Bot
                             {
                                 // If we're getting duplicates, the pool is probably spread thin
                                 // Use a wider range and try again
-                                statThreshold += 500;
+                                statThreshold += 600;
                             }
                         }
                     }
