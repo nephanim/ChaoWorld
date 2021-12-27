@@ -55,7 +55,7 @@ namespace ChaoWorld.Bot
             {
                 await ctx.Reply($"{Emojis.Error} Please use <#{allowedChannels.Races}> to join races.");
             }
-            else if (raceInstance.State == RaceInstance.RaceStates.New && now < raceInstance.ReadyOn)
+            else if (raceInstance.State == RaceInstance.RaceStates.New && now > raceInstance.ReadyOn)
             {
                 await ctx.Reply($"{Emojis.Error} This race is being deleted and can no longer be joined.");
             }
