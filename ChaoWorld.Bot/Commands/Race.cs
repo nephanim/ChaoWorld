@@ -49,10 +49,15 @@ namespace ChaoWorld.Bot
             var activeInTourney = await _repo.GetActiveTournamentByGarden(chao.GardenId.Value);
             var race = await _repo.GetRaceByInstanceId(raceInstance.Id);
             var allowedChannels = await _repo.ReadBroadcastChannels();
+            var now = SystemClock.Instance.GetCurrentInstant();
 
             if (ctx.Channel.Id != allowedChannels.Races)
             {
                 await ctx.Reply($"{Emojis.Error} Please use <#{allowedChannels.Races}> to join races.");
+            }
+            else if (raceInstance.State == RaceInstance.RaceStates.New && now < raceInstance.ReadyOn)
+            {
+                await ctx.Reply($"{Emojis.Error} This race is being deleted and can no longer be joined.");
             }
             else if (raceInstance.State == RaceInstance.RaceStates.InProgress
                 || raceInstance.State == RaceInstance.RaceStates.Completed
@@ -111,7 +116,6 @@ namespace ChaoWorld.Bot
                         await _repo.UpdateRaceInstance(raceInstance);
 
                         // Start polling to make sure the tournament is still ready when it's time to start
-                        var now = SystemClock.Instance.GetCurrentInstant();
                         while (now < raceInstance.ReadyOn)
                         {
                             await Task.Delay(TimeSpan.FromMinutes(1));
