@@ -473,19 +473,20 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckOwnItem(item);
 
-            // Determine the quantity to give, if specified
-            var remainingInput = ctx.RemainderOrNull();
-            int quantity = 1;
-            if (int.TryParse(remainingInput, out int parsedQuantity))
-                quantity = parsedQuantity;
-            if (quantity < 1)
-                quantity = 1;
-            var quantityString = quantity > 1 ? $" x{quantity}" : string.Empty;
-
-            await ConfirmGiveItem(ctx, item, quantity); // Make sure they really want to give this away...
-
             if (await ctx.MatchUser() is { } targetAccount)
             {
+                // Determine the quantity to give, if specified
+                ctx.PopArgument(); // This pops the user mention off the stack so we can get at the quantity input
+                var remainingInput = ctx.RemainderOrNull();
+                int quantity = 1;
+                if (int.TryParse(remainingInput, out int parsedQuantity))
+                    quantity = parsedQuantity;
+                if (quantity < 1)
+                    quantity = 1;
+                var quantityString = quantity > 1 ? $" x{quantity}" : string.Empty;
+
+                await ConfirmGiveItem(ctx, item, quantity); // Make sure they really want to give this away...
+
                 // Make sure they have enough of the item...
                 if (item.Quantity >= quantity)
                 {
