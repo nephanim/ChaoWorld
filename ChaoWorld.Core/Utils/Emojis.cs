@@ -28,5 +28,15 @@ namespace ChaoWorld.Core
         public const string GreenFruit = "<:fruitgreen:910709367672823840>";
         public const string Eggman = "<:eggman:910720453730000961>";
         public const string Rings = "<a:rings:910718050720952320>";
+
+        public const string Slots1 = "<a:slots1:925557453456810015>";
+        public const string Slots2 = "<a:slots2:925557453825912843>";
+        public const string Slots3 = "<a:slots3:925557453800742952>";
+        public const string Slots4 = "<a:slots4:925557453813325864>";
+        public const string Slots5 = "<a:slots5:925557453838508122>";
+        public const string Slots6 = "<a:slots6:925557453926584380>";
+        public const string Slots8 = "<a:slots8:925557454006284319>";
+        public const string Slots9 = "<a:slots9:925557454052397056>";
+        public const string Slots0 = "<a:slots0:925557453750431744>";
     }
 }

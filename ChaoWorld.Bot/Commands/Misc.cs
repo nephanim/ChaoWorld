@@ -134,7 +134,7 @@ namespace ChaoWorld.Bot
                 var payout = (int)Math.Floor((await GetSlotPayout(ctx, tiles)) * payoutMultiplier);
                 balance += payout;
             }
-            await ctx.Reply($"{Emojis.Note} After {simulationCount} plays (betting {bet} rings), balance is {balance:n0} ({((double)balance)/startingBalance*100.0:N0}% return)");
+            await ctx.Reply($"{Emojis.Note} After {simulationCount:n0} plays (betting {bet:n0} rings), balance is {balance:n0} ({((double)balance)/startingBalance*100.0:N0}% return)");
         }
 
         public async Task PlaySlots(Context ctx)
@@ -147,7 +147,7 @@ namespace ChaoWorld.Bot
 
             if (ctx.Garden.RingBalance < bet)
             {
-                await ctx.Reply($"{Emojis.Error} Sorry, you don't have enough rings to play Chao Slots! You need at least 100 rings.");
+                await ctx.Reply($"{Emojis.Error} Sorry, you don't have enough rings to play Chao Slots! You need at least {bet:n0} rings.");
             }
             else if (bet < 100)
             {
@@ -161,33 +161,17 @@ namespace ChaoWorld.Bot
 
                 var tiles = new string[]
                 {
-                    PickSlotResult(new Random().Next(30, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(150, 1001)),
-                    PickSlotResult(new Random().Next(100, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(200, 1001)), PickSlotResult(new Random().Next(100, 1001)),
+                    Emojis.Slots1, Emojis.Slots8, Emojis.Slots4,
+                    Emojis.Slots2, Emojis.Slots9, Emojis.Slots5,
+                    Emojis.Slots3, Emojis.Slots0, Emojis.Slots6
                 };
                 var msg = await ctx.Reply($"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}");
 
-                // Shuffle the tiles so we can give the "slots" effect (some of these are deliberately more likely to show "exciting" rewards to keep them playing)
-                tiles = new string[]
-                {
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(200, 1001)), PickSlotResult(new Random().Next(50, 1001)),
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                    PickSlotResult(new Random().Next(50, 1001)), PickSlotResult(new Random().Next(100, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                };
-                await Task.Delay(300);
-                await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
-                    new MessageEditRequest
-                    {
-                        Content = $"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}",
-                        Embed = null
-                    });
-                tiles = new string[]
-                {
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                    PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)), PickSlotResult(new Random().Next(0, 1001)),
-                };
-                await Task.Delay(300);
+                // Stop first wheel
+                await Task.Delay(500);
+                tiles[0] = PickSlotResult(new Random().Next(0, 1001));
+                tiles[3] = PickSlotResult(new Random().Next(0, 1001));
+                tiles[6] = PickSlotResult(new Random().Next(0, 1001));
                 await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
                     new MessageEditRequest
                     {
@@ -195,16 +179,34 @@ namespace ChaoWorld.Bot
                         Embed = null
                     });
 
-                var payout = (int)Math.Floor((await GetSlotPayout(ctx, tiles)) * payoutMultiplier);
-                ctx.Garden.RingBalance += payout;
-                await _repo.UpdateGarden(ctx.Garden);
-                
+                // Stop second wheel
                 await Task.Delay(300);
+                tiles[1] = PickSlotResult(new Random().Next(0, 1001));
+                tiles[4] = PickSlotResult(new Random().Next(0, 1001));
+                tiles[7] = PickSlotResult(new Random().Next(0, 1001));
                 await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
-                    new MessageEditRequest {
+                    new MessageEditRequest
+                    {
                         Content = $"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}",
                         Embed = null
                     });
+
+                // Stop last wheel
+                await Task.Delay(300);
+                tiles[2] = PickSlotResult(new Random().Next(0, 1001));
+                tiles[5] = PickSlotResult(new Random().Next(0, 1001));
+                tiles[8] = PickSlotResult(new Random().Next(0, 1001));
+                await ctx.Rest.EditMessage(msg.ChannelId, msg.Id,
+                    new MessageEditRequest
+                    {
+                        Content = $"{tiles[0]} {tiles[1]} {tiles[2]}\r\n{tiles[3]} {tiles[4]} {tiles[5]}\r\n{tiles[6]} {tiles[7]} {tiles[8]}",
+                        Embed = null
+                    });
+
+                // Now determine payout
+                var payout = (int)Math.Floor((await GetSlotPayout(ctx, tiles)) * payoutMultiplier);
+                ctx.Garden.RingBalance += payout;
+                await _repo.UpdateGarden(ctx.Garden);
 
                 if (payout > bet)
                     await ctx.Reply($"{Emojis.Success} {ctx.Author.Username} won {payout:n0} rings playing Chao Slots! (+{payout-bet:n0})");
