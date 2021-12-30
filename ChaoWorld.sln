@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChaoWorld.Core", "ChaoWorld
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myriad", "Myriad\Myriad.csproj", "{ACB9BF37-F29C-4068-A7D1-2EFF2C308C4B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChaoWorld.ScheduledTasks", "ChaoWorld.ScheduledTasks\ChaoWorld.ScheduledTasks.csproj", "{374A8EB3-655D-4230-982B-459AE3553991}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{ACB9BF37-F29C-4068-A7D1-2EFF2C308C4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACB9BF37-F29C-4068-A7D1-2EFF2C308C4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACB9BF37-F29C-4068-A7D1-2EFF2C308C4B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{374A8EB3-655D-4230-982B-459AE3553991}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{374A8EB3-655D-4230-982B-459AE3553991}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{374A8EB3-655D-4230-982B-459AE3553991}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{374A8EB3-655D-4230-982B-459AE3553991}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
