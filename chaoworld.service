@@ -1,0 +1,14 @@
+[Unit]
+Description=Chao World Discord Bot
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+WorkingDirectory=/home/noko/thinclient_drives/source/ChaoWorld/ChaoWorld.Bot/bin/Debug/net5.0/publish/
+ExecStart=/home/noko/thinclient_drives/source/ChaoWorld/ChaoWorld.Bot/bin/Debug/net5.0/publish/ChaoWorld.Bot
+
+[Install]
+WantedBy=multi-user.target
