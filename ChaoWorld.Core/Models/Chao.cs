@@ -157,8 +157,17 @@ namespace ChaoWorld.Core
         public int LuckLevel { get; private set; }
         public int LuckProgress { get; private set; }
         public int LuckValue { get; private set; }
-        public double ReincarnationStatFactor { get; set; }
 
+        // Chaos Factor
+        public double SwimFactor { get; set; }
+        public double FlyFactor { get; set; }
+        public double RunFactor { get; set; }
+        public double PowerFactor { get; set; }
+        public double StaminaFactor { get; set; }
+        public double IntelligenceFactor { get; set; }
+        public double LuckFactor { get; set; }
+
+        // Time Gates / Energy
         public int Energy { get; set; }
         public int Hunger { get; set; }
 
@@ -595,25 +604,25 @@ namespace ChaoWorld.Core
             SecondEvolutionType = null;
             FlySwimAffinity = 0;
             RunPowerAffinity = 0;
-            SwimValue = (int)(SwimValue * ReincarnationStatFactor);
+            SwimValue = (int)(SwimValue * SwimFactor);
             SwimLevel = 1;
             SwimProgress = 0;
-            FlyValue = (int)(FlyValue * ReincarnationStatFactor);
+            FlyValue = (int)(FlyValue * FlyFactor);
             FlyLevel = 1;
             FlyProgress = 0;
-            RunValue = (int)(RunValue * ReincarnationStatFactor);
+            RunValue = (int)(RunValue * RunFactor);
             RunLevel = 1;
             RunProgress = 0;
-            PowerValue = (int)(PowerValue * ReincarnationStatFactor);
+            PowerValue = (int)(PowerValue * PowerFactor);
             PowerLevel = 1;
             PowerProgress = 0;
-            StaminaValue = (int)(StaminaValue * ReincarnationStatFactor);
+            StaminaValue = (int)(StaminaValue * StaminaFactor);
             StaminaLevel = 1;
             StaminaProgress = 0;
-            IntelligenceValue = (int)(IntelligenceValue * ReincarnationStatFactor);
+            IntelligenceValue = (int)(IntelligenceValue * IntelligenceFactor);
             IntelligenceLevel = 1;
             IntelligenceProgress = 0;
-            LuckValue = (int)(LuckValue * ReincarnationStatFactor);
+            LuckValue = (int)(LuckValue * LuckFactor);
             LuckLevel = 1;
             LuckProgress = 0;
         }

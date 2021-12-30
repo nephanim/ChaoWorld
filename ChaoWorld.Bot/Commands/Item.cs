@@ -318,12 +318,47 @@ namespace ChaoWorld.Bot
                         chao.Reincarnate();
                         effect = " Your chao disappears into a cocoon, only to reemerge as a child.";
                         break;
-                    case ItemBase.ItemEffects.ReincarnationFactorIncrease:
-                        // TODO: Make a conscious decision about what this threshold should be later, stats can get up to 9797 at 70%
-                        if (chao.ReincarnationStatFactor + (0.01 * quantity) > 0.7)
+                    case ItemBase.ItemEffects.SwimFactorIncrease:
+                        if (chao.SwimFactor + (0.01 * quantity) > 0.7)
                             return false;
-                        chao.ReincarnationStatFactor += 0.01 * quantity;
-                        effect = " Chaos energy strengthens your chao's soul.";
+                        chao.SwimFactor += 0.01 * quantity;
+                        effect = " Chaos energy reinforces your chao's swimming ability.";
+                        break;
+                    case ItemBase.ItemEffects.FlyFactorIncrease:
+                        if (chao.FlyFactor + (0.01 * quantity) > 0.7)
+                            return false;
+                        chao.FlyFactor += 0.01 * quantity;
+                        effect = " Chaos energy reinforces your chao's flying ability.";
+                        break;
+                    case ItemBase.ItemEffects.RunFactorIncrease:
+                        if (chao.RunFactor + (0.01 * quantity) > 0.7)
+                            return false;
+                        chao.RunFactor += 0.01 * quantity;
+                        effect = " Chaos energy reinforces your chao's speed.";
+                        break;
+                    case ItemBase.ItemEffects.PowerFactorIncrease:
+                        if (chao.PowerFactor + (0.01 * quantity) > 0.7)
+                            return false;
+                        chao.PowerFactor += 0.01 * quantity;
+                        effect = " Chaos energy reinforces your chao's strength.";
+                        break;
+                    case ItemBase.ItemEffects.StaminaFactorIncrease:
+                        if (chao.StaminaFactor + (0.01 * quantity) > 0.7)
+                            return false;
+                        chao.StaminaFactor += 0.01 * quantity;
+                        effect = " Chaos energy reinforces your chao's endurance.";
+                        break;
+                    case ItemBase.ItemEffects.IntelligenceFactorIncrease:
+                        if (chao.IntelligenceFactor + (0.01 * quantity) > 0.7)
+                            return false;
+                        chao.IntelligenceFactor += 0.01 * quantity;
+                        effect = " Chaos energy reinforces your chao's intelligence.";
+                        break;
+                    case ItemBase.ItemEffects.LuckFactorIncrease:
+                        if (chao.LuckFactor + (0.01 * quantity) > 0.7)
+                            return false;
+                        chao.LuckFactor += 0.01 * quantity;
+                        effect = " Chaos energy reinforces your chao's luck.";
                         break;
                     case ItemBase.ItemEffects.Negativity:
                         if (quantity > 1)

@@ -125,11 +125,18 @@ namespace ChaoWorld.Core
             DarkAlignment,
             AllowMating,
             Reincarnation,
-            ReincarnationFactorIncrease,
+            ReincarnationFactorIncrease, // No longer used - replaced by individual factor increases
             Negativity,
             NewTree,
             Equipment,
-            ChangeEyeColor
+            ChangeEyeColor,
+            SwimFactorIncrease,
+            FlyFactorIncrease,
+            RunFactorIncrease,
+            PowerFactorIncrease,
+            StaminaFactorIncrease,
+            IntelligenceFactorIncrease,
+            LuckFactorIncrease
         }
         
         public enum ItemTypes

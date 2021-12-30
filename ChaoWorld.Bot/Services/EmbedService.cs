@@ -80,7 +80,6 @@ namespace ChaoWorld.Bot
                 $"Current Age: {chao.CurrentAge}\r\n" +
                 $"Total Age: {chao.TotalAge}\r\n" +
                 $"Reincarnations: {chao.Reincarnations}\r\n" +
-                $"Chaos Factor: {Math.Floor(chao.ReincarnationStatFactor*100)}%" +
                 (chao.EvolutionState != Core.Chao.EvolutionStates.Child ? $"\r\nFertile: {isFertile}" : string.Empty)
             ));
             eb.Field(new($"__Development:__",
@@ -109,13 +108,13 @@ namespace ChaoWorld.Bot
             }
 
             eb.Field(new($"__Abilities:__",
-                $"**Swim** (Lv.{chao.SwimLevel:D2})\r\n{chao.SwimGrade} • {chao.SwimProgress:D2}/100 ({chao.SwimValue:D4})\r\n"
-                + $"**Fly** (Lv.{chao.FlyLevel:D2})\r\n{chao.FlyGrade} • {chao.FlyProgress:D2}/100 ({chao.FlyValue:D4})\r\n"
-                + $"**Run** (Lv.{chao.RunLevel:D2})\r\n{chao.RunGrade} • {chao.RunProgress:D2}/100 ({chao.RunValue:D4})\r\n"
-                + $"**Power** (Lv.{chao.PowerLevel:D2})\r\n{chao.PowerGrade} • {chao.PowerProgress:D2}/100 ({chao.PowerValue:D4})\r\n"
-                + $"**Stamina** (Lv.{chao.StaminaLevel:D2})\r\n{chao.StaminaGrade} • {chao.StaminaProgress:D2}/100 ({chao.StaminaValue:D4})\r\n"
-                + $"**Intelligence** (Lv.{chao.IntelligenceLevel:D2})\r\n{chao.IntelligenceGrade} • {chao.IntelligenceProgress:D2}/100 ({chao.IntelligenceValue:D4})\r\n"
-                + $"**Luck** (Lv.{chao.LuckLevel:D2})\r\n{chao.LuckGrade} • {chao.LuckProgress:D2}/100 ({chao.LuckValue:D4})"
+                $"**Swim** (Lv.{chao.SwimLevel:D2}) • {chao.SwimFactor * 100:N0}%\r\n{chao.SwimGrade} • {chao.SwimProgress:D2}/100 ({chao.SwimValue:D4})\r\n"
+                + $"**Fly** (Lv.{chao.FlyLevel:D2}) • {chao.FlyFactor * 100:N0}%\r\n{chao.FlyGrade} • {chao.FlyProgress:D2}/100 ({chao.FlyValue:D4})\r\n"
+                + $"**Run** (Lv.{chao.RunLevel:D2}) • {chao.RunFactor * 100:N0}%\r\n{chao.RunGrade} • {chao.RunProgress:D2}/100 ({chao.RunValue:D4})\r\n"
+                + $"**Power** (Lv.{chao.PowerLevel:D2}) • {chao.PowerFactor * 100:N0}%\r\n{chao.PowerGrade} • {chao.PowerProgress:D2}/100 ({chao.PowerValue:D4})\r\n"
+                + $"**Stamina** (Lv.{chao.StaminaLevel:D2}) • {chao.StaminaFactor * 100:N0}%\r\n{chao.StaminaGrade} • {chao.StaminaProgress:D2}/100 ({chao.StaminaValue:D4})\r\n"
+                + $"**Intelligence** (Lv.{chao.IntelligenceLevel:D2}) • {chao.IntelligenceFactor * 100:N0}%\r\n{chao.IntelligenceGrade} • {chao.IntelligenceProgress:D2}/100 ({chao.IntelligenceValue:D4})\r\n"
+                + $"**Luck** (Lv.{chao.LuckLevel:D2}) • {chao.LuckFactor * 100:N0}%\r\n{chao.LuckGrade} • {chao.LuckProgress:D2}/100 ({chao.LuckValue:D4})"
             ));
             eb.Field(new($"__Race Stats:__",
                 $"Races: {totalRaces}\r\n" +

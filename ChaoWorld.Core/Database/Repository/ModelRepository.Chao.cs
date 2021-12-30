@@ -159,7 +159,13 @@ namespace ChaoWorld.Core
                     tag = @tag,
                     rebirthon = '{chao.RebirthOn}',
                     reincarnations = {chao.Reincarnations},
-                    reincarnationstatfactor = {chao.ReincarnationStatFactor},
+                    swimfactor = {chao.SwimFactor},
+                    flyfactor = {chao.FlyFactor},
+                    runfactor = {chao.RunFactor},
+                    powerfactor = {chao.PowerFactor},
+                    staminafactor = {chao.StaminaFactor},
+                    intelligencefactor = {chao.IntelligenceFactor},
+                    luckfactor = {chao.LuckFactor},
                     evolutionstate = {(int)chao.EvolutionState},
                     {firstEvolution}
                     {secondEvolution}
