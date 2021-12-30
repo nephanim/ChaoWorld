@@ -89,7 +89,7 @@ namespace ChaoWorld.Core
         {
             var query = new Query("gardens").AsUpdate(new
             {
-                instancelimit = 100
+                instancelimit = 150
             });
             await _db.Query<Garden>(query);
             _logger.Information("Reset instance limits for all gardens");
