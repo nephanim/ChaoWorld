@@ -19,7 +19,8 @@ values
     (15, 'Obstacle Course', 'Intermediate race. Intelligence and luck are key to victory.', 1, 1, false, 1, 8, 600, 4, 0.13, 0.03, 0.12, 0.08, 0.32, 0.32),
     (16, 'Emerald Loop', 'Expert race. Running and power are key to victory.', 1, 1, false, 1, 8, 0, 6, 0, 0, 0.59, 0.41, 0, 0),
     (17, 'Sapphire', 'Intermediate race. Swimming is key to victory.', 1, 1, false, 1, 8, 0, 3, 0.85, 0, 0.15, 0, 0, 0),
-    (18, 'Submerged Mine', 'Expert race. Swimming is key to victory.', 1, 1, false, 1, 8, 0, 6, 0.6, 0, 0.09, 0, 0.16, 0.16);
+    (18, 'Submerged Mine', 'Expert race. Swimming is key to victory.', 1, 1, false, 1, 8, 0, 6, 0.6, 0, 0.09, 0, 0.16, 0.16),
+    (19, 'North Pole', 'Expert race. General ability is key to victory.', 1, 1, false, 1, 8, 0, 7, 0.23, 0.19, 0.17, 0.14, 0, 0.26);
 
 insert into racesegments
     (id, raceid, description, raceindex, terraintype, startelevation, endelevation, terraindistance, staminalossmultiplier,
@@ -138,6 +139,15 @@ values
     (93, 18, 'One of the participants flips a hidden switch in the tunnel which seals a mine shaft ahead, stopping the flow of water until the tunnel drains out. Everyone dries off as they continue through on foot.', 2, 0, 0, 0, 50, 1.0, 0, 0, 30),
     (94, 18, 'The tunnel turns sharply into a dead end - except for another flooded coal mine shaft below. With a splash, the chao dive in and navigate the winding, underwater route.', 3, 1, 0, 0, 80, 1.0, 0, 0, 0),
     (95, 18, 'Emerging into a large room, they find it''s filled with spinning, spiked obstacles that move in and out of the water. A powerful current rushes out of tunnels on their left and through drainage grates on their right. The chao time their traversal carefully.', 4, 1, 0, 0, 40, 2.0, 0, 30, 60),
-    (96, 18, 'The goal waits in one of this room''s adjacent tunnels. Though they must fight against the current to reach it, they give it their all in the final stretch.', 5, 1, 0, 0, 50, 1.5, 0, 0, 0);
+    (96, 18, 'The goal waits in one of this room''s adjacent tunnels. Though they must fight against the current to reach it, they give it their all in the final stretch.', 5, 1, 0, 0, 50, 1.5, 0, 0, 0),
+    --North Pole
+    (97, 19, 'The air is crisp and frigid deep in the arctic circle. As the race starts up an icy hill, some chao struggle to find their footing. The sun high above them barely seems to radiate any warmth.', 0, 0, 70, 70, 40, 1.5, 0, 0, 0),
+    (98, 19, 'Reaching the top of the hill, the chao glide off the edge toward the next glacier. A stretch of freezing water separates the two icy land masses. They flutter their wings hard to avoid as much of the cold water as possible.', 1, 1, 70, 0, 120, 3.0, 0, 0, 0),
+    (99, 19, 'The group shakes dry as they start crossing solid ice again. They set their sights on a snow-dusted spire ahead - the next obstacle they must traverse. However, their weight causes a small crack in the ice to widen... Some chao fall back into the water as the glacier splits.', 2, 0, 0, 0, 40, 2.0, 0, 0, 120),
+    (100, 19, 'The glacier drifts away from the course as the arctic currents take it. A watery gap now separates them from the spire. With no choice but to swim across, the racers splash back into the sea. The cold is brutal after such a short reprieve.', 3, 1, 0, 0, 100, 3.0, 0, 0, 0),
+    (101, 19, 'Shivering and pale, the chao climb out of the water and begin scaling the icy cliff in their path. Ice sticks to their damp arms on their way up.', 4, 2, 0, 50, 0, 2.0, 0, 0, 0),
+    (102, 19, 'Before reaching the summit, they climb onto a snowy ledge. Trudging through the snow pile is taxing, but a welcome break from the long climb. They steel themselves against the gust of subzero wind that rolls by.', 5, 0, 50, 50, 40, 1.5, 0, 0, 0),
+    (103, 19, 'The climb resumes. It''s only getting colder and windier as they head higher. Portions of the icy cliff crack and break off as it''s scaled, causing unsuspecting climbers to fall. The chao are dreaming of warm fields.', 6, 2, 50, 100, 0, 2.0, 0, 0, 60),
+    (104, 19, 'The view from the top is breathtaking; nothing but white and blue surrounds the summit on all sides. The chao fly toward the goal flags far below them, just across a pool of water. Attendants await with warm blankets and hot cocoa.', 7, 1, 100, 40, 100, 3.0, 0, 0, 0);
 
 update info set schema_version = 4;
