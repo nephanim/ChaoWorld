@@ -390,6 +390,19 @@ namespace ChaoWorld.Bot
             return eb.Build();
         }
 
+        public async Task<Embed> CreateJackpotEmbed(Context ctx)
+        {
+            ctx.CheckGarden();
+            var gardenOwner = await ctx.GetCachedGardenOwner(ctx.Garden.Id);
+
+            var eb = new EmbedBuilder()
+                .Title($"Jackpot!")
+                .Description($"{Emojis.Rings} {gardenOwner} just hit the jackpot! Congratulations! {Emojis.Rings}\r\n\r\nRings pour out of the slot machine like a waterfall.")
+                .Image(new("https://chaoworld.online/chao/resources/misc/jackpot.gif"));
+
+            return eb.Build();
+        }
+
         private async Task<uint> GetDiscordColor(Core.Chao chao)
         {
             switch (chao.PrimaryColor)

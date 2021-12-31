@@ -116,7 +116,7 @@ namespace ChaoWorld.Bot
             if (int.TryParse(betInput, out int newBet))
                 bet = newBet;
 
-            var machine = new SlotMachine(_repo, bet)
+            var machine = new SlotMachine(_repo, _embeds, bet)
             {
                 IsSimulated = true
             };
@@ -131,7 +131,7 @@ namespace ChaoWorld.Bot
             if (int.TryParse(betInput, out int newBet))
                 bet = newBet;
 
-            var machine = new SlotMachine(_repo, bet);
+            var machine = new SlotMachine(_repo, _embeds, bet);
             await machine.Play(ctx);
         }
 
@@ -193,11 +193,13 @@ namespace ChaoWorld.Bot
         public double PayoutAmount { get; set; }
 
         private readonly ModelRepository _repo;
+        private readonly EmbedService _embeds;
         private readonly int _betAmount;
 
-        public SlotMachine(ModelRepository repo, int betAmount)
+        public SlotMachine(ModelRepository repo, EmbedService embeds, int betAmount)
         {
             _repo = repo;
+            _embeds = embeds;
             _betAmount = betAmount;
         }
 
@@ -355,7 +357,7 @@ namespace ChaoWorld.Bot
             {
                 // Note that this won't be triggered during simulations - someone actually hit the jackpot
                 await _repo.ResetJackpot();
-                await ctx.Reply($"{Emojis.Rings} {Emojis.Rings} {Emojis.Rings} {ctx.Author.Username} hit the jackpot! Rings pour out of the slot machine like a waterfall. {Emojis.Rings} {Emojis.Rings} {Emojis.Rings}");
+                await ctx.Reply(embed: await _embeds.CreateJackpotEmbed(ctx));
             }
 
             var payout = (int)Math.Floor(PayoutAmount);
