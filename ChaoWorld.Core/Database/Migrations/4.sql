@@ -18,7 +18,8 @@ values
     (14, 'Windy Valley', 'Expert race. Flying and intelligence are key to victory.', 5, 5, false, 1, 8, 0, 5, 0, 0.63, 0, 0, 0.38, 0),
     (15, 'Obstacle Course', 'Intermediate race. Intelligence and luck are key to victory.', 1, 1, false, 1, 8, 600, 4, 0.13, 0.03, 0.12, 0.08, 0.32, 0.32),
     (16, 'Emerald Loop', 'Expert race. Running and power are key to victory.', 1, 1, false, 1, 8, 0, 6, 0, 0, 0.59, 0.41, 0, 0),
-    (17, 'Sapphire', 'Intermediate race. Swimming is key to victory.', 1, 1, false, 1, 8, 0, 3, 0.85, 0, 0.15, 0, 0, 0);
+    (17, 'Sapphire', 'Intermediate race. Swimming is key to victory.', 1, 1, false, 1, 8, 0, 3, 0.85, 0, 0.15, 0, 0, 0),
+    (18, 'Submerged Mine', 'Expert race. Swimming is key to victory.', 1, 1, false, 1, 8, 0, 6, 0.6, 0, 0.09, 0, 0.16, 0.16);
 
 insert into racesegments
     (id, raceid, description, raceindex, terraintype, startelevation, endelevation, terraindistance, staminalossmultiplier,
@@ -130,6 +131,13 @@ values
     (87, 17, 'Chao splash into the glistening water as they reach it. They rise and fall with the waves, following the course parallel to shore. The sun shines bright in the sky and in its reflection.', 1, 1, 0, 0, 100, 1.0, 0, 0, 0),
     (88, 17, 'A sandbank just off the coast intersects the course. Right after a swim in cool waters, the sand feels hotter and sticks to their legs.', 2, 0, 0, 0, 20, 2.5, 0, 0, 0),
     (89, 17, 'Back in the water and refreshed, the chao continue swimming along the coastline. A colony of gulls passes overhead.', 3, 1, 0, 0, 100, 1.0, 0, 0, 0),
-    (90, 17, 'The course turns toward the open sea where a small sailboat awaits. Omochao on board beckon them with checkered flags. The first to climb aboard wins!', 4, 1, 0, 0, 50, 2.0, 0, 0, 0);
+    (90, 17, 'The course turns toward the open sea where a small sailboat awaits. Omochao on board beckon them with checkered flags. The first to climb aboard wins!', 4, 1, 0, 0, 50, 2.0, 0, 0, 0),
+    --Submerged Mine
+    (91, 18, 'Time for a dive! The chao take a deep breath as they drop into a pool below them. Inside, they find the central chamber of the mines completely submerged. Signs floating in the water guide them to the entrance to an underwater tunnel.', 0, 1, 0, 0, 80, 1.0, 0, 0, 0),
+    (92, 18, 'Entering the tunnel proves harder than anticipated as a powerful current rushes out of it. The chao fight against the current, but many are already losing strength. Water keeps pouring in from somewhere ahead.', 1, 1, 0, 0, 50, 3.0, 0, 60, 0),
+    (93, 18, 'One of the participants flips a hidden switch in the tunnel which seals a mine shaft ahead, stopping the flow of water until the tunnel drains out. Everyone dries off as they continue through on foot.', 2, 0, 0, 0, 50, 1.0, 0, 0, 30),
+    (94, 18, 'The tunnel turns sharply into a dead end - except for another flooded mine shaft below. With a splash, the chao dive in and navigate the winding, underwater route.', 3, 1, 0, 0, 80, 1.0, 0, 0, 0),
+    (95, 18, 'Emerging into a large room, they find it''s filled with spinning, spiked obstacles that move in and out of the water. A powerful current rushes out of tunnels on their left and through drainage grates on their right. The chao time their traversal carefully.', 4, 1, 0, 0, 40, 2.0, 0, 30, 60),
+    (96, 18, 'The goal waits in one of this room''s adjacent tunnels. Though they must fight against the current to reach it, they give it their all in the final stretch.', 5, 1, 0, 0, 50, 1.5, 0, 0, 0);
 
 update info set schema_version = 4;
