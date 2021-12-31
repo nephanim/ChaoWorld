@@ -40,11 +40,14 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckGarden();
 
-            var trees = await _repo.GetTreesForGarden(ctx.Garden.Id.Value);
-            foreach (var tree in trees)
+            // See if there are any thirsty trees...
+            var tree = await _repo.GetThirstiestTreeForGarden(ctx.Garden.Id.Value);
+            while (tree != null)
             {
                 await WaterTree(ctx, tree);
+                tree = await _repo.GetThirstiestTreeForGarden(ctx.Garden.Id.Value);
             }
+            await ctx.Reply($"{Emojis.Success} All of your trees have been watered.");
         }
 
         public async Task WaterTree(Context ctx, Core.Tree tree)
@@ -93,11 +96,15 @@ namespace ChaoWorld.Bot
         {
             ctx.CheckGarden();
 
-            var trees = await _repo.GetTreesForGarden(ctx.Garden.Id.Value);
-            foreach (var tree in trees)
+            // See if there are any trees with fruit...
+            var tree = await _repo.GetMostBountifulTreeForGarden(ctx.Garden.Id.Value);
+            while (tree != null)
             {
+                // Keep collecting until we can't find any more
                 await CollectFruit(ctx, tree);
+                tree = await _repo.GetMostBountifulTreeForGarden(ctx.Garden.Id.Value);
             }
+            await ctx.Reply($"{Emojis.Success} All of your fruit has been harvested.");
         }
 
         public async Task CollectFruit(Context ctx, Core.Tree tree)
