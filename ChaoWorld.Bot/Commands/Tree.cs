@@ -44,13 +44,13 @@ namespace ChaoWorld.Bot
             var tree = await _repo.GetThirstiestTreeForGarden(ctx.Garden.Id.Value);
             while (tree != null)
             {
-                await WaterTree(ctx, tree);
+                await WaterTree(ctx, tree, suppressReplies: true);
                 tree = await _repo.GetThirstiestTreeForGarden(ctx.Garden.Id.Value);
             }
             await ctx.Reply($"{Emojis.Success} All of your trees have been watered.");
         }
 
-        public async Task WaterTree(Context ctx, Core.Tree tree)
+        public async Task WaterTree(Context ctx, Core.Tree tree, bool suppressReplies = false)
         {
             ctx.CheckGarden();
             ctx.CheckOwnTree(tree);
@@ -66,13 +66,17 @@ namespace ChaoWorld.Bot
                 if (tree.Health > 100)
                     tree.Health = 100;
 
-                if (tree.Health > 75)
-                    await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It looks refreshed and healthy.");
-                else if (tree.Health > 25)
-                    await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It's starting to grow stronger.");
-                else
-                    await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It will need some more attention later.");
-            } else
+                if (!suppressReplies)
+                {
+                    if (tree.Health > 75)
+                        await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It looks refreshed and healthy.");
+                    else if (tree.Health > 25)
+                        await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It's starting to grow stronger.");
+                    else
+                        await ctx.Reply($"{Emojis.Success} You water the {tree.Name}. It will need some more attention later.");
+                }
+            }
+            else if (!suppressReplies)
             {
                 // Uh oh, we're overwatering the tree...
                 await ctx.Reply($"{Emojis.Warn} You decide not to water the {tree.Name}. It looks like it's too soon. Try again in {timeUntilWatering}.");
@@ -101,13 +105,13 @@ namespace ChaoWorld.Bot
             while (tree != null)
             {
                 // Keep collecting until we can't find any more
-                await CollectFruit(ctx, tree);
+                await CollectFruit(ctx, tree, suppressReplies: true);
                 tree = await _repo.GetMostBountifulTreeForGarden(ctx.Garden.Id.Value);
             }
             await ctx.Reply($"{Emojis.Success} All of your fruit has been harvested.");
         }
 
-        public async Task CollectFruit(Context ctx, Core.Tree tree)
+        public async Task CollectFruit(Context ctx, Core.Tree tree, bool suppressReplies = false)
         {
             ctx.CheckGarden();
             ctx.CheckOwnTree(tree);
