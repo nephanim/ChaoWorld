@@ -121,9 +121,10 @@ namespace ChaoWorld.Bot
                 var quantity = tree.FruitQuantity;
                 var yieldType = tree.Name.Replace(" Cluster", string.Empty).Replace(" Tree", string.Empty);
                 await HarvestFruit(ctx.Garden, tree);
-                await ctx.Reply($"{Emojis.Success} You harvested {yieldType} x{quantity} from the {tree.Name}.");
+                if (!suppressReplies)
+                    await ctx.Reply($"{Emojis.Success} You harvested {yieldType} x{quantity} from the {tree.Name}.");
             }
-            else
+            else if (!suppressReplies)
                 await ctx.Reply($"{Emojis.Error} There is nothing to harvest. Try again later.");
         }
 
