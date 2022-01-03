@@ -194,16 +194,21 @@ namespace ChaoWorld.Bot
                     {
                         // Select random NPC chao to fill remaining slots
                         var joiningNPCs = new List<Core.Chao>();
-                        var statThreshold = race.Difficulty * 600;
+                        var lowerStatThreshold = (race.Difficulty - 1) * 600; // We set lower and upper stat thresholds to try to keep NPC difficulty appropriate for the race
+                        var upperStatThreshold = race.Difficulty * 600;
                         var queryCount = 0;
                         while (currentChaoCount < race.MaximumChao && queryCount < 16) // This limit is totally arbitrary, just a safeguard if we can't find enough chao
                         {
-                            var npc = await _repo.GetRandomChao(0, statThreshold); // Garden 0 is a special holding place reserved for NPCs
+                            var npc = await _repo.GetRandomChao(0, lowerStatThreshold, upperStatThreshold); // Garden 0 is a special holding place reserved for NPCs
                             queryCount++;
-                            // We might not be able to find NPCs in this range since they level up... so go higher and try again
+                            // We might not be able to find NPCs in this range since they level up... so widen the range and try again
                             if (npc == null)
                             {
-                                statThreshold += 600;
+                                // Expand the range downward first until it hits 0 (the NPCs will probably just retire from the race, but whatever)
+                                if (lowerStatThreshold > 0)
+                                    lowerStatThreshold -= 600;
+                                else
+                                    upperStatThreshold += 600; // Since we couldn't find chao going lower, go higher instead (knowing the player will likely get destroyed)
                                 continue;
                             }
                             if (joiningNPCs.All(x => x.Id != npc.Id))
@@ -215,8 +220,11 @@ namespace ChaoWorld.Bot
                             else
                             {
                                 // If we're getting duplicates, the pool is probably spread thin
-                                // Use a wider range and try again
-                                statThreshold += 600;
+                                // Use a wider range and try again - same logic here as above
+                                if (lowerStatThreshold > 0)
+                                    lowerStatThreshold -= 600;
+                                else
+                                    upperStatThreshold += 600;
                             }
                         }
                     }
