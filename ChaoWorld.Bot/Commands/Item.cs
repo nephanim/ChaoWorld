@@ -258,7 +258,8 @@ namespace ChaoWorld.Bot
                     default:
                         return false; // Clearly we don't know what to do with this
                 }
-                chao.Hunger = Math.Max(0, chao.Hunger - 8*quantity); // If eating the fruit worked, it should reduce hunger a little
+                var reduceHunger = new Random().Next(5, 11) * quantity; // If eating the fruit worked, it should reduce hunger a little
+                chao.Hunger = Math.Max(0, chao.Hunger - reduceHunger);
                 chao.Energy += quantity; // It should also return some energy, but only up to the cap
                 if (chao.Energy > 20)
                     chao.Energy = 20;
