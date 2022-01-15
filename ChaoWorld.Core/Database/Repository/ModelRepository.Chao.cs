@@ -234,7 +234,7 @@ namespace ChaoWorld.Core
             await _db.Execute(conn => conn.QueryAsync<int>($@"
                 update chao
                 set
-                    energy = least(20, energy + 20 - floor(random() * hunger / 5)),
+                    energy = least(20, energy + floor(random() * (100-hunger) / 10)),
                     hunger = case when hunger >= 100 then hunger else hunger + 1 end
                 where gardenid != 0;
             "));
