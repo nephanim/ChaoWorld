@@ -118,7 +118,9 @@ namespace ChaoWorld.Bot
         {
             var broadcastChannels = await _repo.ReadBroadcastChannels();
 
+            _logger.Information("Running evolutions...");
             await RunFirstEvolutions(broadcastChannels.General);
+            await RunSecondEvolutions(broadcastChannels.General);
 
             _logger.Information("Updating trees...");
             await _repo.GrowFruitForAllTrees();
@@ -246,6 +248,20 @@ namespace ChaoWorld.Bot
                 await _repo.UpdateChao(c);
                 if (c.GardenId.Value > 0)
                     await SendMessage(channel, $"{Emojis.Megaphone} {c.Name} has reached their first evolution! Congratulations!");
+            }
+        }
+
+        private async Task RunSecondEvolutions(ulong channel)
+        {
+            var chao = await _repo.GetChaoReadyForSecondEvolution();
+            foreach (var c in chao)
+            {
+                c.EvolutionState = Core.Chao.EvolutionStates.Second;
+                c.SecondEvolutionType = c.GetEffectiveAbilityType();
+
+                await _repo.UpdateChao(c);
+                if (c.GardenId.Value > 0)
+                    await SendMessage(channel, $"{Emojis.Megaphone} {c.Name} has reached their second evolution! Congratulations!");
             }
         }
 

@@ -78,7 +78,7 @@ namespace ChaoWorld.Core
         {
             var query = new Query("chao")
                 .Where("evolutionstate", Chao.EvolutionStates.First)
-                .WhereRaw("trunc(date_part('day', now() at time zone 'utc' - rebirthon)) >= 28");
+                .WhereRaw("trunc(date_part('day', now() at time zone 'utc' - rebirthon)) >= 21");
             return await _db.Query<Chao>(query);
         }
 
