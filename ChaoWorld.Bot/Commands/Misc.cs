@@ -79,9 +79,9 @@ namespace ChaoWorld.Bot
             if (ctx.Garden.NextCollectOn < now)
             {
                 var maxLuck = await _repo.GetHighestLuckInGarden(ctx.Garden.Id);
-                var ringsFound = new System.Random().Next(100, 1000 + maxLuck/10);
+                var ringsFound = new Random().Next(100 + maxLuck/10, 1000 + maxLuck);
                 ctx.Garden.RingBalance += ringsFound;
-                var duration = Duration.FromDays(1);
+                var duration = Duration.FromHours(23);
                 ctx.Garden.NextCollectOn = now.Plus(duration);
                 await _repo.UpdateGarden(ctx.Garden);
                 await ctx.Reply($"{Emojis.Success} You found {ringsFound:n0} rings! Your current balance is {ctx.Garden.RingBalance:n0}.");
