@@ -87,15 +87,11 @@ namespace ChaoWorld.Bot
                 await ctx.Reply($"{Emojis.Success} You found {ringsFound:n0} rings! Your current balance is {ctx.Garden.RingBalance:n0}.");
             } else {
                 var duration = ctx.Garden.NextCollectOn - now;
-                var timeRemaining = "24 hours";
-                if (duration.TotalHours >= 2)
-                    timeRemaining = $"{duration.TotalHours:N0} hours";
-                else if (duration.TotalHours >= 1)
-                    timeRemaining = $"1 hour {(duration.TotalMinutes - 60):N0} minutes";
-                else if (duration.TotalMinutes >= 2)
-                    timeRemaining = $"{duration.TotalMinutes:N0} minutes";
+                string timeRemaining;
+                if (duration.TotalHours >= 1)
+                    timeRemaining = $"{(Math.Floor(duration.TotalHours)):N0} hours {(Math.Floor(duration.TotalMinutes % 60)):N0} minutes";
                 else if (duration.TotalMinutes >= 1)
-                    timeRemaining = $"1 minute {duration.TotalSeconds:N0} seconds";
+                    timeRemaining = $"{duration.TotalMinutes:N0} minutes";
                 else
                     timeRemaining = $"{duration.TotalSeconds:N0} seconds";
 
