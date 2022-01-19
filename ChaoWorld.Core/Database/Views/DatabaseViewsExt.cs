@@ -72,6 +72,21 @@ namespace ChaoWorld.Core
             return conn.QueryAsync<ListedRace>(query.ToString(), new { filter = search });
         }
 
+        public static Task<IEnumerable<ListedRaceRecord>> QueryRecordsByRace(this IChaoWorldConnection conn, int raceId)
+        {
+            StringBuilder query;
+            query = new StringBuilder(@$"
+                select ri.winnerchaoid chaoid, c.name chaoname, min(ri.timeelapsedseconds) totaltimeseconds
+                from raceinstances ri
+                join chao c
+                on ri.winnerchaoid = c.id
+                where ri.raceid = {raceId}
+                group by ri.winnerchaoid, c.name
+                order by min(timeelapsedseconds)");
+
+            return conn.QueryAsync<ListedRaceRecord>(query.ToString());
+        }
+
         public static Task<IEnumerable<ListedTournament>> QueryTournamentList(this IChaoWorldConnection conn, bool includeCompletedRaces, bool includeIncompleteRaces, string search)
         {
             var includeStates = new List<int>();

@@ -61,6 +61,11 @@ namespace ChaoWorld.Bot
 
             await ctx.RenderRaceList(_db, includeCompletedRaces, includeIncompleteRaces, title, search);
         }
+
+        public async Task RaceRecordsList(Context ctx, Core.Race race)
+        {
+            await ctx.RenderRaceRecords(_db, race);
+        }
     }
 
     public class RaceProgressListItem
@@ -69,6 +74,13 @@ namespace ChaoWorld.Bot
         public string ChaoName { get; set; }
         public RaceInstanceChaoSegment.SegmentStates Status { get; set; }
         public int Position { get; set; }
+        public int TotalTimeSeconds { get; set; }
+    }
+
+    public class RaceRecordListItem
+    {
+        public long ChaoId { get; set; }
+        public string ChaoName { get; set; }
         public int TotalTimeSeconds { get; set; }
     }
 }

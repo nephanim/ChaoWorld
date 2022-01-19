@@ -10,6 +10,7 @@ using Myriad.Builders;
 using NodaTime;
 
 using ChaoWorld.Core;
+using System;
 
 namespace ChaoWorld.Bot
 {
@@ -179,6 +180,41 @@ namespace ChaoWorld.Bot
                     var ret = $"[`{m.Id}`] **{m.Name}** {Core.Race.GetDifficultyString(m.Difficulty)} ({m.State.GetDescription()})";
                     if (m.WinnerChaoId.HasValue && m.CompletedOn.HasValue)
                         ret += $" • Winner: {m.WinnerName} • <t:{m.CompletedOn.Value.ToUnixTimeSeconds()}>";
+                    return ret;
+                }));
+            }
+        }
+
+        public static async Task RenderRaceRecords(this Context ctx, IDatabase db, Core.Race race)
+        {
+            // We take an IDatabase instead of a IChaoWorldConnection so we don't keep the handle open for the entire runtime
+            // We wanna release it as soon as the list is actually *fetched*, instead of potentially minutes later (paginate timeout)
+            var records = (await db.Execute(conn => conn.QueryRecordsByRace(race.Id)))
+                .ToList();
+            var title = $"Race Records: {race.Name}";
+
+            var itemsPerPage = 20; //Maybe do a long list in the future too
+            await ctx.Paginate(records.ToAsyncEnumerable(), records.Count, itemsPerPage, title, null, Renderer);
+
+            // Base renderer, dispatches based on type
+            Task Renderer(EmbedBuilder eb, IEnumerable<ListedRaceRecord> page)
+            {
+                // Add a global footer with the filter/sort string + result count
+                eb.Footer(new($"{"result".ToQuantity(records.Count)}"));
+                eb.Thumbnail(new("https://nephanim.com/chao/resources/misc/chaorace.jpg"));
+
+                // Then call the specific renderers
+                ShortRenderer(eb, page);
+                return Task.CompletedTask;
+            }
+
+            void ShortRenderer(EmbedBuilder eb, IEnumerable<ListedRaceRecord> page)
+            {
+                // We may end up over the description character limit
+                // so run it through a helper that "makes it work" :)
+                eb.WithSimpleLineContent(page.Select(m =>
+                {
+                    var ret = $"[`{m.ChaoId}`] **{m.ChaoName}** • {TimeSpan.FromSeconds(m.TotalTimeSeconds).ToString("c")}";
                     return ret;
                 }));
             }
