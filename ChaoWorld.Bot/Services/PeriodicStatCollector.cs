@@ -304,7 +304,7 @@ namespace ChaoWorld.Bot
                 items.Add(fruit);
             }
 
-            var seedLimit = new Random().Next(1, 5) == 1 ? 1 : 0; // Only have seeds available every few hours
+            var seedLimit = new Random().Next(1, 5) == 1 ? new Random().Next(1, 3) : 0; // Only have seeds available every few hours, but allow up to 2 seeds at once
             var seeds = await _repo.GetMarketEnabledSeeds(seedLimit);
             foreach (var seed in seeds)
             {
@@ -312,7 +312,7 @@ namespace ChaoWorld.Bot
                 items.Add(seed);
             }
 
-            var specialLimit = new Random().Next(1, 9) == 1 ? 1 : 0; // Have special items available a few times per day
+            var specialLimit = new Random().Next(1, 9) == 1 ? new Random().Next(1, 3) : 0; // Have special items available a few times per day, but allow up to 2 items at once
             var specials = await _repo.GetMarketEnabledSpecials(specialLimit);
             foreach (var special in specials)
             {
