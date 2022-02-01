@@ -35,6 +35,7 @@ namespace ChaoWorld.Bot
         private readonly Core.Garden _senderGarden;
         private readonly IMetrics _metrics;
         private readonly IDiscordCache _cache;
+        private readonly WebhookExecutorService _webhookExecutor;
 
         private Command? _currentCommand;
 
@@ -50,6 +51,7 @@ namespace ChaoWorld.Bot
             _cache = provider.Resolve<IDiscordCache>();
             _db = provider.Resolve<IDatabase>();
             _repo = provider.Resolve<ModelRepository>();
+            _webhookExecutor = provider.Resolve<WebhookExecutorService>();
             _metrics = provider.Resolve<IMetrics>();
             _provider = provider;
             _parameters = new Parameters(message.Content?.Substring(commandParseOffset));
@@ -96,6 +98,21 @@ namespace ChaoWorld.Bot
                 Embed = embed,
                 // Default to an empty allowed mentions object instead of null (which means no mentions allowed)
                 AllowedMentions = mentions ?? new AllowedMentions()
+            });
+
+            return msg;
+        }
+
+        public async Task<Message> Post(string text = null, Embed embed = null, AllowedMentions? mentions = null)
+        {
+            var msg = await _webhookExecutor.ExecuteWebhook(new ProxyRequest
+            {
+                GuildId = Guild.Id,
+                ChannelId = Channel.Id,
+                Name = "Chao World",
+                AvatarUrl = "https://cdn.discordapp.com/attachments/904950403886641164/937870842593943552/chao.png",
+                Content = text,
+                Embeds = embed != null ? new Embed[] { embed } : null
             });
 
             return msg;

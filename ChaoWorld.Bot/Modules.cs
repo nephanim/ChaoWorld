@@ -40,7 +40,7 @@ namespace ChaoWorld.Bot
                 };
             }).AsSelf().SingleInstance();
             builder.RegisterType<Cluster>().AsSelf().SingleInstance();
-            builder.Register(c => new Myriad.Rest.DiscordApiClient(c.Resolve<BotConfig>().Token, c.Resolve<ILogger>()))
+            builder.Register(c => new DiscordApiClient(c.Resolve<BotConfig>().Token, c.Resolve<ILogger>()))
                 .AsSelf().SingleInstance();
             builder.RegisterType<MemoryDiscordCache>().AsSelf().As<IDiscordCache>().SingleInstance();
 
