@@ -144,6 +144,9 @@ namespace ChaoWorld.Bot
                     return ctx.Execute<Misc>(SlotsPlay, m => m.SimulateSlots(ctx));
                 else
                     PrintCommandExpectedError(ctx, SlotsCommands);
+            if (ctx.Match("cwdebug"))
+                if (ctx.Match("webhook"))
+                    ctx.Post("This is a test of the webhook service.");
 
             // remove compiler warning
             return ctx.Reply($"{Emojis.Error} Unknown command {ctx.PeekArgument().AsCode()}. For a full list of commands, see #resources.");
