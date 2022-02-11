@@ -312,7 +312,7 @@ namespace ChaoWorld.Bot
                 items.Add(seed);
             }
 
-            var specialLimit = new Random().Next(1, 9) == 1 ? new Random().Next(1, 3) : 0; // Have special items available a few times per day, but allow up to 2 items at once
+            var specialLimit = new Random().Next(1, 7) == 1 ? new Random().Next(1, 4) : 0; // Have special items available ~4 times per day, but allow up to 3 items at once
             var specials = await _repo.GetMarketEnabledSpecials(specialLimit);
             foreach (var special in specials)
             {
@@ -328,13 +328,13 @@ namespace ChaoWorld.Bot
             var chao = await _repo.GetChaoInGarden(0);
             foreach (var c in chao)
             {
-                c.RaiseSwim(500);
-                c.RaiseFly(500);
-                c.RaiseRun(500);
-                c.RaisePower(500);
-                c.RaiseStamina(500);
-                c.RaiseIntelligence(500);
-                c.RaiseLuck(500);
+                c.RaiseSwim(100);
+                c.RaiseFly(100);
+                c.RaiseRun(100);
+                c.RaisePower(100);
+                c.RaiseStamina(100);
+                c.RaiseIntelligence(100);
+                c.RaiseLuck(100);
                 await _repo.UpdateChao(c);
                 _logger.Information($"Boosted stats for chao {c.Id} ({c.Name})");
             }
