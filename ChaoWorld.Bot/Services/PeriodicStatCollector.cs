@@ -320,6 +320,14 @@ namespace ChaoWorld.Bot
                 items.Add(special);
             }
 
+            var potionLimit = new Random().Next(1, 9) == 1 ? 1 : 0; // Have potions available ~3 times per day
+            var potions = await _repo.GetMarketEnabledPotions(potionLimit);
+            foreach (var potion in potions)
+            {
+                potion.Quantity = 1;
+                items.Add(potion);
+            }
+
             return items;
         }
 

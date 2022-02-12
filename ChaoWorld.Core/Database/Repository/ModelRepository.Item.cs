@@ -116,6 +116,22 @@ namespace ChaoWorld.Core
                     from itemtypes
                     where ismarketenabled = true
                     and categoryid = {(int)ItemBase.ItemCategories.Special}
+                    and effecttypeid != {(int)ItemBase.ItemEffects.Reincarnation}
+                    order by random()
+                    limit {limit}
+            "));
+            return items;
+        }
+
+        public async Task<IEnumerable<MarketItem>> GetMarketEnabledPotions(int limit)
+        {
+            if (limit < 1) return new List<MarketItem>();
+
+            var items = await _db.Execute(conn => conn.QueryAsync<MarketItem>($@"
+                    select *
+                    from itemtypes
+                    where ismarketenabled = true
+                    and effecttypeid = {(int)ItemBase.ItemEffects.Reincarnation}
                     order by random()
                     limit {limit}
             "));
