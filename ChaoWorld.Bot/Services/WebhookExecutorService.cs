@@ -135,6 +135,7 @@ namespace ChaoWorld.Bot
             {
                 try
                 {
+                    _logger.Information($"Executing webhook {webhook.Id} in channel {webhook.ChannelId} (thread {req.ThreadId})");
                     webhookMessage = await _rest.ExecuteWebhook(webhook.Id, webhook.Token, webhookReq, files, req.ThreadId);
                 }
                 catch (JsonReaderException)
@@ -196,6 +197,8 @@ namespace ChaoWorld.Bot
             // If any individual attachment is larger than 8MB, will throw an error
             var chunks = new List<List<Message.Attachment>>();
             var list = new List<Message.Attachment>();
+            if (attachments == null)
+                return chunks;
 
             foreach (var attachment in attachments)
             {
