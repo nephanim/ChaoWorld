@@ -98,7 +98,14 @@ namespace ChaoWorld.Core
                 powergrade = chao.PowerGrade,
                 staminagrade = chao.StaminaGrade,
                 intelligencegrade = chao.IntelligenceGrade,
-                luckgrade = chao.LuckGrade
+                luckgrade = chao.LuckGrade,
+                swimfactor = chao.SwimFactor,
+                runfactor = chao.RunFactor,
+                flyfactor = chao.FlyFactor,
+                powerfactor = chao.PowerFactor,
+                staminafactor = chao.StaminaFactor,
+                intelligencefactor = chao.IntelligenceFactor,
+                luckfactor = chao.LuckFactor,
             });
             chao = await _db.QueryFirst<Chao>(conn, query, "returning *");
             _logger.Information("Created {ChaoId} in {GardenId}: {ChaoName}",

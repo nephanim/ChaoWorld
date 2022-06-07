@@ -291,6 +291,14 @@ namespace ChaoWorld.Core
             StaminaGrade = MiscUtils.GenerateStatGrade();
             IntelligenceGrade = MiscUtils.GenerateStatGrade();
             LuckGrade = MiscUtils.GenerateStatGrade();
+
+            SwimFactor = 0.10;
+            FlyFactor = 0.10;
+            RunFactor = 0.10;
+            PowerFactor = 0.10;
+            StaminaFactor = 0.10;
+            IntelligenceFactor = 0.10;
+            LuckFactor = 0.10;
         }
 
         public bool RaiseStatGrade(AbilityTypes type)
