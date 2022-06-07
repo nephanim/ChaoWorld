@@ -267,8 +267,16 @@ namespace ChaoWorld.Core
             [ItemCategory(ItemCategories.Seed)] [Description("Lucky Mushroom Spores")] [Price(100000)] LuckyMushroomSpores,
 
             // Special
-            [ItemCategory(ItemCategories.Special)] [Description("Suspicious Potion")] [Price(30000)] SuspiciousPotion = 3000,
-            [ItemCategory(ItemCategories.Special)] [Description("Chaos Juice")] [Price(100000)] ChaosJuice,
+            [ItemCategory(ItemCategories.Special)] [Description("Suspicious Potion")] [Price(30000)] SuspiciousPotion = 2141,
+            //[ItemCategory(ItemCategories.Special)] [Description("Chaos Juice")] [Price(100000)] ChaosJuice,
+            [ItemCategory(ItemCategories.Special)][Description("Chaos Juice: Swim Blend")][Price(70000)] ChaosJuiceSwimBlend = 2159,
+            [ItemCategory(ItemCategories.Special)][Description("Chaos Juice: Fly Blend")][Price(70000)] ChaosJuiceFlyBlend = 2160,
+            [ItemCategory(ItemCategories.Special)][Description("Chaos Juice: Run Blend")][Price(70000)] ChaosJuiceRunBlend = 2161,
+            [ItemCategory(ItemCategories.Special)][Description("Chaos Juice: Power Blend")][Price(70000)] ChaosJuicePowerBlend = 2162,
+            [ItemCategory(ItemCategories.Special)][Description("Chaos Juice: Stamina Blend")][Price(70000)] ChaosJuiceStaminaBlend = 2163,
+            [ItemCategory(ItemCategories.Special)][Description("Chaos Juice: Intelligence Blend")][Price(70000)] ChaosJuiceIntelligenceBlend = 2164,
+            [ItemCategory(ItemCategories.Special)][Description("Chaos Juice: Luck Blend")][Price(70000)] ChaosJuiceLuckBlend = 2165,
+
             [ItemCategory(ItemCategories.Special)] [Description("Negative Mirror")] [Price(10000)] NegativeMirror,
 
             // Non-Market Hats
