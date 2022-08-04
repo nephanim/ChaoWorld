@@ -266,7 +266,8 @@ namespace ChaoWorld.Core
                 quantity = item.Quantity
             });
             item = await _db.QueryFirst<MarketItem>(conn, query, "returning *");
-            _logger.Information($"Listed {item.Name} (x{item.Quantity}) on the Black Market");
+            var baseItem = item as ItemBase;
+            _logger.Information($"Listed {baseItem.Name} (x{item.Quantity}) on the Black Market");
             return item;
         }
 

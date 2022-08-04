@@ -110,7 +110,8 @@ namespace ChaoWorld.Bot
                 GuildId = Guild.Id,
                 ChannelId = Channel.Id,
                 Name = "Chao World",
-                AvatarUrl = "https://cdn.discordapp.com/attachments/904950403886641164/937870842593943552/chao.png",
+                AvatarUrl = "https://cdn.discordapp.com/attachments/904950403886641164/983927352465698816/logo.png",
+                //"https://cdn.discordapp.com/attachments/904950403886641164/937870842593943552/chao.png",
                 Content = text,
                 Embeds = embed != null ? new Embed[] { embed } : null
             });
